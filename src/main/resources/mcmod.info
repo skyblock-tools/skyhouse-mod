@@ -1,0 +1,16 @@
+[
+{
+  "modid": "skyhouse",
+  "name": "Skyhouse",
+  "description": "Forge mod for the Skyhouse auction flipper.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/skyhouse-auctions/skyhouse-mod",
+  "updateUrl": "",
+  "authorList": ["pjones123"],
+  "credits": "The skyblock.tools team",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
