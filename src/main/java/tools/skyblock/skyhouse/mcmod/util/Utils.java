@@ -73,6 +73,8 @@ public class Utils {
         URLConnection conn = url.openConnection();
         conn.setConnectTimeout(3_000);
         conn.setReadTimeout(15_000);
+        conn.setRequestProperty("accept", "application/json");
+        conn.setRequestProperty("user-agent", "forge/skyhouse");
         String res = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
         return SkyhouseMod.gson.fromJson(res, JsonObject.class);
     }

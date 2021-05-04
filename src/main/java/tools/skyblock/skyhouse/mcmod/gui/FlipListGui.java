@@ -52,8 +52,8 @@ public class FlipListGui extends CustomGui {
         super.tick();
         guiLeft = width-256-20;
         guiTop = height/2-128;
-        lastPageAuctions = auctions.size() % 4;
-        totalPages = (int) Math.ceil(auctions.size() / 4);
+        lastPageAuctions = auctions.size() % 4 == 0 ? 4 : auctions.size() % 4;
+        totalPages = (int) Math.ceil((double) auctions.size() / 4);
         shownAucs = page == totalPages-1 ? lastPageAuctions : 4;
     }
 
@@ -73,7 +73,7 @@ public class FlipListGui extends CustomGui {
             drawTexturedModalRect(guiLeft+256-12-16, guiTop+10, 16, 0, 16, 16);
         }
         int i = 0;
-        for (Auction auction : auctions.subList(page*4, page*4+4)) {
+        for (Auction auction : auctions.subList(page*4, page*4+shownAucs)) {
             ItemStack toRender = auction.getStack();
             GlStateManager.pushMatrix();
             GlStateManager.scale(2, 2, 2);
@@ -82,16 +82,17 @@ public class FlipListGui extends CustomGui {
             GlStateManager.popMatrix();
             Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.FLIP_FRAME);
             drawTexturedModalRect(guiLeft + 12, guiTop - 20 + i * 55, 0, 0, 216, 45);
-
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+            drawTexturedModalRect(guiLeft+12+135, guiTop - 19 + i * 55, 80, 0, 16, 16);
             drawString(Minecraft.getMinecraft().fontRendererObj, auction.getName(), (guiLeft + 57), (guiTop + 5 + 55 * i), 0xffffff);
             drawString(Minecraft.getMinecraft().fontRendererObj, NumberFormat.getNumberInstance(Locale.UK).format(auction.getProfit()),
                     guiLeft + 60, guiTop - 15 + 55 * i, 0xffffff);
         }
         i = 0;
-        for (Auction auction : auctions.subList(page*4, page*4+4)) {
+        for (Auction auction : auctions.subList(page*4, page*4+shownAucs)) {
             ItemStack toRender = auction.getStack();
             if (hover(mouseX, mouseY, guiLeft+18, guiTop-15+55*++i, 32, 32))
-                drawHoveringText(Utils.getLoreAndName(toRender), mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
+                toRender.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
             if (hover(mouseX, mouseY, guiLeft+12+194, guiTop-20+i*55+2, 15, 15))
                 drawHoveringText(Arrays.asList(
                         EnumChatFormatting.GREEN + "Price: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getPrice()),
@@ -108,7 +109,9 @@ public class FlipListGui extends CustomGui {
     public void click(int mouseX, int mouseY) {
         int start = 4 * page;
         for (int i = 1; i < shownAucs+1; i++) {
-            if (hover(mouseX, mouseY, guiLeft+12, guiTop - 20 + i * 55, 216, 45))
+            if (hover(mouseX, mouseY, guiLeft+12+135, guiTop - 19 + i * 55, 16, 16))
+                auctions.remove(start + i - 1);
+            else if (hover(mouseX, mouseY, guiLeft+12, guiTop - 20 + i * 55, 216, 45))
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/viewauction " + auctions.get(start + i - 1).getUuid());
         }
         if (page != 0 && hover(mouseX, mouseY, guiLeft+12, guiTop+10, 16, 16)) page--;

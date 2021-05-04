@@ -23,7 +23,26 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 version = "1.0"
 group= "tools.skyblock.skyhouse.mcmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "skyhouse"
-
+runClient {
+    def props = new Properties()
+    file("login.properties").withInputStream { props.load(it) }
+    String accessToken = props.getProperty("accessToken")
+    String uuid = props.getProperty("uuid")
+    String userType = props.getProperty("userType")
+    String username = props.getProperty("username")
+    boolean dcevm = Boolean.getBoolean(props.getProperty("dcevm"))
+    String authType, authValue
+    if (accessToken == null) {
+        authType = "--password"
+        authValue = props.getProperty("password")
+    } else {
+        authType = "--accessToken"
+        authValue = accessToken
+    }
+    args = ["--userType", userType, "--uuid", uuid, "--username", username, authType, authValue]
+    if (dcevm)
+        jvmArgs(['-Xmx2G', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5010', '-XXaltjvm=dcevm', '-XX:+UnlockExperimentalVMOptions'])
+}
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"

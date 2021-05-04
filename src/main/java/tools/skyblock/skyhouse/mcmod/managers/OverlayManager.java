@@ -64,6 +64,11 @@ public class OverlayManager {
                 Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not connect to API!"));
                 Minecraft.getMinecraft().displayGuiScreen(null);
             }
+            else if (e.getMessage().contains("403") || e.getMessage().contains("401")) {
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Forbidden to access the API!"));
+                Minecraft.getMinecraft().displayGuiScreen(null);
+            }
+            else e.printStackTrace();
         });
     }
 
