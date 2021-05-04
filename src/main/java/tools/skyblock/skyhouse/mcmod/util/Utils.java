@@ -5,8 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Blocks;
@@ -22,6 +24,7 @@ import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -272,6 +275,17 @@ public class Utils {
     }
 
     public static boolean canDrawOverlay() {
+        if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer) {
+            try {
+                ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+                GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+                Field xSizeField = screen.getClass().getDeclaredField("xSize");
+                xSizeField.setAccessible(true);
+                int xSize = (int) xSizeField.get(screen);
+                int endHorizontal = (screen.width - xSize) / 2 + xSize;
+                if (endHorizontal + 256 * sr.getScaleFactor() < sr.getScaledWidth()) return true;
+            } catch (ReflectiveOperationException ignored) {}
+        }
         return guiScale() && windowSize();
     }
 

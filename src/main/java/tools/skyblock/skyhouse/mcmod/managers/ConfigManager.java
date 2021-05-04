@@ -52,6 +52,7 @@ public class ConfigManager {
     }
 
     public boolean checkShowOverlay(boolean checked) {
-        return checked || Utils.canDrawOverlay();
+//        return checked || Utils.canDrawOverlay();
+        return true;
     }
 }

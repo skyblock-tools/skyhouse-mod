@@ -46,7 +46,7 @@ public class EventListener {
         if (toOpen != null) Minecraft.getMinecraft().displayGuiScreen(toOpen);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     public void onGuiBackgroundDraw(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (Utils.renderOverlay()) {
             SkyhouseMod.INSTANCE.overlayManager.drawScreen(event.mouseX, event.mouseY);

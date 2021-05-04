@@ -52,16 +52,27 @@ public class FlipListGui extends CustomGui {
         super.tick();
         guiLeft = width-256-20;
         guiTop = height/2-128;
-        lastPageAuctions = auctions.size() % 4 == 0 ? 4 : auctions.size() % 4;
-        totalPages = (int) Math.ceil((double) auctions.size() / 4);
-        shownAucs = page == totalPages-1 ? lastPageAuctions : 4;
+        if (auctions.size() == 0) {
+            totalPages = 0;
+            page = 0;
+            shownAucs = 0;
+        } else {
+            lastPageAuctions = auctions.size() % 4 == 0 ? 4 : auctions.size() % 4;
+            totalPages = (int) Math.ceil((double) auctions.size() / 4);
+
+            shownAucs = page == totalPages - 1 ? lastPageAuctions : 4;
+        }
+
     }
+
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableDepth();
         drawTexturedModalRect(width-256-20, height/2-128, 0, 0, 256, 256);
+        GlStateManager.enableDepth();
         drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "Found " + auctions.size() + " flips! Page " + (page+1) + " of " + totalPages, guiLeft+120, guiTop+20, 0xffffff);
 
         if (page != 0) {

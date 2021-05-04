@@ -81,7 +81,11 @@ public class SelectionGui extends CustomGui {
     public void drawScreen(int mouseX, int mouseY) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.disableDepth();
+        GlStateManager.disableBlend();
         drawTexturedModalRect(width-256-20, height/2-128, 0, 0, 256, 256);
+        GlStateManager.enableDepth();
+        GlStateManager.enableBlend();
         drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "AH Flip options", guiLeft+120, guiTop+20, 0xffffff);
 
         drawString(Minecraft.getMinecraft().fontRendererObj, "Minimum profit",guiLeft+(64-40)+100, guiTop+150+5, 0xffffff);
