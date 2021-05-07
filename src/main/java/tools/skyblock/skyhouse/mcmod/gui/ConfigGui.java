@@ -21,6 +21,7 @@ public class ConfigGui extends GuiScreen {
     private int guiLeft, guiTop;
     private List<GuiButton> buttons = new ArrayList<>();
     private List<ConfigOption> lables = new ArrayList<>();
+    private int editGuiButtonId;
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -62,7 +63,11 @@ public class ConfigGui extends GuiScreen {
                                 boolean.class
                         ).invoke(SkyhouseMod.INSTANCE.configManager, checked);
                     } catch (ReflectiveOperationException e) {
-                        e.printStackTrace();
+                        try {
+                            field.set(SkyhouseMod.INSTANCE.configManager, checked);
+                        } catch (IllegalAccessException illegalAccessException) {
+                            illegalAccessException.printStackTrace();
+                        }
                     }
                 };                Predicate<Boolean> updateChecker = (checked) -> {
                     try {
@@ -81,6 +86,7 @@ public class ConfigGui extends GuiScreen {
 
             }
         }
+        buttons.add(new GuiButton(editGuiButtonId = i, width-200-20, height-20-20, "edit gui location"));
         buttonList.addAll(buttons);
     }
 
@@ -93,11 +99,15 @@ public class ConfigGui extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         for (GuiButton button : buttons) {
-            button.mousePressed(mc, mouseX, mouseY);
+            if (button.id == editGuiButtonId && button.mousePressed(mc, mouseX, mouseY)) SkyhouseMod.INSTANCE.listener.openGui(new GuiEditGui());
+            else button.mousePressed(mc, mouseX, mouseY);
         }
     }
 
     @Override
     protected void actionPerformed(GuiButton button) {
+        if (button.id == editGuiButtonId) {
+            SkyhouseMod.INSTANCE.listener.openGui(new GuiEditGui());
+        }
     }
 }

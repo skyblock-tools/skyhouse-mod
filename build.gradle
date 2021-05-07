@@ -20,7 +20,7 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-version = "1.0"
+version = "1.0.1"
 group= "tools.skyblock.skyhouse.mcmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "skyhouse"
 runClient {
@@ -30,7 +30,8 @@ runClient {
     String uuid = props.getProperty("uuid")
     String userType = props.getProperty("userType")
     String username = props.getProperty("username")
-    boolean dcevm = Boolean.getBoolean(props.getProperty("dcevm"))
+    boolean dcevm = "true".equals(props.getProperty("dcevm"))
+    String javaagent = props.getProperty("javaagent")
     String authType, authValue
     if (accessToken == null) {
         authType = "--password"
@@ -39,9 +40,10 @@ runClient {
         authType = "--accessToken"
         authValue = accessToken
     }
+    if (dcevm) {
+        jvmArgs(['-Xmx3G', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5010', '-XXaltjvm=dcevm', '-XX:+UnlockExperimentalVMOptions', '-javaagent:'+javaagent])
+    }
     args = ["--userType", userType, "--uuid", uuid, "--username", username, authType, authValue]
-    if (dcevm)
-        jvmArgs(['-Xmx2G', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5010', '-XXaltjvm=dcevm', '-XX:+UnlockExperimentalVMOptions'])
 }
 
 minecraft {

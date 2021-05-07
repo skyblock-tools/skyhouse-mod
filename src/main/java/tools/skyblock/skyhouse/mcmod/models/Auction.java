@@ -23,6 +23,10 @@ public class Auction {
     @Expose
     private String nbt;
 
+    @SerializedName("isRecomb")
+    @Expose
+    private boolean recomb;
+
     private ItemStack stack;
 
     public void process() {
@@ -49,7 +53,12 @@ public class Auction {
         return nbt;
     }
 
+    public boolean isRecomb() {
+        return recomb;
+    }
+
     public ItemStack getStack() {
         return stack;
     }
+
 }

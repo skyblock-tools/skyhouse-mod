@@ -24,6 +24,7 @@ public class CustomTextbox extends GuiTextField {
 
     public CustomTextbox withDefaultText(String text) {
         setText(text);
+        drawTextBox();
         return this;
     }
 

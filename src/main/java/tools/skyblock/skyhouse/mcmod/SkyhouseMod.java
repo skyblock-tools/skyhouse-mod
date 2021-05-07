@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import tools.skyblock.skyhouse.mcmod.commands.ConfigCommand;
+import tools.skyblock.skyhouse.mcmod.commands.ReloadConfigCommand;
 import tools.skyblock.skyhouse.mcmod.listeners.EventListener;
 import tools.skyblock.skyhouse.mcmod.managers.OverlayManager;
 import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
@@ -42,6 +43,15 @@ public class SkyhouseMod {
         configDir = new File(event.getModConfigurationDirectory(), "skyhouse");
         configDir.mkdirs();
         configFile = new File(configDir, "config.json");
+        loadConfig();
+        listener = new EventListener();
+        overlayManager = new OverlayManager();
+        MinecraftForge.EVENT_BUS.register(listener);
+        ClientCommandHandler.instance.registerCommand(new ConfigCommand());
+        ClientCommandHandler.instance.registerCommand(new ReloadConfigCommand());
+    }
+
+    public void loadConfig() {
         if (configFile.exists())
             try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
                 configManager = gson.fromJson(reader, ConfigManager.class);
@@ -50,10 +60,6 @@ public class SkyhouseMod {
             configManager = new ConfigManager();
             saveConfig();
         }
-        listener = new EventListener();
-        overlayManager = new OverlayManager();
-        MinecraftForge.EVENT_BUS.register(listener);
-        ClientCommandHandler.instance.registerCommand(new ConfigCommand());
     }
 
     public void saveConfig() {

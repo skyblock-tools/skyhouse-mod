@@ -16,6 +16,7 @@ import tools.skyblock.skyhouse.mcmod.util.Resources;
 public class SelectionGui extends CustomGui {
 
     private int guiLeft, guiTop;
+    private float guiScale;
 
     private SearchFilter searchFilter = new SearchFilter();
 
@@ -51,21 +52,24 @@ public class SelectionGui extends CustomGui {
     @Override
     public void initGui() {
         tick();
-
-        inputs.get(0).xPosition = guiLeft+(64-40);
-        inputs.get(0).yPosition = guiTop+150;
-        inputs.get(1).xPosition = guiLeft+(64-40);
-        inputs.get(1).yPosition = guiTop+180;
-        buttons.get(0).xPosition = guiLeft+(128-40);
-        buttons.get(0).yPosition = guiTop+220;
+        guiScale = Utils.getScaleFactor();
+        inputs.get(0).xPosition = 64-40;
+        inputs.get(0).yPosition = 150;
+        inputs.get(1).xPosition = 64-40;
+        inputs.get(1).yPosition = 180;
+        buttons.get(0).xPosition = 128-40;
+        buttons.get(0).yPosition = 220;
+        for (GuiButton button : buttons) {
+            if (button instanceof CustomButton) ((CustomButton) button).scales(guiScale);
+        }
     }
 
 
     @Override
     public void tick() {
         super.tick();
-        guiLeft = width-256-20;
-        guiTop = height/2-128;
+        guiLeft = Utils.getGuiLeft();
+        guiTop = Utils.getGuiTop();
     }
 
 
@@ -82,25 +86,28 @@ public class SelectionGui extends CustomGui {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
-        GlStateManager.disableBlend();
-        drawTexturedModalRect(width-256-20, height/2-128, 0, 0, 256, 256);
+//        drawTexturedModalRect(width-256-20, height/2-128, 0, 0, 256, 256);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiLeft, guiTop, 0);
+        GlStateManager.scale(guiScale, guiScale, guiScale);
+        drawTexturedModalRect(0, 0, 0, 0, 256, 256);
+        drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "AH Flip options", 120, 20, 0xffffff);
+
+        drawString(Minecraft.getMinecraft().fontRendererObj, "Minimum profit",(64-40)+100, 150+5, 0xffffff);
+        drawString(Minecraft.getMinecraft().fontRendererObj, "Maximum price",(64-40)+100, 180+5, 0xffffff);
+        super.drawScreen(mouseX-guiLeft, mouseY-guiTop);
+        GlStateManager.popMatrix();
+
         GlStateManager.enableDepth();
-        GlStateManager.enableBlend();
-        drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "AH Flip options", guiLeft+120, guiTop+20, 0xffffff);
-
-        drawString(Minecraft.getMinecraft().fontRendererObj, "Minimum profit",guiLeft+(64-40)+100, guiTop+150+5, 0xffffff);
-        drawString(Minecraft.getMinecraft().fontRendererObj, "Maximum price",guiLeft+(64-40)+100, guiTop+180+5, 0xffffff);
-
-        super.drawScreen(mouseX, mouseY);
     }
 
     @Override
     public void click(int mouseX, int mouseY) {
         for (GuiTextField textField : inputs) {
-            textField.setFocused(hover(mouseX, mouseY, textField.xPosition, textField.yPosition, textField.width, textField.height));
+            textField.setFocused(hover(mouseX-guiLeft, mouseY-guiTop, textField.xPosition, textField.yPosition, textField.width, textField.height, guiScale));
         }
         for (GuiButton button : buttons) {
-            button.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY);
+            button.mousePressed(Minecraft.getMinecraft(), mouseX-guiLeft, mouseY-guiTop);
         }
     }
 }

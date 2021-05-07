@@ -51,7 +51,7 @@ public class Utils {
         if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
             String title = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
-            return title.toLowerCase().contains("auction");
+            return title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid");
         }
         return false;
     }
@@ -236,25 +236,6 @@ public class Utils {
         return stack;
     }
 
-    public static List<String> getLoreAndName(ItemStack stack) {
-        List<String> out = new ArrayList<>();
-        out.add(stack.getDisplayName());
-        out.addAll(getLore(stack));
-        return out;
-    }
-
-    public static List<String> getLore(ItemStack stack) {
-        List<String> out = new ArrayList<>();
-        NBTTagCompound tag = stack.getTagCompound();
-        if (tag.hasKey("display", 10)) {
-            NBTTagCompound display = tag.getCompoundTag("display");
-            NBTTagList lore = display.getTagList("Lore", 8);
-            for (int i = 0; i < lore.tagCount(); i++) {
-                out.add(lore.getStringTagAt(i));
-            }
-        }
-        return out;
-    }
 
     public static NBTTagList getLore(JsonArray lore) {
         NBTTagList list = new NBTTagList();
@@ -265,33 +246,26 @@ public class Utils {
         return list;
     }
 
-    public static boolean guiScale() {
-        return Minecraft.getMinecraft().gameSettings.guiScale < 3;
-    }
-
-    public static boolean windowSize() {
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return sr.getScaledWidth() >= 730 && sr.getScaledHeight() >= 270;
-    }
-
-    public static boolean canDrawOverlay() {
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer) {
-            try {
-                ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-                GuiScreen screen = Minecraft.getMinecraft().currentScreen;
-                Field xSizeField = screen.getClass().getDeclaredField("xSize");
-                xSizeField.setAccessible(true);
-                int xSize = (int) xSizeField.get(screen);
-                int endHorizontal = (screen.width - xSize) / 2 + xSize;
-                if (endHorizontal + 256 * sr.getScaleFactor() < sr.getScaledWidth()) return true;
-            } catch (ReflectiveOperationException ignored) {}
-        }
-        return guiScale() && windowSize();
-    }
-
     public static boolean renderOverlay() {
-        return canDrawOverlay() && isAhGui() && SkyhouseMod.INSTANCE.configManager.showOverlay;
+        return isAhGui() && SkyhouseMod.INSTANCE.configManager.showOverlay;
     }
 
+    public static int getGuiLeft() {
+        int savedGuiLeft = SkyhouseMod.INSTANCE.configManager.guiLeft;
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        return SkyhouseMod.INSTANCE.configManager.relativeGui ? Math.round(sr.getScaledWidth() * (((float) savedGuiLeft) / 1000)) : savedGuiLeft;
+    }
+    public static int getGuiTop() {
+        int savedGuiTop = SkyhouseMod.INSTANCE.configManager.guiTop;
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        return SkyhouseMod.INSTANCE.configManager.relativeGui ? Math.round(sr.getScaledHeight() * (((float) savedGuiTop) / 1000)) : savedGuiTop;
+    }
+
+    public static float getScaleFactor() {
+        float savedSf = SkyhouseMod.INSTANCE.configManager.guiScale;
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        return SkyhouseMod.INSTANCE.configManager.relativeGui ? (savedSf * sr.getScaledWidth()) / 255f : savedSf;
+
+    }
 
 }

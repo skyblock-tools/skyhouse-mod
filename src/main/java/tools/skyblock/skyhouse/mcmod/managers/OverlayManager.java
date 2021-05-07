@@ -57,7 +57,7 @@ public class OverlayManager {
 
 
     public void search(SearchFilter filter) {
-        Utils.getJsonApiAsync(Utils.getUrl("https://api-jiri-v1.rose.sh/api/flip/auctions",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
+        Utils.getJsonApiAsync(Utils.getUrl("https://api-jiri-v1.rose.sh/api/flip/auctions?showRawData=yesPlease",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
                 SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter), JsonObject.class)),
                 data -> flips = data.get("flips").getAsJsonArray(), e -> {
             if (e instanceof SocketTimeoutException) {

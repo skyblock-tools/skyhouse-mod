@@ -45,6 +45,10 @@ public abstract class CustomGui extends GuiScreen {
         return mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
     }
 
+    protected boolean hover(int mouseX, int mouseY, int x, int y, int width, int height, float guiScale) {
+        return mouseX > x * guiScale && mouseX < (x + width)*guiScale && mouseY > y * guiScale && mouseY < (y + height)*guiScale;
+    }
+
 
     public void drawHoveringText(List<String> textLines, int x, int y) {
 

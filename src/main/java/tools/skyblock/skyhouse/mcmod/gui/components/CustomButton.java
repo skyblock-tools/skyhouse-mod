@@ -14,10 +14,16 @@ public class CustomButton extends GuiButton {
     private int textureX, textureY;
     private boolean customDraw = false;
     private Runnable clickAction = null;
+    private float guiScale = 1;
 
     public CustomButton(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText) {
         super(buttonId, x, y, widthIn, heightIn, buttonText);
 
+    }
+
+    public CustomButton scales(float sf) {
+        guiScale = sf;
+        return this;
     }
 
     public CustomButton(ResourceLocation resource, int buttonId, int x, int y, int widthIn, int heightIn, int textureX, int textureY, String buttonText) {
@@ -36,32 +42,34 @@ public class CustomButton extends GuiButton {
     }
 
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (customDraw) drawCustomButton(mc, mouseX, mouseY);
-        else super.drawButton(mc, mouseX, mouseY);
+        drawCustomButton(mc, mouseX, mouseY);
     }
 
     public void drawCustomButton(Minecraft mc, int mouseX, int mouseY) {
-        if (this.visible)
-        {
+        if (this.visible) {
             FontRenderer fontrenderer = mc.fontRendererObj;
             mc.getTextureManager().bindTexture(resourceLocation);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+            this.hovered = mouseX >= this.xPosition * guiScale && mouseY >= this.yPosition * guiScale &&
+                    mouseX < (this.xPosition + this.width) * guiScale && mouseY < (this.yPosition + this.height) * guiScale;
             int i = this.getHoverState(this.hovered);
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             GlStateManager.blendFunc(770, 771);
-            this.drawTexturedModalRect(this.xPosition, this.yPosition, hovered?hoverX:textureX, hovered?hoverX:textureX, this.width / 2, this.height);
-            this.mouseDragged(mc, mouseX, mouseY);
+            if (customDraw)
+                this.drawTexturedModalRect(this.xPosition, this.yPosition, hovered ? hoverX : textureX, hovered ? hoverX : textureX, this.width / 2, this.height);
+            else {
+                this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + i * 20, this.width / 2, this.height);
+                this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+            }
+                this.mouseDragged(mc, mouseX, mouseY);
             int j = 14737632;
 
             if (packedFGColour != 0) {
                 j = packedFGColour;
-            }
-            else if (!this.enabled) {
+            } else if (!this.enabled) {
                 j = 10526880;
-            }
-            else if (this.hovered && "textures/gui/widgets.png".equals(resourceLocation.getResourcePath())) {
+            } else if (this.hovered && "textures/gui/widgets.png".equals(resourceLocation.getResourcePath())) {
                 j = 16777120;
             }
 
@@ -74,9 +82,14 @@ public class CustomButton extends GuiButton {
         return this;
     }
 
+    private boolean mousePressed(int mouseX, int mouseY) {
+        return enabled && visible && mouseX >= this.xPosition * guiScale && mouseY >= this.yPosition * guiScale &&
+                mouseX < (this.xPosition + this.width) * guiScale && mouseY < (this.yPosition + this.height) * guiScale;
+    }
+    
     @Override
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
-        if (super.mousePressed(mc, mouseX, mouseY) && clickAction != null) {
+        if (mousePressed(mouseX, mouseY) && clickAction != null) {
             clickAction.run();
             return true;
         }

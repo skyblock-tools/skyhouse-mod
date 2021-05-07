@@ -8,5 +8,6 @@ public class Resources {
     public static final ResourceLocation AH_OVERLAY_BACKGROUND = new ResourceLocation(SkyhouseMod.MODID,"textures/search_overlay.png");
     public static final ResourceLocation FLIP_FRAME = new ResourceLocation(SkyhouseMod.MODID,"textures/flip_frame.png");
     public static final ResourceLocation GUI_ICONS = new ResourceLocation(SkyhouseMod.MODID, "textures/gui_icons.png");
+    public static final ResourceLocation RECOMB_ICON = new ResourceLocation(SkyhouseMod.MODID, "textures/recomb.png");
 
 }
