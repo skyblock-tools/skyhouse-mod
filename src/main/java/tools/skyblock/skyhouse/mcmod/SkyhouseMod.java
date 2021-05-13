@@ -28,9 +28,9 @@ public class SkyhouseMod {
             .create();
     public static final Gson gson = new Gson();
     public static SkyhouseMod INSTANCE;
-    public EventListener listener;
-    public OverlayManager overlayManager;
-    public ConfigManager configManager = null;
+    private EventListener listener;
+    private OverlayManager overlayManager;
+    private ConfigManager configManager = null;
     private File configDir;
     private File configFile;
 
@@ -41,8 +41,8 @@ public class SkyhouseMod {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         configDir = new File(event.getModConfigurationDirectory(), "skyhouse");
-        configDir.mkdirs();
-        configFile = new File(configDir, "config.json");
+        getConfigDir().mkdirs();
+        configFile = new File(getConfigDir(), "config.json");
         loadConfig();
         listener = new EventListener();
         overlayManager = new OverlayManager();
@@ -69,5 +69,21 @@ public class SkyhouseMod {
             writer.write(serializeGson.toJson(configManager));
             writer.close();
         } catch (IOException ignored) {}
+    }
+
+    public EventListener getListener() {
+        return listener;
+    }
+
+    public OverlayManager getOverlayManager() {
+        return overlayManager;
+    }
+
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public File getConfigDir() {
+        return configDir;
     }
 }

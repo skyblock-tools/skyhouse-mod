@@ -30,28 +30,26 @@ public class EventListener {
     @SubscribeEvent
     public void onGuiScreenMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
         if (Utils.isAhGui())
-            SkyhouseMod.INSTANCE.overlayManager.mouseAction();
+            SkyhouseMod.INSTANCE.getOverlayManager().mouseAction();
     }
 
     @SubscribeEvent
     public void onGuiScreenKeyboard(GuiScreenEvent.KeyboardInputEvent.Pre event) {
         if (Utils.isAhGui())
-            SkyhouseMod.INSTANCE.overlayManager.keyTyped();
+            SkyhouseMod.INSTANCE.getOverlayManager().keyTyped();
     }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getMinecraft().currentScreen == null)
-            SkyhouseMod.INSTANCE.overlayManager.close();
         if (toOpen != null) Minecraft.getMinecraft().displayGuiScreen(toOpen);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onGuiBackgroundDraw(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (Utils.renderOverlay()) {
-            SkyhouseMod.INSTANCE.overlayManager.drawScreen(event.mouseX, event.mouseY);
+            SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
             if (tooltipToRender != null) {
-                SkyhouseMod.INSTANCE.overlayManager.drawHoveringText(tooltipToRender, event.mouseX, event.mouseY);
+                SkyhouseMod.INSTANCE.getOverlayManager().drawHoveringText(tooltipToRender, event.mouseX, event.mouseY);
                 tooltipToRender = null;
             }
         }
@@ -60,7 +58,7 @@ public class EventListener {
     @SubscribeEvent
     public void onGuiResize(GuiScreenEvent.InitGuiEvent event) {
         if (Utils.renderOverlay())
-            SkyhouseMod.INSTANCE.overlayManager.initGui();
+            SkyhouseMod.INSTANCE.getOverlayManager().initGui();
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

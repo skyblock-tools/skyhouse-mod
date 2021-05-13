@@ -50,8 +50,7 @@ public class CustomButton extends GuiButton {
             FontRenderer fontrenderer = mc.fontRendererObj;
             mc.getTextureManager().bindTexture(resourceLocation);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.hovered = mouseX >= this.xPosition * guiScale && mouseY >= this.yPosition * guiScale &&
-                    mouseX < (this.xPosition + this.width) * guiScale && mouseY < (this.yPosition + this.height) * guiScale;
+            this.hovered = isScaledHover(mouseX, mouseY);
             int i = this.getHoverState(this.hovered);
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
@@ -86,7 +85,12 @@ public class CustomButton extends GuiButton {
         return enabled && visible && mouseX >= this.xPosition * guiScale && mouseY >= this.yPosition * guiScale &&
                 mouseX < (this.xPosition + this.width) * guiScale && mouseY < (this.yPosition + this.height) * guiScale;
     }
-    
+
+    protected boolean isScaledHover(int mouseX, int mouseY) {
+        return mouseX >= this.xPosition * guiScale && mouseY >= this.yPosition * guiScale &&
+                mouseX < (this.xPosition + this.width) * guiScale && mouseY < (this.yPosition + this.height) * guiScale;
+    }
+
     @Override
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY) {
         if (mousePressed(mouseX, mouseY) && clickAction != null) {

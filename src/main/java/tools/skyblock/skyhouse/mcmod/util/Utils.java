@@ -5,10 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Blocks;
@@ -24,7 +22,6 @@ import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -247,24 +244,24 @@ public class Utils {
     }
 
     public static boolean renderOverlay() {
-        return isAhGui() && SkyhouseMod.INSTANCE.configManager.showOverlay;
+        return isAhGui() && SkyhouseMod.INSTANCE.getConfigManager().showOverlay;
     }
 
     public static int getGuiLeft() {
-        int savedGuiLeft = SkyhouseMod.INSTANCE.configManager.guiLeft;
+        int savedGuiLeft = SkyhouseMod.INSTANCE.getConfigManager().guiLeft;
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return SkyhouseMod.INSTANCE.configManager.relativeGui ? Math.round(sr.getScaledWidth() * (((float) savedGuiLeft) / 1000)) : savedGuiLeft;
+        return SkyhouseMod.INSTANCE.getConfigManager().relativeGui ? Math.round(sr.getScaledWidth() * (((float) savedGuiLeft) / 1000)) : savedGuiLeft;
     }
     public static int getGuiTop() {
-        int savedGuiTop = SkyhouseMod.INSTANCE.configManager.guiTop;
+        int savedGuiTop = SkyhouseMod.INSTANCE.getConfigManager().guiTop;
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return SkyhouseMod.INSTANCE.configManager.relativeGui ? Math.round(sr.getScaledHeight() * (((float) savedGuiTop) / 1000)) : savedGuiTop;
+        return SkyhouseMod.INSTANCE.getConfigManager().relativeGui ? Math.round(sr.getScaledHeight() * (((float) savedGuiTop) / 1000)) : savedGuiTop;
     }
 
     public static float getScaleFactor() {
-        float savedSf = SkyhouseMod.INSTANCE.configManager.guiScale;
+        float savedSf = SkyhouseMod.INSTANCE.getConfigManager().guiScale;
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return SkyhouseMod.INSTANCE.configManager.relativeGui ? (savedSf * sr.getScaledWidth()) / 255f : savedSf;
+        return SkyhouseMod.INSTANCE.getConfigManager().relativeGui ? (savedSf * sr.getScaledWidth()) / 255f : savedSf;
 
     }
 

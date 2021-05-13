@@ -1,5 +1,6 @@
 package tools.skyblock.skyhouse.mcmod.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,10 +9,11 @@ import tools.skyblock.skyhouse.mcmod.config.ConfigOption;
 import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
+import tools.skyblock.skyhouse.mcmod.util.Resources;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -32,11 +34,21 @@ public class ConfigGui extends GuiScreen {
         drawCenteredString(fontRendererObj, "Skyhouse Auction Flipping", width/4, height/16, 0x188cd5);
         GlStateManager.popMatrix();
         int i = 0;
+        super.drawScreen(mouseX, mouseY, partialTicks);
         for (ConfigOption opt : lables) {
             drawString(fontRendererObj, opt.value(), width/3, height/4 + (height/8 * i++), 0xffffff);
+            if (opt.description().length != 0 ) {
+                Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+                drawTexturedModalRect(width/3-20, height/4-4 + (height/8 * (i-1)), 160, 0, 16, 16);
+            }
         }
         drawString(fontRendererObj, "https://skyblock.tools/skyhouse/flipper", 10, height-20, 0xb8b8b8);
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        i = 0;
+        for (ConfigOption opt : lables) {
+            if (mouseX > width/3-20 && mouseX < width/3-20+16 && mouseY > height/4 + (height/8 * (++i-1)) && mouseY < height/4 + (height/8 * (i-1)) + 16 && opt.description().length != 0) {
+                drawHoveringText(Arrays.asList(opt.description()), mouseX, mouseY);
+            }
+        }
     }
 
     public void tick() {
@@ -61,10 +73,10 @@ public class ConfigGui extends GuiScreen {
                         field.getDeclaringClass().getDeclaredMethod("set"
                                         + methodSuffix,
                                 boolean.class
-                        ).invoke(SkyhouseMod.INSTANCE.configManager, checked);
+                        ).invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
                     } catch (ReflectiveOperationException e) {
                         try {
-                            field.set(SkyhouseMod.INSTANCE.configManager, checked);
+                            field.set(SkyhouseMod.INSTANCE.getConfigManager(), checked);
                         } catch (IllegalAccessException illegalAccessException) {
                             illegalAccessException.printStackTrace();
                         }
@@ -74,14 +86,14 @@ public class ConfigGui extends GuiScreen {
                         return (boolean) field.getDeclaringClass().getDeclaredMethod("check"
                                         + methodSuffix,
                                 boolean.class
-                        ).invoke(SkyhouseMod.INSTANCE.configManager, checked);
+                        ).invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
                     } catch (ReflectiveOperationException e) {
                         return true;
                     }
                 };
                 try {
                     buttons.add(new CheckBox(i, width - width /3, height /4 -4 + (height / 8 * i++), updateChecker,
-                            field.getBoolean(SkyhouseMod.INSTANCE.configManager), updater));
+                            field.getBoolean(SkyhouseMod.INSTANCE.getConfigManager()), updater));
                 } catch (ReflectiveOperationException ignored) {}
 
             }
@@ -92,14 +104,14 @@ public class ConfigGui extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        SkyhouseMod.INSTANCE.listener.closeGui();
+        SkyhouseMod.INSTANCE.getListener().closeGui();
         SkyhouseMod.INSTANCE.saveConfig();
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         for (GuiButton button : buttons) {
-            if (button.id == editGuiButtonId && button.mousePressed(mc, mouseX, mouseY)) SkyhouseMod.INSTANCE.listener.openGui(new GuiEditGui());
+            if (button.id == editGuiButtonId && button.mousePressed(mc, mouseX, mouseY)) SkyhouseMod.INSTANCE.getListener().openGui(new GuiEditGui());
             else button.mousePressed(mc, mouseX, mouseY);
         }
     }
@@ -107,7 +119,7 @@ public class ConfigGui extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (button.id == editGuiButtonId) {
-            SkyhouseMod.INSTANCE.listener.openGui(new GuiEditGui());
+            SkyhouseMod.INSTANCE.getListener().openGui(new GuiEditGui());
         }
     }
 }

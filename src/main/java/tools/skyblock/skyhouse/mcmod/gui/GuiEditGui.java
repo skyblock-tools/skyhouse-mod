@@ -76,12 +76,11 @@ public class GuiEditGui extends GuiScreen {
         tick(mouseX, mouseY);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         drawTexturedModalRect(0, 0, 0, 0, 256, 256);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
+        drawTexturedModalRect(0, 256, 0, 45, 256, 32);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-        GlStateManager.pushMatrix();
-        GlStateManager.scale(4, 4, 4);
-        drawTexturedModalRect(24, 8, 112, 0, 16, 16);
-        drawTexturedModalRect(24, 41, 128, 0, 16, 16);
-        GlStateManager.popMatrix();
+        drawTexturedModalRect(96, 32, 0, 16, 64, 64);
+        drawTexturedModalRect(96, 164, 64, 16, 64, 64);
         drawCenteredString(fontRendererObj, "Drag to move position", 128, 124, 0x00ff00);
         GlStateManager.popMatrix();
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -121,12 +120,12 @@ public class GuiEditGui extends GuiScreen {
                 guiTop = height / 2 - 128;
                 break;
             case 1:
-                SkyhouseMod.INSTANCE.listener.closeGui();
+                SkyhouseMod.INSTANCE.getListener().closeGui();
                 Minecraft.getMinecraft().displayGuiScreen(null);
                 break;
             case 2:
                 save = false;
-                SkyhouseMod.INSTANCE.listener.closeGui();
+                SkyhouseMod.INSTANCE.getListener().closeGui();
                 Minecraft.getMinecraft().displayGuiScreen(null);
                 break;
         }
@@ -135,11 +134,11 @@ public class GuiEditGui extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (save) {
-            boolean relative = SkyhouseMod.INSTANCE.configManager.relativeGui;
+            boolean relative = SkyhouseMod.INSTANCE.getConfigManager().relativeGui;
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-            SkyhouseMod.INSTANCE.configManager.guiLeft = relative ? Math.round(((float) (guiLeft == 0 ? 1 : guiLeft) / ((float) sr.getScaledWidth())) * 1000) : guiLeft;
-            SkyhouseMod.INSTANCE.configManager.guiTop = relative ? Math.round(((float) (guiTop == 0 ? 1 : guiTop) / ((float) sr.getScaledHeight())) * 1000): guiTop;
-            SkyhouseMod.INSTANCE.configManager.guiScale = relative ? (255f * guiScale) / sr.getScaledWidth() : guiScale;
+            SkyhouseMod.INSTANCE.getConfigManager().guiLeft = relative ? Math.round(((float) (guiLeft == 0 ? 1 : guiLeft) / ((float) sr.getScaledWidth())) * 1000) : guiLeft;
+            SkyhouseMod.INSTANCE.getConfigManager().guiTop = relative ? Math.round(((float) (guiTop == 0 ? 1 : guiTop) / ((float) sr.getScaledHeight())) * 1000): guiTop;
+            SkyhouseMod.INSTANCE.getConfigManager().guiScale = relative ? (255f * guiScale) / sr.getScaledWidth() : guiScale;
             SkyhouseMod.INSTANCE.saveConfig();
         }
     }
@@ -149,7 +148,7 @@ public class GuiEditGui extends GuiScreen {
     }
 
     private boolean wouldRenderOutOfBoundsY(int y, float sf) {
-        return (y == 0 || y >= height - 1 - 256 * sf);
+        return (y == 0 || y >= height - 1 - (256+32) * sf);
     }
 
 }

@@ -14,6 +14,10 @@ public class SearchFilter {
     @Expose
     public int maxPrice = Constants.DEFAULT_MAX_PRICE;
 
+    @SerializedName("showRawData")
+    @Expose
+    public boolean showRawData = true;
+
     public SearchFilter withMinProfit(int minProfit) {
         this.minProfit = minProfit;
         return this;

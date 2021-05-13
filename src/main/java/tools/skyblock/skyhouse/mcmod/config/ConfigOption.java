@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
 public @interface ConfigOption {
 
     String value();
+    String[] description() default {};
 
 }

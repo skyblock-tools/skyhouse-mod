@@ -15,6 +15,10 @@ public abstract class CustomGui extends GuiScreen {
     protected List<GuiTextField> inputs = new ArrayList<>();
     protected List<GuiButton> buttons = new ArrayList<>();
 
+    public CustomGui() {
+        fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
+    }
+
     public void tick() {
         sr = new ScaledResolution(Minecraft.getMinecraft());
         width = sr.getScaledWidth();
@@ -51,7 +55,6 @@ public abstract class CustomGui extends GuiScreen {
 
 
     public void drawHoveringText(List<String> textLines, int x, int y) {
-
         super.drawHoveringText(textLines, x, y, Minecraft.getMinecraft().fontRendererObj);
     }
 }

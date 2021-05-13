@@ -1,6 +1,5 @@
 package tools.skyblock.skyhouse.mcmod.commands;
 
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
@@ -29,8 +28,8 @@ public class ConfigCommand implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
-        SkyhouseMod.INSTANCE.configManager.processConfig();
-        SkyhouseMod.INSTANCE.listener.openGui(new ConfigGui());
+        SkyhouseMod.INSTANCE.getConfigManager().processConfig();
+        SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui());
     }
 
     @Override

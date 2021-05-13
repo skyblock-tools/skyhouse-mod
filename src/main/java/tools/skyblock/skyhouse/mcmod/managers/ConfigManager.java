@@ -20,13 +20,14 @@ public class ConfigManager {
     @Expose
     @SerializedName("save_options")
     @Checkbox
-    @ConfigOption("Save flip search options")
+    @ConfigOption(value = "Save flip search options", description = {"\u00a77Whether or not the search options reset when you close the auction house\u00a7r"})
     public boolean saveOptions;
 
     @Expose
     @SerializedName("relative_gui")
     @Checkbox
-    @ConfigOption("Relative GUI position")
+    @ConfigOption(value = "Relative GUI position", description = {"\u00a7aOn: \u00a7r\u00a77Overlay GUI is positioned and scaled relative to the screen size\u00a7r",
+            "\u00a74Off: \u00a7r\u00a77Overlay GUI is positioned at a fixed location and scale\u00a7r"})
     public boolean relativeGui = true;
 
     @Expose
@@ -56,11 +57,7 @@ public class ConfigManager {
     public void processConfig() {
         if (!configOpened) {
             setRelativeGui(true);
-//            ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-//            guiScale = 256f / sr.getScaledWidth();
-//            guiTop = (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2;
-//            guiLeft = Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f);
-//            configOpened = true;
+       configOpened = true;
         }
     }
 
@@ -92,7 +89,6 @@ public class ConfigManager {
     }
 
     public boolean checkShowOverlay(boolean checked) {
-//        return checked || Utils.canDrawOverlay();
         return true;
     }
 }
