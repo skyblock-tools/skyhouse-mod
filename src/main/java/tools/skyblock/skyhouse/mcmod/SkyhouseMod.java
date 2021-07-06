@@ -2,16 +2,18 @@ package tools.skyblock.skyhouse.mcmod;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import tools.skyblock.skyhouse.mcmod.commands.ConfigCommand;
-import tools.skyblock.skyhouse.mcmod.commands.ReloadConfigCommand;
+import tools.skyblock.skyhouse.mcmod.commands.*;
 import tools.skyblock.skyhouse.mcmod.listeners.EventListener;
 import tools.skyblock.skyhouse.mcmod.managers.OverlayManager;
 import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
+import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +35,12 @@ public class SkyhouseMod {
     private ConfigManager configManager = null;
     private File configDir;
     private File configFile;
+    public JsonObject lowestBins = null;
+    public JsonObject bazaarData = null;
+    public JsonObject reforgeData = null;
+    public final String[] commandWhitelist = {"168300e6-4e74-4a6d-89a0-7b7cf8ad6a7d", "38184ab9-506a-42e6-9ecf-65d5bc006f86"};
+
+
 
     public SkyhouseMod() {
         INSTANCE = this;
@@ -49,6 +57,17 @@ public class SkyhouseMod {
         MinecraftForge.EVENT_BUS.register(listener);
         ClientCommandHandler.instance.registerCommand(new ConfigCommand());
         ClientCommandHandler.instance.registerCommand(new ReloadConfigCommand());
+        ClientCommandHandler.instance.registerCommand(new RefreshLowestBins());
+        ClientCommandHandler.instance.registerCommand(new RefreshBazaarData());
+        ClientCommandHandler.instance.registerCommand(new RefreshReforgeData());
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> SkyhouseMod.INSTANCE.saveConfig()));
+    }
+
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        Utils.getLowestBinsFromMoulberryApi();
+        Utils.getBazaarDataFromApi();
+        Utils.getReforgeDataFromMoulberryGithub();
     }
 
     public void loadConfig() {

@@ -23,7 +23,7 @@ public class ConfigCommand implements ICommand {
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList("skyhouse");
+        return Arrays.asList("skyhouse", "sh");
     }
 
     @Override

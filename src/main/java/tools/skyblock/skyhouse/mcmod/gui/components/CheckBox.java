@@ -39,6 +39,19 @@ public class CheckBox extends GuiButton {
         return false;
     }
 
+    public boolean pressed() {
+        if (toggleCheck.test(checked)) {
+            checked = !checked;
+            updater.accept(checked);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean canCheck() {
+        return toggleCheck.test(checked);
+    }
+
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
         if (this.visible) {
             enabled = toggleCheck.test(checked);
@@ -51,6 +64,22 @@ public class CheckBox extends GuiButton {
             GlStateManager.blendFunc(770, 771);
             this.mouseDragged(mc, mouseX, mouseY);
             this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?64:48, 0, 16, 16);
+        }
+    }
+
+    public void drawButton(Minecraft mc, int mouseX, int mouseY, boolean greyed) {
+        if (this.visible) {
+            enabled = toggleCheck.test(checked);
+            mc.getTextureManager().bindTexture(Resources.GUI_ICONS);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+            int i = this.getHoverState(this.hovered);
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            GlStateManager.blendFunc(770, 771);
+            this.mouseDragged(mc, mouseX, mouseY);
+            if (!greyed) this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?64:48, 0, 16, 16);
+            else this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?193:177, 16, 16, 16);
 
         }
     }

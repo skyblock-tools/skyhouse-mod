@@ -20,6 +20,7 @@ public class CustomTextbox extends GuiTextField {
         super(componentId, fontrendererObj, x, y, par5Width, par6Height);
         opt = options;
     }
+
     public CustomTextbox(int componentId, FontRenderer fontrendererObj, int x, int y, int par5Width, int par6Height) {
         this(componentId, fontrendererObj, x, y, par5Width, par6Height, 0);
     }

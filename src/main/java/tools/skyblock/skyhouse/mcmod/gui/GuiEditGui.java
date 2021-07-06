@@ -77,11 +77,11 @@ public class GuiEditGui extends GuiScreen {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         drawTexturedModalRect(0, 0, 0, 0, 256, 256);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
-        drawTexturedModalRect(0, 256, 0, 45, 256, 32);
+        drawTexturedModalRect(0, -32, 0, 45, 256, 32);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-        drawTexturedModalRect(96, 32, 0, 16, 64, 64);
-        drawTexturedModalRect(96, 164, 64, 16, 64, 64);
-        drawCenteredString(fontRendererObj, "Drag to move position", 128, 124, 0x00ff00);
+        drawTexturedModalRect(96, 164, 0, 16, 64, 64);
+        drawTexturedModalRect(96, 32, 64, 16, 64, 64);
+        drawCenteredString(fontRendererObj, "Drag To Move", 128, 124, 0x00ff00);
         GlStateManager.popMatrix();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -89,9 +89,9 @@ public class GuiEditGui extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         float oldGuiScale = guiScale;
-        if (mouseX > guiLeft + 96 * guiScale && mouseX < guiLeft + (96 + 64) * guiScale && mouseY > guiTop + 32 * guiScale && mouseY < guiTop + (32 + 64) * guiScale) {
+        if (mouseX > guiLeft + 96 * guiScale && mouseX < guiLeft + (96 + 64) * guiScale && mouseY > guiTop + 164 * guiScale && mouseY < guiTop + (164 + 64) * guiScale) {
             guiScale = Math.max(guiScale - 0.1f, 0.5f);
-        } else if (mouseX > guiLeft + 96 * guiScale && mouseX < guiLeft + (96 + 64) * guiScale && mouseY > guiTop + 164 * guiScale && mouseY < guiTop + (164 + 64 * guiScale)) {
+        } else if (mouseX > guiLeft + 96 * guiScale && mouseX < guiLeft + (96 + 64) * guiScale && mouseY > guiTop + 32 * guiScale && mouseY < guiTop + (32 + 64 * guiScale)) {
             guiScale = Math.min(guiScale + 0.1f, 2);
             if (wouldRenderOutOfBoundsX(guiLeft, guiScale) || wouldRenderOutOfBoundsY(guiTop, guiScale)) guiScale = oldGuiScale;
         }
@@ -116,28 +116,31 @@ public class GuiEditGui extends GuiScreen {
         switch (button.id) {
             case 0:
                 guiScale = 1;
-                guiLeft = width / 2 - 128;
-                guiTop = height / 2 - 128;
+                guiLeft = 0;
+                guiTop = 32;
                 break;
             case 1:
-                SkyhouseMod.INSTANCE.getListener().closeGui();
-                Minecraft.getMinecraft().displayGuiScreen(null);
+                save();
+                SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui());
                 break;
             case 2:
                 save = false;
-                SkyhouseMod.INSTANCE.getListener().closeGui();
-                Minecraft.getMinecraft().displayGuiScreen(null);
+                SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui());
                 break;
         }
     }
 
     @Override
     public void onGuiClosed() {
+        save();
+    }
+
+    private void save() {
         if (save) {
             boolean relative = SkyhouseMod.INSTANCE.getConfigManager().relativeGui;
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
             SkyhouseMod.INSTANCE.getConfigManager().guiLeft = relative ? Math.round(((float) (guiLeft == 0 ? 1 : guiLeft) / ((float) sr.getScaledWidth())) * 1000) : guiLeft;
-            SkyhouseMod.INSTANCE.getConfigManager().guiTop = relative ? Math.round(((float) (guiTop == 0 ? 1 : guiTop) / ((float) sr.getScaledHeight())) * 1000): guiTop;
+            SkyhouseMod.INSTANCE.getConfigManager().guiTop = relative ? Math.round(((float) (guiTop == 0 ? 1 : guiTop) / ((float) sr.getScaledHeight())) * 1000) : guiTop;
             SkyhouseMod.INSTANCE.getConfigManager().guiScale = relative ? (255f * guiScale) / sr.getScaledWidth() : guiScale;
             SkyhouseMod.INSTANCE.saveConfig();
         }
@@ -148,7 +151,7 @@ public class GuiEditGui extends GuiScreen {
     }
 
     private boolean wouldRenderOutOfBoundsY(int y, float sf) {
-        return (y == 0 || y >= height - 1 - (256+32) * sf);
+        return (y <= 32 || y >= height - 1 - (256+32) * sf);
     }
 
 }

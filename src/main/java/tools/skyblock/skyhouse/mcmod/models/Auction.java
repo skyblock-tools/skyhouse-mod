@@ -10,15 +10,19 @@ public class Auction {
     @SerializedName("item_name")
     @Expose
     private String name;
+
     @SerializedName("uuid")
     @Expose
     private String uuid;
+
     @SerializedName("price")
     @Expose
     private int price;
+
     @SerializedName("profit")
     @Expose
     private int profit;
+
     @SerializedName("item_bytes")
     @Expose
     private String nbt;
@@ -26,6 +30,18 @@ public class Auction {
     @SerializedName("isRecomb")
     @Expose
     private boolean recomb;
+
+    @SerializedName("isPet")
+    @Expose
+    private boolean pet;
+
+    @SerializedName("isSoul")
+    @Expose
+    private boolean soul;
+
+    @SerializedName("isSkin")
+    @Expose
+    private boolean skin;
 
     private ItemStack stack;
 
@@ -55,6 +71,18 @@ public class Auction {
 
     public boolean isRecomb() {
         return recomb;
+    }
+
+    public boolean isPet() {
+        return pet;
+    }
+
+    public boolean isSoul() {
+        return soul;
+    }
+
+    public boolean isSkin() {
+        return skin;
     }
 
     public ItemStack getStack() {
