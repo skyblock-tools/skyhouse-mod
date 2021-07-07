@@ -38,7 +38,6 @@ public class SkyhouseMod {
     public JsonObject lowestBins = null;
     public JsonObject bazaarData = null;
     public JsonObject reforgeData = null;
-    public final String[] commandWhitelist = {"168300e6-4e74-4a6d-89a0-7b7cf8ad6a7d", "38184ab9-506a-42e6-9ecf-65d5bc006f86"};
 
 
 

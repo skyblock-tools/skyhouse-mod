@@ -208,6 +208,7 @@ public class FlipListGui extends CustomGui {
                 SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.add(auctions.get(start + i - 1).getUuid());
                 auctions.remove(start + i - 1);
             } else if (hover(mouseX-guiLeft, mouseY-guiTop, 19, - 20 + i * 55, 216, 45, guiScale)) {
+                SkyhouseMod.INSTANCE.getListener().setLastAuction(start + i -1);
                 Minecraft.getMinecraft().thePlayer.sendChatMessage("/viewauction " + auctions.get(start + i - 1).getUuid());
             }
         }
@@ -223,6 +224,11 @@ public class FlipListGui extends CustomGui {
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230, -32+8, 16, 16, guiScale)) {
             SkyhouseMod.INSTANCE.getOverlayManager().search(filter);
         }
+    }
+
+    public void removeNotFoundAuction(int index) {
+        SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.add(auctions.get(index).getUuid());
+        auctions.remove(index);
     }
 
     @Override

@@ -161,4 +161,12 @@ public class OverlayManager {
                 SkyhouseMod.INSTANCE.getConfigManager().recombsInSearch == Constants.DEFAULT_RECOMBS_IN_SEARCH;
     }
 
+    public boolean isFlipList() {
+        return gui instanceof FlipListGui;
+    }
+
+    public CustomGui getGui() {
+        return gui;
+    }
+
 }

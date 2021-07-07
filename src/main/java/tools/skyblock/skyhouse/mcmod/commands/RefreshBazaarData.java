@@ -41,7 +41,7 @@ public class RefreshBazaarData implements ICommand {
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return (Arrays.asList(SkyhouseMod.INSTANCE.commandWhitelist).contains(Minecraft.getMinecraft().thePlayer.getUniqueID().toString()));
+        return true;
     }
 
     @Override

@@ -2,6 +2,8 @@ package tools.skyblock.skyhouse.mcmod.listeners;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -9,6 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.gui.CreationGui;
+import tools.skyblock.skyhouse.mcmod.gui.FlipListGui;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.util.ArrayList;
@@ -27,14 +30,20 @@ public class EventListener {
     public boolean binsManuallyRefreshed = false;
     public boolean bazaarManuallyRefreshed = false;
     public boolean reforgesManuallyRefreshed = false;
+    private int lastAuctionIndex = -1;
 
     private GuiScreen toOpen;
 
     public void openGui(GuiScreen guiScreen) {
         toOpen = guiScreen;
     }
+
     public void closeGui() {
         toOpen = null;
+    }
+
+    public void setLastAuction(int lastAuctionIndex) {
+        this.lastAuctionIndex = lastAuctionIndex;
     }
 
     @SubscribeEvent
@@ -90,6 +99,16 @@ public class EventListener {
         if (tooltipToRender != null) {
             SkyhouseMod.INSTANCE.getOverlayManager().drawHoveringText(tooltipToRender, event.mouseX, event.mouseY);
             tooltipToRender = null;
+        }
+    }
+
+    @SubscribeEvent
+    public void onChatMessageRecieved(ClientChatReceivedEvent event) {
+        if (isAhGui() && SkyhouseMod.INSTANCE.getOverlayManager().isFlipList() && event.type == 0) {
+            ChatComponentText text = (ChatComponentText) event.message;
+            if (text.getUnformattedText().equals("This auction wasn't found!")) {
+                ((FlipListGui) SkyhouseMod.INSTANCE.getOverlayManager().getGui()).removeNotFoundAuction(lastAuctionIndex);
+            }
         }
     }
 
