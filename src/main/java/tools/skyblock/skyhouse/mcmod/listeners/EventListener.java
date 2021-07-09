@@ -86,14 +86,17 @@ public class EventListener {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onGuiBackgroundDraw(GuiScreenEvent.DrawScreenEvent.Post event) {
+        boolean drawn = false;
         if (Utils.renderCreationOverlay()) {
             if (isAhCreationGui()) {
                 SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
+                drawn = true;
             }
         }
-        if (Utils.renderFlippingOverlay()) {
+        if (Utils.renderFlippingOverlay() && !drawn) {
             if (isAhGui()) {
                 SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
+                drawn = true;
             }
         }
         if (tooltipToRender != null) {

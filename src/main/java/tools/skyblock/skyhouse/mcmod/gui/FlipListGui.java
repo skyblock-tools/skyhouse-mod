@@ -14,6 +14,11 @@ import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +92,23 @@ public class FlipListGui extends CustomGui {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
+
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GlStateManager.enableAlpha();
+            GlStateManager.color(1, 1, 1, 0.5f);
+            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.AQUA + "Get bin->bin flips with unlimited profit, filters, and more" + EnumChatFormatting.RESET, width/2, 16, 0xffffff);
+            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.AQUA + "With Skyhouse+, learn more at" + EnumChatFormatting.RESET, width/2, 32, 0xffffff);
+
+            String shPlusUrl = "https://skyblock.tools/skyhouse/skyhouse_plus";
+            if (mouseX >= width/2-fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseY >= 48 && mouseY <= 48+8) {
+                drawCenteredString(fontRendererObj, EnumChatFormatting.UNDERLINE + shPlusUrl + EnumChatFormatting.RESET, width/2, 48, 0xb8b8b8);
+            } else drawCenteredString(fontRendererObj, shPlusUrl, width/2, 48, 0xb8b8b8);
+
+            GlStateManager.disableAlpha();
+            GlStateManager.color(1, 1, 1, 1);
+        }
+
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
@@ -176,6 +198,8 @@ public class FlipListGui extends CustomGui {
                 ), mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
         }
         super.drawScreen(mouseX, mouseY);
+        GlStateManager.enableDepth();
+        GlStateManager.enableLighting();
         if (hover(mouseX-guiLeft, mouseY-guiTop, 8, -32+8, 16, 16, guiScale)) {
             drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse Settings"), mouseX, mouseY);
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230-16-10, -32+8, 16, 16, guiScale)) {
@@ -194,9 +218,8 @@ public class FlipListGui extends CustomGui {
         } else if (hover(mouseX - guiLeft, mouseY - guiTop, 256-12-16, 10, 16, 16, guiScale) && page != totalPages-1 && totalPages != 0) {
             drawHoveringText(Arrays.asList(EnumChatFormatting.GRAY + "Last Page"), mouseX, mouseY);
         }
+        GlStateManager.disableDepth();
 
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
 
     }
 
@@ -223,6 +246,13 @@ public class FlipListGui extends CustomGui {
             SkyhouseMod.INSTANCE.getOverlayManager().close();
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230, -32+8, 16, 16, guiScale)) {
             SkyhouseMod.INSTANCE.getOverlayManager().search(filter);
+        }
+        String shPlusUrl = "https://skyblock.tools/skyhouse/skyhouse_plus";
+        if (mouseX >= width/2-fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseY >= 48 && mouseY <= 48+8) {
+            try {
+                Desktop.getDesktop().browse(new URI(shPlusUrl));
+            } catch (URISyntaxException | IOException ignored) {
+            }
         }
     }
 

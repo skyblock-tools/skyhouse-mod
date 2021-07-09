@@ -53,18 +53,7 @@ public class CheckBox extends GuiButton {
     }
 
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        if (this.visible) {
-            enabled = toggleCheck.test(checked);
-            mc.getTextureManager().bindTexture(Resources.GUI_ICONS);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-            int i = this.getHoverState(this.hovered);
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-            GlStateManager.blendFunc(770, 771);
-            this.mouseDragged(mc, mouseX, mouseY);
-            this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?64:48, 0, 16, 16);
-        }
+        drawButton(mc, mouseX, mouseY, false);
     }
 
     public void drawButton(Minecraft mc, int mouseX, int mouseY, boolean greyed) {
@@ -78,8 +67,7 @@ public class CheckBox extends GuiButton {
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             GlStateManager.blendFunc(770, 771);
             this.mouseDragged(mc, mouseX, mouseY);
-            if (!greyed) this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?64:48, 0, 16, 16);
-            else this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?193:177, 16, 16, 16);
+            this.drawTexturedModalRect(this.xPosition, this.yPosition, checked?64:48, greyed ? 16 : 0, 16, 16);
 
         }
     }

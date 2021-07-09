@@ -354,7 +354,11 @@ public class CreationGui extends CustomGui {
                                 try {
                                     petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get(possibleInternalName).getAsInt();
                                 } catch (NullPointerException bonusIsNull) {
-                                    petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get("PET_ITEM_" + possibleInternalName).getAsInt();
+                                    try {
+                                        petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get("PET_ITEM_" + possibleInternalName).getAsInt();
+                                    } catch (NullPointerException e) {
+                                        petItemBonus = 0;
+                                    }
                                 }
                                 value += petItemBonus;
                                 drawString(fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + matcher.group(1), 14, currentHeight, 0xffffff);
@@ -384,6 +388,9 @@ public class CreationGui extends CustomGui {
         }
 
         GlStateManager.popMatrix();
+        GlStateManager.enableDepth();
+
+        GlStateManager.enableLighting();
 
         if (hover(mouseX-guiLeft, mouseY-guiTop, 8, -32+8, 16, 16, guiScale)) {
             drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse Settings"), mouseX, mouseY);
@@ -396,8 +403,6 @@ public class CreationGui extends CustomGui {
                     EnumChatFormatting.GRAY + "rarity and do not take level into account." + EnumChatFormatting.RESET), mouseX, mouseY);
         }
 
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
 
     }
 

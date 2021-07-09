@@ -97,7 +97,7 @@ public class OverlayManager {
 
     public void search(SearchFilter filter) {
         this.filter = filter;
-        Utils.getJsonApiAsync(Utils.getUrl("https://api-jiri-v1-91372cec-b8ed-4f23-9572-f2c3219cf6f8.rose.sh/api/flip/auctions",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
+        SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/api/flip/auctions",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
                 SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter), JsonObject.class)),
                 data -> {
                     flips = data.get("flips").getAsJsonArray();
@@ -107,7 +107,11 @@ public class OverlayManager {
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not connect to API!"));
                         Minecraft.getMinecraft().displayGuiScreen(null);
                     } else if (e.getMessage().contains("403") || e.getMessage().contains("401")) {
+                        SkyhouseMod.INSTANCE.getAuthenticationManager().tryRefreshCredentials();
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Forbidden to access the API!"));
+                        Minecraft.getMinecraft().displayGuiScreen(null);
+                    } else if (e.getMessage().contains("429")) {
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are being ratelimited! Please try again in a few seconds"));                        Minecraft.getMinecraft().displayGuiScreen(null);
                         Minecraft.getMinecraft().displayGuiScreen(null);
                     } else {
                         CrashReport report = CrashReport.makeCrashReport(e, "API returned unknown error");

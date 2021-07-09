@@ -22,3 +22,4 @@ eclipse
 run
 
 login.properties
+src/main/resources/credentials.properties

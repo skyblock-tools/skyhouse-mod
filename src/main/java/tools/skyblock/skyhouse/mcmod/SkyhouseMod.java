@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import tools.skyblock.skyhouse.mcmod.commands.*;
 import tools.skyblock.skyhouse.mcmod.listeners.EventListener;
+import tools.skyblock.skyhouse.mcmod.managers.AuthenticationManager;
 import tools.skyblock.skyhouse.mcmod.managers.OverlayManager;
 import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
@@ -33,6 +34,7 @@ public class SkyhouseMod {
     private EventListener listener;
     private OverlayManager overlayManager;
     private ConfigManager configManager = null;
+    private AuthenticationManager authenticationManager;
     private File configDir;
     private File configFile;
     public JsonObject lowestBins = null;
@@ -47,6 +49,8 @@ public class SkyhouseMod {
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        authenticationManager = new AuthenticationManager();
+        authenticationManager.loadFromJar();
         configDir = new File(event.getModConfigurationDirectory(), "skyhouse");
         getConfigDir().mkdirs();
         configFile = new File(getConfigDir(), "config.json");
@@ -59,7 +63,7 @@ public class SkyhouseMod {
         ClientCommandHandler.instance.registerCommand(new RefreshLowestBins());
         ClientCommandHandler.instance.registerCommand(new RefreshBazaarData());
         ClientCommandHandler.instance.registerCommand(new RefreshReforgeData());
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> SkyhouseMod.INSTANCE.saveConfig()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::saveConfig));
     }
 
     @EventHandler
@@ -99,6 +103,10 @@ public class SkyhouseMod {
 
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    public AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
     }
 
     public File getConfigDir() {

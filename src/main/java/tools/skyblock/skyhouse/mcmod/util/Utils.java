@@ -72,6 +72,15 @@ public class Utils {
         return false;
     }
 
+    public static URL parseUrl(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException ignored) {
+            return null;
+        }
+    }
+
+
     public static URL getUrl(String url, JsonObject query) {
         StringBuilder bobTheBuilder = new StringBuilder(url);
         bobTheBuilder.append("?");
@@ -81,19 +90,18 @@ public class Utils {
                     .append(item.getValue())
                     .append("&");
         }
-        try {
-            return new URL(bobTheBuilder.toString());
-        } catch (MalformedURLException e) {
-            return null;
-        }
+        return parseUrl(bobTheBuilder.toString());
     }
 
-    public static JsonObject getJsonApi(URL url) throws IOException {
+    public static JsonObject getJsonApi(URL url, String[]... headers) throws IOException {
         URLConnection conn = url.openConnection();
         conn.setConnectTimeout(3_000);
         conn.setReadTimeout(15_000);
         conn.setRequestProperty("accept", "application/json");
         conn.setRequestProperty("user-agent", "forge/skyhouse");
+        for (String[] header : headers) {
+            conn.setRequestProperty(header[0], header[1]);
+        }
         String res = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
         return SkyhouseMod.gson.fromJson(res, JsonObject.class);
     }
@@ -102,10 +110,11 @@ public class Utils {
         getJsonApiAsync(url, cb, Throwable::printStackTrace);
     }
 
-    public static void getJsonApiAsync(URL url, Consumer<JsonObject> cb, Consumer<IOException> errorHandler) {
+
+    public static void getJsonApiAsync(URL url, Consumer<JsonObject> cb, Consumer<IOException> errorHandler, String[]... headers) {
         es.submit(() -> {
             try {
-                cb.accept(getJsonApi(url));
+                cb.accept(getJsonApi(url, headers));
             } catch (IOException e) {
                 errorHandler.accept(e);
             }
@@ -113,7 +122,7 @@ public class Utils {
     }
 
     public static void getLowestBinsFromMoulberryApi() {
-        getJsonApiAsync(Utils.getUrl("https://moulberry.codes/lowestbin.json", new JsonObject()),
+        getJsonApiAsync(parseUrl("https://moulberry.codes/lowestbin.json"),
                 data -> {
                     if (data != null) SkyhouseMod.INSTANCE.lowestBins = data;
                 },
@@ -126,7 +135,7 @@ public class Utils {
     }
 
     public static void getBazaarDataFromApi() {
-        getJsonApiAsync(Utils.getUrl("https://api.hypixel.net/skyblock/bazaar", new JsonObject()),
+        getJsonApiAsync(parseUrl("https://api.hypixel.net/skyblock/bazaar"),
                 data -> {
                     if (data != null) SkyhouseMod.INSTANCE.bazaarData = data;
                 },
@@ -139,7 +148,7 @@ public class Utils {
     }
 
     public static void getReforgeDataFromMoulberryGithub() {
-        getJsonApiAsync(Utils.getUrl("https://raw.githubusercontent.com/Moulberry/NotEnoughUpdates-REPO/master/constants/reforgestones.json", new JsonObject()),
+        getJsonApiAsync(parseUrl("https://raw.githubusercontent.com/Moulberry/NotEnoughUpdates-REPO/master/constants/reforgestones.json"),
                 data -> {
                     if (data != null) SkyhouseMod.INSTANCE.reforgeData = data;
                 },
@@ -201,8 +210,10 @@ public class Utils {
         return lore;
     }
 
-    //This was copy pasted from https://github.com/Mouberry/NotEnoughUpdates
-    //to work with his lowest bin api (With a few changes to work here)
+    /*
+    This was copied and pasted from https://github.com/Mouberry/NotEnoughUpdates
+    to work with his lowest bin api (with a few changes to work here)
+     */
     public static String getInternalNameFromNBT(NBTTagCompound tag) {
         String internalName = null;
         if(tag != null && tag.hasKey("ExtraAttributes", 10)) {

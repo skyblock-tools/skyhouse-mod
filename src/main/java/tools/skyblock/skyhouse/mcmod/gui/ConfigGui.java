@@ -36,7 +36,9 @@ public class ConfigGui extends GuiScreen {
         tick();
         GlStateManager.pushMatrix();
         GlStateManager.scale(2, 2, 2);
-        drawCenteredString(fontRendererObj, "Skyhouse Auction Flipping", width/4, height/16, 0x188cd5);
+        String title = "Skyhouse";
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2) title += "+";
+        drawCenteredString(fontRendererObj, title, width/4, height/16, 0x188cd5);
         GlStateManager.popMatrix();
         int i = 0;
         super.drawScreen(mouseX, mouseY, partialTicks);
