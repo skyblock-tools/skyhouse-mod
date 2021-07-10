@@ -79,8 +79,8 @@ public class GuiEditGui extends GuiScreen {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
         drawTexturedModalRect(0, -32, 0, 45, 256, 32);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-        drawTexturedModalRect(96, 164, 0, 16, 64, 64);
-        drawTexturedModalRect(96, 32, 64, 16, 64, 64);
+        drawTexturedModalRect(96, 164, 0, 32, 64, 64);
+        drawTexturedModalRect(96, 32, 64, 32, 64, 64);
         drawCenteredString(fontRendererObj, "Drag To Move", 128, 124, 0x00ff00);
         GlStateManager.popMatrix();
         super.drawScreen(mouseX, mouseY, partialTicks);

@@ -24,26 +24,6 @@ version = "1.2.0-PRE3"
 group= "tools.skyblock.skyhouse.mcmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Skyhouse"
 runClient {
-    def props = new Properties()
-    file("login.properties").withInputStream { props.load(it) }
-    String accessToken = props.getProperty("accessToken")
-    String uuid = props.getProperty("uuid")
-    String userType = props.getProperty("userType")
-    String username = props.getProperty("username")
-    boolean dcevm = "true".equals(props.getProperty("dcevm"))
-    String javaagent = props.getProperty("javaagent")
-    String authType, authValue
-    if (accessToken == null) {
-        authType = "--password"
-        authValue = props.getProperty("password")
-    } else {
-        authType = "--accessToken"
-        authValue = accessToken
-    }
-    if (dcevm) {
-        jvmArgs(['-Xmx3G', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5010', '-XXaltjvm=dcevm', '-XX:+UnlockExperimentalVMOptions', '-javaagent:'+javaagent])
-    }
-    args = ["--userType", userType, "--uuid", uuid, "--username", username, authType, authValue]
 }
 
 minecraft {
@@ -88,3 +68,12 @@ processResources
         exclude 'mcmod.info'
     }
 }
+
+task moveResources {
+    doLast {
+        ant.move file: "${buildDir}/resources/main",
+                todir: "${buildDir}/classes/java"
+    }
+}
+moveResources.dependsOn processResources
+classes.dependsOn moveResources
