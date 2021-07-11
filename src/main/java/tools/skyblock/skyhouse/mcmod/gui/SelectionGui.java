@@ -81,7 +81,7 @@ public class SelectionGui extends CustomGui {
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));
 
         iconButtons.add(new IconButton(1, 14, 12, 194, 0)
-                .withTooltip(EnumChatFormatting.GREEN + "Skyhouse Settings")
+                .withTooltip(EnumChatFormatting.GREEN + "Skyhouse")
                 .withClickCallback(() -> SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui())));
     }
 
@@ -108,6 +108,8 @@ public class SelectionGui extends CustomGui {
                 Consumer<Boolean> updater = (checked) -> {
                     try {
                         field.getDeclaringClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
+                                .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
+                        searchFilter.getClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
                                 .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
                     } catch (ReflectiveOperationException e) {
                         try {
@@ -157,6 +159,7 @@ public class SelectionGui extends CustomGui {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
+        GlStateManager.disableLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
@@ -192,6 +195,7 @@ public class SelectionGui extends CustomGui {
 
         drawComponents(mouseX, mouseY);
         GlStateManager.popMatrix();
+        GlStateManager.enableLighting();
         drawTooltips(mouseX, mouseY);
 
 

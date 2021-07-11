@@ -210,6 +210,16 @@ public class Utils {
         return lore;
     }
 
+    public static JsonObject getPetInfoFromNbt(NBTTagCompound nbt) {
+        String str = "";
+        NBTTagCompound extraAttributes = nbt.getCompoundTag("ExtraAttributes");
+        if (extraAttributes.hasKey("petInfo", 8)) {
+            str = extraAttributes.getString("petInfo");
+        }
+        JsonObject petInfo = SkyhouseMod.serializeGson.fromJson(str, JsonObject.class).getAsJsonObject();
+        return petInfo;
+    }
+
     /*
     This was copied and pasted from https://github.com/Mouberry/NotEnoughUpdates
     to work with his lowest bin api (with a few changes to work here)

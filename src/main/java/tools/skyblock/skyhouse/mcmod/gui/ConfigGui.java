@@ -125,8 +125,7 @@ public class ConfigGui extends GuiScreen {
         int linkEnd = fontRendererObj.getStringWidth("https://skyblock.tools/skyhouse/flipper") + 10;
         if (mouseX >= 10 && mouseX <= linkEnd && mouseY >= height-20 && mouseY <= height-12) {
             try {
-                //Desktop.getDesktop().browse(new URI("https://skyblock.tools/skyhouse/flipper"));
-                Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+                Desktop.getDesktop().browse(new URI("https://skyblock.tools/skyhouse/flipper"));
             }
             catch (URISyntaxException | IOException e) {
                 System.out.println("error pog");

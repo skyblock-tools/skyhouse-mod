@@ -117,7 +117,7 @@ public class CreationConfigGui extends CustomGui {
         }
 
         if (hover(mouseX-guiLeft, mouseY-guiTop, 8, -32+8, 16, 16, guiScale)) {
-            drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse Settings"), mouseX, mouseY);
+            drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse"), mouseX, mouseY);
         } else if (hover(mouseX-guiLeft, mouseY - guiTop, 230, 8 - 32, 16, 16, guiScale)) {
             drawHoveringText(Arrays.asList(EnumChatFormatting.GRAY + "Settings"), mouseX, mouseY);
         } else if (hover(mouseX-guiLeft, mouseY - guiTop, 12 + 25, 8 - 32, 16, 16, guiScale) && page != 0) {

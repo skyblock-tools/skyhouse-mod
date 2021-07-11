@@ -22,7 +22,7 @@ public class ConfigManager {
     @Expose
     @SerializedName("show_creation_overlay")
     @Checkbox
-    @ConfigOption(value = "Enable auction creation overlay", description = {"\u00a77Enables the auction creation overlay"})
+    @ConfigOption(value = "Enable auction creation overlay", description = {"\u00a77Enables the auction creation overlay", "\u00a74This is a work-in-progress feature"})
     public boolean showCreationOverlay = false;
 
     @Expose
@@ -158,6 +158,13 @@ public class ConfigManager {
     @Expose
     @SerializedName("config_opened")
     public boolean configOpened;
+
+    public void resetFilterCheckboxes() {
+        setSkinsInSearch(true);
+        setCakeSoulsInSearch(true);
+        setPetsInSearch(true);
+        setRecombsInSearch(true);
+    }
 
     public void processConfig() {
         if (!configOpened) {

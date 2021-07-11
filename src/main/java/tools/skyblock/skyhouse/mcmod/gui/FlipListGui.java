@@ -16,7 +16,6 @@ import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.NumberFormat;
@@ -46,11 +45,13 @@ public class FlipListGui extends CustomGui {
             JsonObject item = el.getAsJsonObject();
             Auction auction = SkyhouseMod.serializeGson.fromJson(item, Auction.class);
             if (!SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.contains(auction.getUuid())){
-                if (!SkyhouseMod.INSTANCE.getConfigManager().getRecombsInSearch() && auction.isRecomb() ||
-                    !SkyhouseMod.INSTANCE.getConfigManager().getPetsInSearch() && auction.isPet() ||
-                    !SkyhouseMod.INSTANCE.getConfigManager().getCakeSoulsInSearch() && auction.isSoul() ||
-                    !SkyhouseMod.INSTANCE.getConfigManager().getSkinsInSearch() && auction.isSkin()) {
-                    continue;
+                if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel > 1) {
+                    if (!SkyhouseMod.INSTANCE.getConfigManager().getRecombsInSearch() && auction.isRecomb() ||
+                        !SkyhouseMod.INSTANCE.getConfigManager().getPetsInSearch() && auction.isPet() ||
+                        !SkyhouseMod.INSTANCE.getConfigManager().getCakeSoulsInSearch() && auction.isSoul() ||
+                        !SkyhouseMod.INSTANCE.getConfigManager().getSkinsInSearch() && auction.isSkin()) {
+                        continue;
+                    }
                 }
                 auctions.add(auction);
             }
@@ -97,8 +98,8 @@ public class FlipListGui extends CustomGui {
             GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GlStateManager.enableAlpha();
             GlStateManager.color(1, 1, 1, 0.5f);
-            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.AQUA + "Get bin->bin flips with unlimited profit, filters, and more" + EnumChatFormatting.RESET, width/2, 16, 0xffffff);
-            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.AQUA + "With Skyhouse+, learn more at" + EnumChatFormatting.RESET, width/2, 32, 0xffffff);
+            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.AQUA + "Get unlimited profit bin->bin flips, filters, and more" + EnumChatFormatting.RESET, width/2, 16, 0xffffff);
+            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.AQUA + "with Skyhouse+, learn more at" + EnumChatFormatting.RESET, width/2, 32, 0xffffff);
 
             String shPlusUrl = "https://skyblock.tools/skyhouse/skyhouse_plus";
             if (mouseX >= width/2-fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseY >= 48 && mouseY <= 48+8) {
@@ -201,7 +202,7 @@ public class FlipListGui extends CustomGui {
         GlStateManager.enableDepth();
         GlStateManager.enableLighting();
         if (hover(mouseX-guiLeft, mouseY-guiTop, 8, -32+8, 16, 16, guiScale)) {
-            drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse Settings"), mouseX, mouseY);
+            drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse"), mouseX, mouseY);
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230-16-10, -32+8, 16, 16, guiScale)) {
             if (Utils.isAhCreationGui() && Utils.renderCreationOverlay()) drawHoveringText(Arrays.asList(EnumChatFormatting.RED + "Close Flip List"), mouseX, mouseY);
             else drawHoveringText(Arrays.asList(EnumChatFormatting.RED + "Back To Menu"), mouseX, mouseY);

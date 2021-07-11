@@ -18,7 +18,6 @@ import tools.skyblock.skyhouse.mcmod.util.Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +31,6 @@ public class CreationGui extends CustomGui {
     private float guiScale;
     private final Pattern REGEX_PATTERN_FOR_HOT_POTATO_BOOKS_BONUS_FOR_ITEM_VALUE_CALCULATION = Pattern.compile(EnumChatFormatting.YELLOW + "\\(\\+(\\d+)\\)");
     private final Pattern REGEX_PATTERN_FOR_ART_OF_WAR_BONUS_FOR_ITEM_VALUE_CALCULATION = Pattern.compile(EnumChatFormatting.GOLD + "\\[\\+(\\d+)\\]");
-    private final Pattern REGEX_PATTERN_FOR_PET_ITEM_BONUS_FOR_ITEM_VALUE_CALCULATION = Pattern.compile(EnumChatFormatting.GOLD + "Held Item: \u00a7[a-f\\d](.+)");
     private List<IconButton> extraPanelButtons = new ArrayList<>();
     private static boolean isPreviewTooltip = false;
 
@@ -345,23 +343,20 @@ public class CreationGui extends CustomGui {
 
                         //TODO: add everything that could modify the value of a pet here
 
+                        JsonObject petInfo = Utils.getPetInfoFromNbt(nbt);
+
                         if (SkyhouseMod.INSTANCE.getConfigManager().getIncludePetItems()) {
-                            for (String entry : lore) {
-                                final Matcher matcher = REGEX_PATTERN_FOR_PET_ITEM_BONUS_FOR_ITEM_VALUE_CALCULATION.matcher(entry);
-                                if (!matcher.find()) continue;
-                                final String possibleInternalName = matcher.group(1).toUpperCase().replaceAll("\\s", "_");
-                                int petItemBonus = -1;
-                                try {
-                                    petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get(possibleInternalName).getAsInt();
-                                } catch (NullPointerException bonusIsNull) {
-                                    try {
-                                        petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get("PET_ITEM_" + possibleInternalName).getAsInt();
-                                    } catch (NullPointerException e) {
-                                        petItemBonus = 0;
-                                    }
-                                }
+                            if (petInfo.has("heldItem")) {
+                                String petItem = petInfo.get("heldItem").getAsString();
+                                final int petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get(petItem).getAsInt();
                                 value += petItemBonus;
-                                drawString(fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + matcher.group(1), 14, currentHeight, 0xffffff);
+                                String prettyPetItemName = petItem.replaceAll("_", " ").toLowerCase().replace("pet item", "");
+                                StringBuilder capitalizedPrettyPetItemName = new StringBuilder();
+                                for (String word : prettyPetItemName.split("\\s")) {
+                                    capitalizedPrettyPetItemName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+                                }
+                                capitalizedPrettyPetItemName = new StringBuilder(capitalizedPrettyPetItemName.toString().trim());
+                                drawString(fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);
                                 drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petItemBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petItemBonus)), currentHeight, 0xffffff);
                                 currentHeight += 15;
                             }
@@ -393,7 +388,7 @@ public class CreationGui extends CustomGui {
         GlStateManager.enableLighting();
 
         if (hover(mouseX-guiLeft, mouseY-guiTop, 8, -32+8, 16, 16, guiScale)) {
-            drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse Settings"), mouseX, mouseY);
+            drawHoveringText(Arrays.asList(EnumChatFormatting.GREEN + "Skyhouse"), mouseX, mouseY);
         } else if (hover(mouseX-guiLeft, mouseY - guiTop, 230, 8 - 32, 16, 16, guiScale)) {
             drawHoveringText(Arrays.asList(EnumChatFormatting.GRAY + "Settings" + EnumChatFormatting.RESET), mouseX, mouseY);
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 8+22, -32+8+1, 16, 16, guiScale) && SkyhouseMod.INSTANCE.getOverlayManager().hasFlips()) {
