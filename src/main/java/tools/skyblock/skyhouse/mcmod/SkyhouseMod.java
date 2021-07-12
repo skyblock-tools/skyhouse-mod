@@ -78,7 +78,7 @@ public class SkyhouseMod {
             try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
                 configManager = gson.fromJson(reader, ConfigManager.class);
                 if (authenticationManager.privLevel < 2) {
-                    configManager.resetFilterCheckboxes();
+                    configManager.resetPremiumFeatures();
                 }
             } catch (IOException ignored) {}
         if (configManager == null) {

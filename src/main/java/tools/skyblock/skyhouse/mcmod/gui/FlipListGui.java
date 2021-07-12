@@ -128,13 +128,13 @@ public class FlipListGui extends CustomGui {
         if (Utils.isAhCreationGui() && Utils.renderCreationOverlay()) {
             drawTexturedModalRect(8+22, -32+8+1, 32, 0, 16, 16);
         }
-        drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "Flip List", 128, 12 - 32, 0xffffff);
+        Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "Flip List", 128, 12 - 32, 0xffffff);
 
         if (totalPages != 0)
-            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "Found " + auctions.size() + (auctions.size() > 1 ? " flips! Page " : " flip! Page ") + (page + 1) + " of " + totalPages, 128, 15, 0xffffff);
+            Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "Found " + auctions.size() + (auctions.size() > 1 ? " flips! Page " : " flip! Page ") + (page + 1) + " of " + totalPages, 128, 15, 0xffffff);
         else {
-            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "No Flips Found", 128, 120, 0xffffff);
-            drawCenteredString(Minecraft.getMinecraft().fontRendererObj, ":(", 128, 136, 0xffffff);
+            Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "No Flips Found", 128, 120, 0xffffff);
+            Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, ":(", 128, 136, 0xffffff);
         }
 
         if (page != 0) {

@@ -64,7 +64,7 @@ public class CreationConfigGui extends CustomGui {
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
 
-        drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "Page " + (page+1) + " of " + totalPages, 128, 12-32, 0xffffff);
+        Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "Page " + (page+1) + " of " + totalPages, 128, 12-32, 0xffffff);
 
         if (page != 0) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
@@ -90,9 +90,9 @@ public class CreationConfigGui extends CustomGui {
         int count = 0;
         for (ConfigOption option : labels.subList(page*6, page*6+shownOptions)) {
             if (!disabled.contains(count)) {
-                drawString(fontRendererObj, EnumChatFormatting.WHITE + option.value(), 16+16, currentHeight, 0xffffff);
+                Utils.drawString(this, fontRendererObj, EnumChatFormatting.WHITE + option.value(), 16+16, currentHeight, 0xffffff);
             } else {
-                drawString(fontRendererObj, EnumChatFormatting.GRAY + option.value(), 16+16, currentHeight, 0xffffff);
+                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + option.value(), 16+16, currentHeight, 0xffffff);
             }
             if (option.description().length != 0) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);

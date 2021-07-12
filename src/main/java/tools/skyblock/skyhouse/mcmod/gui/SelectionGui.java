@@ -167,17 +167,17 @@ public class SelectionGui extends CustomGui {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
         drawTexturedModalRect(0, -32, 0, 45, 256, 32);
 
-        drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
+        Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
 
         drawHorizontalLine(12, 256-12, 34, 0xff595959);
 
-        drawString(Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
-        drawString(Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
+        Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
+        Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
 
         int currentHeight = 196;
         for (ConfigOption option : labels) {
             currentHeight -= 29;
-            drawString(fontRendererObj, EnumChatFormatting.WHITE + option.value(), 128+(64-50), currentHeight-4, 0xffffff);
+            Utils.drawString(this, fontRendererObj, option.value(), 128+(64-50), currentHeight-4, 0xffffff);
         }
 
         for (CheckBox checkBox : checkBoxes) {

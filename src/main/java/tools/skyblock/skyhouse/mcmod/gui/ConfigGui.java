@@ -11,6 +11,7 @@ import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
+import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -41,9 +42,11 @@ public class ConfigGui extends GuiScreen {
         drawCenteredString(fontRendererObj, title, width/4, height/16, 0x188cd5);
         GlStateManager.popMatrix();
         int i = 0;
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        for (GuiButton guiButton : this.buttonList) {
+            Utils.drawButton(guiButton, this.mc, mouseX, mouseY);
+        }
         for (ConfigOption opt : labels) {
-            drawString(fontRendererObj, opt.value(), width/3, height/4 + (height/8 * i++), 0xffffff);
+            Utils.drawString(this, fontRendererObj, opt.value(), width/3, height/4 + (height/8 * i++), 0xffffff);
             if (opt.description().length != 0 ) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
                 drawTexturedModalRect(width/3-20, height/4-4 + (height/8 * (i-1)), 160, 0, 16, 16);
@@ -57,9 +60,9 @@ public class ConfigGui extends GuiScreen {
         }
         int linkEnd = fontRendererObj.getStringWidth("https://skyblock.tools/skyhouse/flipper") + 10;
         if (mouseX >= 10 && mouseX <= linkEnd && mouseY >= height-20 && mouseY <= height-12) {
-            drawString(fontRendererObj, EnumChatFormatting.UNDERLINE + "https://skyblock.tools/skyhouse/flipper" + EnumChatFormatting.RESET, 10, height-20, 0xb8b8b8);
+            Utils.drawString(this, fontRendererObj, EnumChatFormatting.UNDERLINE + "https://skyblock.tools/skyhouse/flipper" + EnumChatFormatting.RESET, 10, height-20, 0xb8b8b8);
             drawHoveringText(Arrays.asList("\u00a77Click to follow the link"), mouseX, mouseY);
-        } else drawString(fontRendererObj, "https://skyblock.tools/skyhouse/flipper", 10, height-20, 0xb8b8b8);
+        } else Utils.drawString(this, fontRendererObj, "https://skyblock.tools/skyhouse/flipper", 10, height-20, 0xb8b8b8);
     }
 
     public void tick() {

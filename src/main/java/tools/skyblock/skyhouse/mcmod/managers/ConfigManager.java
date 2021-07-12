@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.Checkbox;
 import tools.skyblock.skyhouse.mcmod.config.ConfigOption;
 import tools.skyblock.skyhouse.mcmod.config.CreationOption;
@@ -24,6 +25,12 @@ public class ConfigManager {
     @Checkbox
     @ConfigOption(value = "Enable auction creation overlay", description = {"\u00a77Enables the auction creation overlay", "\u00a74This is a work-in-progress feature"})
     public boolean showCreationOverlay = false;
+
+    @Expose
+    @SerializedName("full_chroma_mode")
+    @Checkbox
+    @ConfigOption(value = "Enable chroma in all Skyhouse GUI's", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA to function"})
+    public boolean fullChromaMode = false;
 
     @Expose
     @SerializedName("save_options")
@@ -159,7 +166,7 @@ public class ConfigManager {
     @SerializedName("config_opened")
     public boolean configOpened;
 
-    public void resetFilterCheckboxes() {
+    public void resetPremiumFeatures() {
         setSkinsInSearch(true);
         setCakeSoulsInSearch(true);
         setPetsInSearch(true);
@@ -192,6 +199,16 @@ public class ConfigManager {
 
     public void setShowCreationOverlay(boolean showCreationOverlay) {
         this.showCreationOverlay = showCreationOverlay;
+    }
+
+    public void setFullChromaMode(boolean fullChromaMode) {
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2) {
+            this.fullChromaMode = fullChromaMode;
+        }
+    }
+
+    public boolean useFullChromaMode() {
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && this.fullChromaMode;
     }
 
     public void setRelativeGui(boolean relativeGui) {
