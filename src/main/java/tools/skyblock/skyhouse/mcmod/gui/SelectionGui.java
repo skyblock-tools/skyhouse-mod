@@ -75,12 +75,12 @@ public class SelectionGui extends CustomGui {
                         .withClickCallback(() -> SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.clear())
                         .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.isEmpty()));
 
-        iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 0)
+        iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 16)
                 .withTooltip(EnumChatFormatting.RED + "Reset Filter Preferences")
                 .withClickCallback(() -> SkyhouseMod.INSTANCE.getOverlayManager().resetFilter())
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));
 
-        iconButtons.add(new IconButton(1, 14, 12, 194, 0)
+        iconButtons.add(new IconButton(1, 14, 12, 194, 16)
                 .withTooltip(EnumChatFormatting.GREEN + "Skyhouse")
                 .withClickCallback(() -> SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui())));
     }

@@ -124,7 +124,7 @@ public class FlipListGui extends CustomGui {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230 - 16 - 10, -32 + 8, 176, 0, 16, 16);
         drawTexturedModalRect(230, -32 + 8, 144, 0, 16, 16);
-        drawTexturedModalRect(8, -32 + 8, 194, 0, 16, 16);
+        drawTexturedModalRect(8, -32 + 8, 194, 16, 16, 16);
         if (Utils.isAhCreationGui() && Utils.renderCreationOverlay()) {
             drawTexturedModalRect(8+22, -32+8+1, 32, 0, 16, 16);
         }

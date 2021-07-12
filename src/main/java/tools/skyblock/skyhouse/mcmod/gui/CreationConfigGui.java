@@ -54,7 +54,7 @@ public class CreationConfigGui extends CustomGui {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230, -8-16, 194, 0, 16, 16);
-        drawTexturedModalRect(8, -32+8, 194, 0, 16, 16);
+        drawTexturedModalRect(8, -32+8, 194, 16, 16, 16);
 
         GlStateManager.popMatrix();
 

@@ -79,7 +79,7 @@ public class CreationGui extends CustomGui {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230, -8-16, 194, 0, 16, 16);
-        drawTexturedModalRect(8, -32+8, 194, 0, 16, 16);
+        drawTexturedModalRect(8, -32+8, 194, 16, 16, 16);
         if (SkyhouseMod.INSTANCE.getOverlayManager().hasFlips()) {
             drawTexturedModalRect(8+22, -32+8+1, 32, 0, 16, 16);
         }
