@@ -356,7 +356,8 @@ public class CreationGui extends CustomGui {
                                 String prettyPetItemName = petItem.replaceAll("_", " ").toLowerCase().replace("pet item", "");
                                 StringBuilder capitalizedPrettyPetItemName = new StringBuilder();
                                 for (String word : prettyPetItemName.split("\\s")) {
-                                    capitalizedPrettyPetItemName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+                                    if (word.length() >= 2) capitalizedPrettyPetItemName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+                                    else capitalizedPrettyPetItemName.append(word.toUpperCase());
                                 }
                                 capitalizedPrettyPetItemName = new StringBuilder(capitalizedPrettyPetItemName.toString().trim());
                                 Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);

@@ -132,7 +132,7 @@ public class SelectionGui extends CustomGui {
                             field.getBoolean(SkyhouseMod.INSTANCE.getConfigManager()), updater));
                 } catch (ReflectiveOperationException ignored) {}
                 i++;
-                currentHeight -= 29;
+                currentHeight -= 24;
             }
         }
         buttonList.addAll(buttons);
@@ -174,11 +174,12 @@ public class SelectionGui extends CustomGui {
         Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
         Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
 
-        int currentHeight = 196;
+        int currentHeight = 168;
         for (ConfigOption option : labels) {
-            currentHeight -= 29;
             Utils.drawString(this, fontRendererObj, option.value(), 128+(64-50), currentHeight-4, 0xffffff);
+            currentHeight -= 24;
         }
+        Utils.drawString(this, fontRendererObj, "Include:", 128+(64-50), currentHeight-4, 0xffffff);
 
         for (CheckBox checkBox : checkBoxes) {
             checkBox.drawButton(Minecraft.getMinecraft(), mouseX, mouseY, SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2);
