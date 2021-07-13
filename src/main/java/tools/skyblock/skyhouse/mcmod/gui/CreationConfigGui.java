@@ -92,7 +92,7 @@ public class CreationConfigGui extends CustomGui {
             if (!disabled.contains(count)) {
                 Utils.drawString(this, fontRendererObj, EnumChatFormatting.WHITE + option.value(), 16+16, currentHeight, 0xffffff);
             } else {
-                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + option.value(), 16+16, currentHeight, 0xffffff);
+                drawString(fontRendererObj, EnumChatFormatting.GRAY + option.value(), 16+16, currentHeight, 0xffffff);
             }
             if (option.description().length != 0) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);

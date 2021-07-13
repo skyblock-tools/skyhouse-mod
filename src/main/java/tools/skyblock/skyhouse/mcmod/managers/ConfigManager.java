@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.fml.common.Loader;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.Checkbox;
 import tools.skyblock.skyhouse.mcmod.config.ConfigOption;
@@ -27,12 +28,6 @@ public class ConfigManager {
     public boolean showCreationOverlay = false;
 
     @Expose
-    @SerializedName("full_chroma_mode")
-    @Checkbox
-    @ConfigOption(value = "Enable chroma in all Skyhouse GUI's", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA to function"})
-    public boolean fullChromaMode = false;
-
-    @Expose
     @SerializedName("save_options")
     @Checkbox
     @ConfigOption(value = "Save flip search options", description = {"\u00a77Whether or not the search options reset when you close the auction house\u00a7r"})
@@ -44,6 +39,12 @@ public class ConfigManager {
     @ConfigOption(value = "Relative GUI position", description = {"\u00a7aOn: \u00a7r\u00a77Overlay GUI is positioned and scaled relative to the screen size\u00a7r",
             "\u00a74Off: \u00a7r\u00a77Overlay GUI is positioned at a fixed location and scale\u00a7r"})
     public boolean relativeGui = true;
+
+    @Expose
+    @SerializedName("full_chroma_mode")
+    @Checkbox
+    @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA to function"})
+    public boolean fullChromaMode = false;
 
     @Expose
     @CreationOption
@@ -171,6 +172,7 @@ public class ConfigManager {
         setCakeSoulsInSearch(true);
         setPetsInSearch(true);
         setRecombsInSearch(true);
+        setFullChromaMode(false);
     }
 
     public void processConfig() {
@@ -202,13 +204,11 @@ public class ConfigManager {
     }
 
     public void setFullChromaMode(boolean fullChromaMode) {
-        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2) {
-            this.fullChromaMode = fullChromaMode;
-        }
+        this.fullChromaMode = fullChromaMode;
     }
 
-    public boolean useFullChromaMode() {
-        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && this.fullChromaMode;
+    public boolean getFullChromaMode() {
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && this.fullChromaMode && Loader.isModLoaded("skyblockaddons");
     }
 
     public void setRelativeGui(boolean relativeGui) {
@@ -221,8 +221,16 @@ public class ConfigManager {
         configOpened = true;
     }
 
-    public boolean checkShowOverlay(boolean checked) {
+    public boolean checkShowFlippingOverlay(boolean checked) {
         return true;
+    }
+
+    public boolean checkShowCreationOverlay(boolean checked) {
+        return true;
+    }
+
+    public boolean checkFullChromaMode(boolean checked) {
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && Loader.isModLoaded("skyblockaddons");
     }
 
     public void setIncludeHpbs(boolean includeHpbs) {
@@ -374,7 +382,7 @@ public class ConfigManager {
     }
 
     public boolean checkSkinsInSearch(boolean checked) {
-        return true;
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
     }
 
     public boolean getSkinsInSearch() {
@@ -386,7 +394,7 @@ public class ConfigManager {
     }
 
     public boolean checkCakeSoulsInSearch(boolean checked) {
-        return true;
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
     }
 
     public boolean getCakeSoulsInSearch() {
@@ -398,7 +406,7 @@ public class ConfigManager {
     }
 
     public boolean checkPetsInSearch(boolean checked) {
-        return true;
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
     }
 
     public boolean getPetsInSearch() {
@@ -410,7 +418,7 @@ public class ConfigManager {
     }
 
     public boolean checkRecombsInSearch(boolean checked) {
-        return true;
+        return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
     }
 
     public boolean getRecombsInSearch() {

@@ -29,6 +29,7 @@ public class ConfigGui extends GuiScreen {
     private int guiLeft, guiTop;
     private List<GuiButton> buttons = new ArrayList<>();
     private List<ConfigOption> labels = new ArrayList<>();
+    private List<Integer> disabled = new ArrayList<Integer>();
     private int editGuiButtonId;
 
     @Override
@@ -42,15 +43,31 @@ public class ConfigGui extends GuiScreen {
         drawCenteredString(fontRendererObj, title, width/4, height/16, 0x188cd5);
         GlStateManager.popMatrix();
         int i = 0;
-        for (GuiButton guiButton : this.buttonList) {
-            Utils.drawButton(guiButton, this.mc, mouseX, mouseY);
+        for (GuiButton button : this.buttonList) {
+            if (button instanceof CheckBox) {
+                if (((CheckBox) button).canCheck()) {
+                    ((CheckBox) button).drawButton(mc, mouseX, mouseY, false);
+                } else {
+                    ((CheckBox) button).drawButton(mc, mouseX, mouseY, true);
+                    disabled.add(i);
+                }
+            } else {
+                Utils.drawButton(button, this.mc, mouseX, mouseY);
+            }
+            i++;
         }
+
+        i = 0;
+        int count = 0;
         for (ConfigOption opt : labels) {
-            Utils.drawString(this, fontRendererObj, opt.value(), width/3, height/4 + (height/8 * i++), 0xffffff);
+            if (disabled.contains(count)) drawString(fontRendererObj, EnumChatFormatting.GRAY + opt.value(), width/3, height/4 + (height/8 * i++), 0xffffff);
+            else Utils.drawString(this, fontRendererObj, opt.value(), width/3, height/4 + (height/8 * i++), 0xffffff);
             if (opt.description().length != 0 ) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-                drawTexturedModalRect(width/3-20, height/4-4 + (height/8 * (i-1)), 160, 0, 16, 16);
-            }
+                if (disabled.contains(count)) drawTexturedModalRect(width/3-20, height/4-4 + (height/8 * (i-1)), 160, 16, 16, 16);
+                else drawTexturedModalRect(width/3-20, height/4-4 + (height/8 * (i-1)), 160, 0, 16, 16);
+                }
+            count++;
         }
         i = 0;
         for (ConfigOption opt : labels) {

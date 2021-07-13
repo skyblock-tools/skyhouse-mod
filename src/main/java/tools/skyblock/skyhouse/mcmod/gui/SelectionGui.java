@@ -235,8 +235,7 @@ public class SelectionGui extends CustomGui {
                 button.getClickCallback().run();
         }
         for (CheckBox button : checkBoxes) {
-            if (hover(mouseX - guiLeft, mouseY - guiTop, button.xPosition, button.yPosition, button.width, button.height, guiScale) &&
-            SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel > 1) {
+            if (hover(mouseX - guiLeft, mouseY - guiTop, button.xPosition, button.yPosition, button.width, button.height, guiScale)) {
                 button.pressed();
             }
         }
