@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -40,6 +41,9 @@ public class AuthenticationManager {
             accessToken = json.get("access_token").getAsString();
             privLevel = json.get("privilege_level").getAsInt();
             lastCredUpdate = System.currentTimeMillis();
+            if (privLevel < 2) {
+                SkyhouseMod.INSTANCE.getConfigManager().resetPremiumFeatures();
+            }
         }, (err) -> {
             if (err.getMessage().contains("401") || err.getMessage().contains("403"))
                 Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not authenticate with the API, please refresh your access token and try again" + EnumChatFormatting.RESET));

@@ -49,12 +49,12 @@ public class SkyhouseMod {
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        authenticationManager = new AuthenticationManager();
-        authenticationManager.loadFromJar();
         configDir = new File(event.getModConfigurationDirectory(), "skyhouse");
         getConfigDir().mkdirs();
         configFile = new File(getConfigDir(), "config.json");
         loadConfig();
+        authenticationManager = new AuthenticationManager();
+        authenticationManager.loadFromJar();
         listener = new EventListener();
         overlayManager = new OverlayManager();
         MinecraftForge.EVENT_BUS.register(listener);
@@ -77,9 +77,6 @@ public class SkyhouseMod {
         if (configFile.exists())
             try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
                 configManager = gson.fromJson(reader, ConfigManager.class);
-                if (authenticationManager.privLevel < 2) {
-                    configManager.resetPremiumFeatures();
-                }
             } catch (IOException ignored) {}
         if (configManager == null) {
             configManager = new ConfigManager();

@@ -178,7 +178,7 @@ public class ConfigManager {
     public void processConfig() {
         if (!configOpened) {
             setRelativeGui(true);
-       configOpened = true;
+            configOpened = true;
         }
     }
 
