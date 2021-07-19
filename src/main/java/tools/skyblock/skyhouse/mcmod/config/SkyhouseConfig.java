@@ -16,8 +16,20 @@ public class SkyhouseConfig {
             configOpened = true;
         }
     }
+    public void resetPremiumFeatures() {
+        filterOptions.skinsInSearch = true;
+        filterOptions.cakeSoulsInSearch = true;
+        filterOptions.petsInSearch = true;
+        filterOptions.recombsInSearch = true;
+        generalConfig.fullChromaMode = false;
+    }
 
     public Field openCategory;
+
+    @ConfigCategory(name = "General", description = "General config")
+    @SerializedName("general")
+    @Expose
+    public GeneralConfig generalConfig = new GeneralConfig();
 
     @ConfigCategory(name = "AH Overlays", description = "Configure the AH overlays")
     @SerializedName("ah_overlay")
@@ -40,6 +52,15 @@ public class SkyhouseConfig {
     @Expose
     @SerializedName("config_opened")
     public boolean configOpened = false;
+
+    public class GeneralConfig {
+
+        @Expose
+        @SerializedName("full_chroma_mode")
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA 1.6.0 or higher to function"})
+        public boolean fullChromaMode = false;
+
+    }
 
     public class AhOverlayConfig {
         @Expose

@@ -41,7 +41,7 @@ public class AuthenticationManager {
             privLevel = json.get("privilege_level").getAsInt();
             lastCredUpdate = System.currentTimeMillis();
             if (privLevel < 2) {
-                SkyhouseMod.INSTANCE.getConfigManager().resetPremiumFeatures();
+                SkyhouseMod.INSTANCE.getConfig().resetPremiumFeatures();
             }
         }, (err) -> {
             if (err.getMessage().contains("401") || err.getMessage().contains("403"))
