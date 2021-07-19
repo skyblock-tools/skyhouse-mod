@@ -1,35 +1,35 @@
 package tools.skyblock.skyhouse.mcmod.commands;
 
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
-import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
+import tools.skyblock.skyhouse.mcmod.gui.AhOverlayPositionEditor;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class ConfigCommand implements ICommand {
+public class AhOverlayPositionEditorCommand implements ICommand {
 
     @Override
     public String getCommandName() {
-        return "skyhouse";
+        return "skyhouseeditahoverlay";
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return null;
+        return "";
     }
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList("skyhouse", "sh");
+        return Arrays.asList();
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) {
-        SkyhouseMod.INSTANCE.getConfig().processConfig();
-        SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui());
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+        SkyhouseMod.INSTANCE.getListener().openGui(new AhOverlayPositionEditor());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ConfigCommand implements ICommand {
 
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        return null;
+        return Arrays.asList();
     }
 
     @Override

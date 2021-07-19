@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.gui;
+package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -9,6 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
+import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.models.Auction;
 import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
@@ -45,14 +47,6 @@ public class FlipListGui extends CustomGui {
             JsonObject item = el.getAsJsonObject();
             Auction auction = SkyhouseMod.serializeGson.fromJson(item, Auction.class);
             if (!SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.contains(auction.getUuid())){
-                if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel > 1) {
-                    if (!SkyhouseMod.INSTANCE.getConfigManager().getRecombsInSearch() && auction.isRecomb() ||
-                        !SkyhouseMod.INSTANCE.getConfigManager().getPetsInSearch() && auction.isPet() ||
-                        !SkyhouseMod.INSTANCE.getConfigManager().getCakeSoulsInSearch() && auction.isSoul() ||
-                        !SkyhouseMod.INSTANCE.getConfigManager().getSkinsInSearch() && auction.isSkin()) {
-                        continue;
-                    }
-                }
                 auctions.add(auction);
             }
         }

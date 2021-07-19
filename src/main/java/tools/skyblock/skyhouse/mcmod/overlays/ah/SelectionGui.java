@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.gui;
+package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -6,13 +6,14 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
-import tools.skyblock.skyhouse.mcmod.config.ConfigOption;
-import tools.skyblock.skyhouse.mcmod.config.FilterOption;
+import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
+import tools.skyblock.skyhouse.mcmod.config.annotations.HiddenConfigOption;
+import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
+import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
 import tools.skyblock.skyhouse.mcmod.gui.components.CustomButton;
 import tools.skyblock.skyhouse.mcmod.gui.components.CustomTextbox;
 import tools.skyblock.skyhouse.mcmod.gui.components.IconButton;
-import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
 import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
@@ -28,7 +29,7 @@ public class SelectionGui extends CustomGui {
 
     private int guiLeft, guiTop;
     private float guiScale;
-    private List<ConfigOption> labels = new ArrayList<>();
+    private List<HiddenConfigOption> labels = new ArrayList<>();
 
     private List<CheckBox> checkBoxes = new ArrayList<>();
 
@@ -42,10 +43,10 @@ public class SelectionGui extends CustomGui {
     }
 
     private void createElements() {
-        ConfigManager config = SkyhouseMod.INSTANCE.getConfigManager();
-        boolean save = config.saveOptions;
-        int minProfit = save ? config.minProfit : Constants.DEFAULT_MIN_PROFIT;
-        int maxPrice = save ? config.maxPrice : Constants.DEFAULT_MAX_PRICE;
+        SkyhouseConfig config = SkyhouseMod.INSTANCE.getConfig();
+        boolean save = config.ahOverlayConfig.saveOptions;
+        int minProfit = save ? config.filterOptions.minProfit : Constants.DEFAULT_MIN_PROFIT;
+        int maxPrice = save ? config.filterOptions.maxPrice : Constants.DEFAULT_MAX_PRICE;
         searchFilter
                 .withMinProfit(minProfit)
                 .withMaxPrice(maxPrice);
@@ -57,13 +58,13 @@ public class SelectionGui extends CustomGui {
                         .withDefaultText(String.valueOf(minProfit))
                         .withStateUpdater(Utils.createStringToIntCallback(searchFilter::withMinProfit,
                                 Constants.DEFAULT_MIN_PROFIT))
-                        .withStateUpdater(Utils.createStringToIntCallback(config::setMinProfit, Constants.DEFAULT_MIN_PROFIT))
+                        .withStateUpdater(Utils.createStringToIntCallback(config.filterOptions::setMinProfit, Constants.DEFAULT_MIN_PROFIT))
         );
         inputs.add(
                 new CustomTextbox(1, Minecraft.getMinecraft().fontRendererObj, 14+10, 198, 90, 20, CustomTextbox.DIGITS_ONLY)
                         .withDefaultText(String.valueOf(maxPrice))
                         .withStateUpdater(Utils.createStringToIntCallback(searchFilter::withMaxPrice, Constants.DEFAULT_MAX_PRICE))
-                        .withStateUpdater(Utils.createStringToIntCallback(config::setMaxPrice, Constants.DEFAULT_MAX_PRICE))
+                        .withStateUpdater(Utils.createStringToIntCallback(config.filterOptions::setMaxPrice, Constants.DEFAULT_MAX_PRICE))
         );
         buttons.add(
                 new CustomButton(0, (128-40), 236-10, 80, 20, "Search")
@@ -72,12 +73,12 @@ public class SelectionGui extends CustomGui {
 
         iconButtons.add(new IconButton(1, 256-16-10-14-16, 12, 80, 0)
                         .withTooltip(EnumChatFormatting.RED + "Clear Auction Blacklist")
-                        .withClickCallback(() -> SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.clear())
+                        .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist::clear)
                         .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.isEmpty()));
 
         iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 0)
                 .withTooltip(EnumChatFormatting.RED + "Reset Filter Preferences")
-                .withClickCallback(() -> SkyhouseMod.INSTANCE.getOverlayManager().resetFilter())
+                .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager()::resetFilter)
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));
 
         iconButtons.add(new IconButton(1, 14, 12, 194, 0)
@@ -99,41 +100,40 @@ public class SelectionGui extends CustomGui {
         }
         int i = 0;
         int currentHeight = 168;
-        for (Field field : ConfigManager.class.getDeclaredFields()) {
-            if (!field.isAnnotationPresent(ConfigOption.class)) continue;
-            if (field.isAnnotationPresent(FilterOption.class)) labels.add(field.getAnnotation(ConfigOption.class));
+        for (Field field : SkyhouseConfig.FilterOptions.class.getDeclaredFields()) {
+            if (!field.isAnnotationPresent(HiddenConfigOption.class)) continue;
+            labels.add(field.getAnnotation(HiddenConfigOption.class));
             String methodSuffix = Character.toUpperCase(field.getName().charAt(0))
                     + field.getName().substring(1);
-            if (field.isAnnotationPresent(FilterOption.class)) {
-                Consumer<Boolean> updater = (checked) -> {
-                    try {
-                        field.getDeclaringClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
-                                .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                        searchFilter.getClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
-                                .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                    } catch (ReflectiveOperationException e) {
-                        try {
-                            field.set(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                        } catch (IllegalAccessException illegalAccessException) {
-                            illegalAccessException.printStackTrace();
-                        }
-                    }
-                };
-                Predicate<Boolean> updateChecker = (checked) -> {
-                    try {
-                        return (boolean) field.getDeclaringClass().getDeclaredMethod("check" + methodSuffix, boolean.class)
-                                .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                    } catch (ReflectiveOperationException e) {
-                        return true;
-                    }
-                };
+            Consumer<Boolean> updater = (checked) -> {
                 try {
-                    checkBoxes.add(new CheckBox(i, 256-16-16-8, currentHeight-8, updateChecker,
-                            field.getBoolean(SkyhouseMod.INSTANCE.getConfigManager()), updater));
-                } catch (ReflectiveOperationException ignored) {}
-                i++;
-                currentHeight -= 29;
+                    field.getDeclaringClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
+                            .invoke(SkyhouseMod.INSTANCE.getConfig().filterOptions, checked);
+                    searchFilter.getClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
+                            .invoke(SkyhouseMod.INSTANCE.getConfig().filterOptions, checked);
+                } catch (ReflectiveOperationException e) {
+                    try {
+                        field.set(SkyhouseMod.INSTANCE.getConfig().filterOptions, checked);
+                    } catch (IllegalAccessException illegalAccessException) {
+                        illegalAccessException.printStackTrace();
+                    }
+                }
+            };
+            Predicate<Boolean> updateChecker = (checked) -> {
+                try {
+                    return (boolean) field.getDeclaringClass().getDeclaredMethod("check" + methodSuffix, boolean.class)
+                            .invoke(SkyhouseMod.INSTANCE.getConfig().filterOptions, checked);
+                } catch (ReflectiveOperationException e) {
+                    return true;
+                }
+            };
+            try {
+                checkBoxes.add(new CheckBox(i, 256 - 16 - 16 - 8, currentHeight - 8, updateChecker,
+                        field.getBoolean(SkyhouseMod.INSTANCE.getConfig().filterOptions), updater));
+            } catch (ReflectiveOperationException ignored) {
             }
+            i++;
+            currentHeight -= 29;
         }
         buttonList.addAll(buttons);
     }
@@ -175,7 +175,7 @@ public class SelectionGui extends CustomGui {
         drawString(Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
 
         int currentHeight = 196;
-        for (ConfigOption option : labels) {
+        for (HiddenConfigOption option : labels) {
             currentHeight -= 29;
             drawString(fontRendererObj, EnumChatFormatting.WHITE + option.value(), 128+(64-50), currentHeight-4, 0xffffff);
         }

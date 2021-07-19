@@ -4,11 +4,11 @@ import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.Properties;
 import java.util.function.Consumer;
@@ -46,15 +46,30 @@ public class AuthenticationManager {
         });
     }
 
-    public void loadFromJar() {
+    public void loadCredentials() {
         try {
-            Properties props = new Properties();
-            InputStream stream = getClass().getClassLoader().getResourceAsStream("credentials.properties");
-            if (stream == null) {
-                refreshToken = System.getenv("refresh_token");
-            } else {
-                props.load(stream);
-                refreshToken = props.getProperty("refresh_token");
+            File file = new File(SkyhouseMod.INSTANCE.getConfigDir(), "very-secret-do-not-share.txt");
+            boolean loadFromJar = true;
+            if (file.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                refreshToken = reader.readLine();
+                loadFromJar = refreshToken == null;
+                reader.close();
+            } if (loadFromJar) {
+                Properties props = new Properties();
+                InputStream stream = getClass().getClassLoader().getResourceAsStream("credentials.properties");
+                if (stream == null) {
+                    refreshToken = System.getenv("refresh_token");
+                } else {
+                    props.load(stream);
+                    refreshToken = props.getProperty("refresh_token");
+                }
+                if (refreshToken != null && !refreshToken.isEmpty()) {
+                    file.createNewFile();
+                    FileWriter writer = new FileWriter(file);
+                    writer.write(refreshToken);
+                    writer.close();
+                }
             }
             refreshCredentials();
         } catch (IOException ignored) {

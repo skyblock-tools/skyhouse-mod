@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.config;
+package tools.skyblock.skyhouse.mcmod.config.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,9 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface FilterOption {
+public @interface ConfigCategory {
 
+    String name();
+    String description();
 
 }

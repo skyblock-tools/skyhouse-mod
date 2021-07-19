@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.commands;
+package tools.skyblock.skyhouse.mcmod.commands.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
@@ -7,12 +7,11 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static tools.skyblock.skyhouse.mcmod.util.Utils.getReforgeDataFromMoulberryGithub;
 
 public class RefreshReforgeData implements ICommand {
 
@@ -34,9 +33,7 @@ public class RefreshReforgeData implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Refreshing reforge data..."));
-        SkyhouseMod.INSTANCE.getListener().reforgesManuallyRefreshed = true;
-        SkyhouseMod.INSTANCE.getListener().ticksUntilRefreshReforges = 0;
-        getReforgeDataFromMoulberryGithub();
+        DataManager.getReforgeDataFromMoulberryGithub(true);
     }
 
     @Override

@@ -13,7 +13,7 @@ import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.io.IOException;
 
-public class GuiEditGui extends GuiScreen {
+public class AhOverlayPositionEditor extends GuiScreen {
 
     private int guiLeft, guiTop;
     private int offsetX, offsetY;
@@ -95,7 +95,7 @@ public class GuiEditGui extends GuiScreen {
             guiScale = Math.min(guiScale + 0.1f, 2);
             if (wouldRenderOutOfBoundsX(guiLeft, guiScale) || wouldRenderOutOfBoundsY(guiTop, guiScale)) guiScale = oldGuiScale;
         }
-        if (mouseX > guiLeft && mouseX < guiLeft + 256 * guiScale && mouseY > guiTop && mouseY < guiTop + 256 * guiScale) {
+        if (mouseX > guiLeft && mouseX < guiLeft + 256 * guiScale && mouseY > guiTop - 32 * guiScale && mouseY < guiTop + 256 * guiScale) {
             isDragging = true;
             calculateOffset(mouseX, mouseY);
         }
@@ -137,11 +137,11 @@ public class GuiEditGui extends GuiScreen {
 
     private void save() {
         if (save) {
-            boolean relative = SkyhouseMod.INSTANCE.getConfigManager().relativeGui;
+            boolean relative = SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.relativeGui;
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-            SkyhouseMod.INSTANCE.getConfigManager().guiLeft = relative ? Math.round(((float) (guiLeft == 0 ? 1 : guiLeft) / ((float) sr.getScaledWidth())) * 1000) : guiLeft;
-            SkyhouseMod.INSTANCE.getConfigManager().guiTop = relative ? Math.round(((float) (guiTop == 0 ? 1 : guiTop) / ((float) sr.getScaledHeight())) * 1000) : guiTop;
-            SkyhouseMod.INSTANCE.getConfigManager().guiScale = relative ? (255f * guiScale) / sr.getScaledWidth() : guiScale;
+            SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.guiLeft = relative ? Math.round(((float) (guiLeft == 0 ? 1 : guiLeft) / ((float) sr.getScaledWidth())) * 1000) : guiLeft;
+            SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.guiTop = relative ? Math.round(((float) (guiTop == 0 ? 1 : guiTop) / ((float) sr.getScaledHeight())) * 1000) : guiTop;
+            SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.guiScale = relative ? (255f * guiScale) / sr.getScaledWidth() : guiScale;
             SkyhouseMod.INSTANCE.saveConfig();
         }
     }
@@ -151,7 +151,7 @@ public class GuiEditGui extends GuiScreen {
     }
 
     private boolean wouldRenderOutOfBoundsY(int y, float sf) {
-        return (y <= 32 || y >= height - 1 - (256+32) * sf);
+        return (y <= 32 || y >= height - 1 - 256 * sf);
     }
 
 }

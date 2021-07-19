@@ -10,26 +10,19 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
-import tools.skyblock.skyhouse.mcmod.gui.CreationGui;
-import tools.skyblock.skyhouse.mcmod.gui.FlipListGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.FlipListGui;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static tools.skyblock.skyhouse.mcmod.util.Utils.isAhCreationGui;
-import static tools.skyblock.skyhouse.mcmod.util.Utils.isAhGui;
+import static tools.skyblock.skyhouse.mcmod.util.Utils.*;
 
 public class EventListener {
 
     private List<String> tooltipToRender = null;
 
-    public int ticksUntilRefreshBins = 0;
-    public int ticksUntilRefreshBaz = 0;
-    public int ticksUntilRefreshReforges = 0;
-    public boolean binsManuallyRefreshed = false;
-    public boolean bazaarManuallyRefreshed = false;
-    public boolean reforgesManuallyRefreshed = false;
     private int lastAuctionIndex = -1;
 
     private GuiScreen toOpen;
@@ -38,34 +31,11 @@ public class EventListener {
         toOpen = guiScreen;
     }
 
-    public void closeGui() {
-        toOpen = null;
-    }
 
     public void setLastAuction(int lastAuctionIndex) {
         this.lastAuctionIndex = lastAuctionIndex;
     }
 
-    @SubscribeEvent
-    public void tickEvent(TickEvent.ClientTickEvent event) {
-        ticksUntilRefreshBins++;
-        ticksUntilRefreshBaz++;
-        if (ticksUntilRefreshBins == 4800) {
-            ticksUntilRefreshBins = 0;
-            if (binsManuallyRefreshed) binsManuallyRefreshed = false;
-            Utils.getLowestBinsFromMoulberryApi();
-        }
-        if (ticksUntilRefreshBaz == 4800) {
-            ticksUntilRefreshBaz = 0;
-            if (bazaarManuallyRefreshed) bazaarManuallyRefreshed = false;
-            Utils.getBazaarDataFromApi();
-        }
-        if (ticksUntilRefreshBaz == 12000) {
-            ticksUntilRefreshReforges = 0;
-            if (reforgesManuallyRefreshed) reforgesManuallyRefreshed = false;
-            Utils.getReforgeDataFromMoulberryGithub();
-        }
-    }
 
     @SubscribeEvent
     public void onGuiScreenMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
@@ -82,25 +52,19 @@ public class EventListener {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (toOpen != null) Minecraft.getMinecraft().displayGuiScreen(toOpen);
+        toOpen = null;
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onGuiBackgroundDraw(GuiScreenEvent.DrawScreenEvent.Post event) {
-        boolean drawn = false;
-        if (Utils.renderCreationOverlay()) {
-            if (isAhCreationGui()) {
-                SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
-                drawn = true;
-            }
-        }
-        if (Utils.renderFlippingOverlay() && !drawn) {
-            if (isAhGui()) {
-                SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
-                drawn = true;
-            }
+        SkyhouseMod.INSTANCE.getOverlayManager().drawOverlays(event.mouseX, event.mouseY);
+        if ((Utils.renderCreationOverlay() && isAhCreationGui()) || (Utils.renderFlippingOverlay() && Utils.isAhGui())) {
+            SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
         }
         if (tooltipToRender != null) {
-            SkyhouseMod.INSTANCE.getOverlayManager().drawHoveringText(tooltipToRender, event.mouseX, event.mouseY);
+            if ((Utils.isAhGui() && SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.showFlippingOverlay) || (Utils.isAhCreationGui() &&
+                    SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.showCreationOverlay))
+                SkyhouseMod.INSTANCE.getOverlayManager().drawHoveringText(tooltipToRender, event.mouseX, event.mouseY);
             tooltipToRender = null;
         }
     }
@@ -125,7 +89,8 @@ public class EventListener {
     public void onTooltip(ItemTooltipEvent event) {
         if (Utils.renderCreationOverlay() && Utils.isAhCreationGui()) {
             tooltipToRender = CreationGui.processTooltip(event.toolTip);
-        } else tooltipToRender = new ArrayList<>(event.toolTip);
+        } else if (Utils.isAhGui() && Utils.renderFlippingOverlay()) tooltipToRender = new ArrayList<>(event.toolTip);
+        else return;
         event.toolTip.clear();
     }
 

@@ -2,19 +2,25 @@ package tools.skyblock.skyhouse.mcmod;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import tools.skyblock.skyhouse.mcmod.commands.*;
+import tools.skyblock.skyhouse.mcmod.commands.data.RefreshBazaarData;
+import tools.skyblock.skyhouse.mcmod.commands.data.RefreshLowestBins;
+import tools.skyblock.skyhouse.mcmod.commands.data.RefreshReforgeData;
+import tools.skyblock.skyhouse.mcmod.commands.data.ReloadConfigCommand;
+import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
 import tools.skyblock.skyhouse.mcmod.listeners.EventListener;
 import tools.skyblock.skyhouse.mcmod.managers.AuthenticationManager;
+import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 import tools.skyblock.skyhouse.mcmod.managers.OverlayManager;
-import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
-import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -30,68 +36,69 @@ public class SkyhouseMod {
             .setPrettyPrinting()
             .create();
     public static final Gson gson = new Gson();
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static SkyhouseMod INSTANCE;
     private EventListener listener;
     private OverlayManager overlayManager;
-    private ConfigManager configManager = null;
     private AuthenticationManager authenticationManager;
     private File configDir;
     private File configFile;
-    public JsonObject lowestBins = null;
-    public JsonObject bazaarData = null;
-    public JsonObject reforgeData = null;
 
-
+    private SkyhouseConfig config;
 
     public SkyhouseMod() {
         INSTANCE = this;
     }
+
+    private static class WrongForgeVersion extends RuntimeException {
+        public WrongForgeVersion(String message) {
+            super(message);
+        }
+    }
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        authenticationManager = new AuthenticationManager();
-        authenticationManager.loadFromJar();
+        if (ForgeVersion.getBuildVersion() != 2318)
+            throw new WrongForgeVersion("[SKYHOUSE] This mod is incompatible with forge version " + ForgeVersion.getVersion() + ", Please upgrade to 11.15.1.2318 or remove this mod");
         configDir = new File(event.getModConfigurationDirectory(), "skyhouse");
         getConfigDir().mkdirs();
         configFile = new File(getConfigDir(), "config.json");
         loadConfig();
+        authenticationManager = new AuthenticationManager();
+        authenticationManager.loadCredentials();
         listener = new EventListener();
         overlayManager = new OverlayManager();
+        DataManager.scheduleFetch();
         MinecraftForge.EVENT_BUS.register(listener);
         ClientCommandHandler.instance.registerCommand(new ConfigCommand());
         ClientCommandHandler.instance.registerCommand(new ReloadConfigCommand());
         ClientCommandHandler.instance.registerCommand(new RefreshLowestBins());
         ClientCommandHandler.instance.registerCommand(new RefreshBazaarData());
         ClientCommandHandler.instance.registerCommand(new RefreshReforgeData());
+        ClientCommandHandler.instance.registerCommand(new SetTokenCommand());
+        ClientCommandHandler.instance.registerCommand(new AhOverlayPositionEditorCommand());
         Runtime.getRuntime().addShutdownHook(new Thread(this::saveConfig));
-    }
-
-    @EventHandler
-    public void init(FMLInitializationEvent event) {
-        Utils.getLowestBinsFromMoulberryApi();
-        Utils.getBazaarDataFromApi();
-        Utils.getReforgeDataFromMoulberryGithub();
     }
 
     public void loadConfig() {
         if (configFile.exists())
             try (InputStreamReader reader = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {
-                configManager = gson.fromJson(reader, ConfigManager.class);
-                if (authenticationManager.privLevel < 2) {
-                    configManager.resetFilterCheckboxes();
-                }
+                config = gson.fromJson(reader, SkyhouseConfig.class);
+                config.processConfig();
             } catch (IOException ignored) {}
-        if (configManager == null) {
-            configManager = new ConfigManager();
+        if (config == null) {
+            config = new SkyhouseConfig();
+            config.processConfig();
             saveConfig();
         }
     }
+
 
     public void saveConfig() {
         try {
             configFile.createNewFile();
             FileWriter writer = new FileWriter(configFile);
-            writer.write(serializeGson.toJson(configManager));
+            writer.write(serializeGson.toJson(config));
             writer.close();
         } catch (IOException ignored) {}
     }
@@ -104,15 +111,15 @@ public class SkyhouseMod {
         return overlayManager;
     }
 
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
-
     public AuthenticationManager getAuthenticationManager() {
         return authenticationManager;
     }
 
     public File getConfigDir() {
         return configDir;
+    }
+
+    public SkyhouseConfig getConfig() {
+        return config;
     }
 }

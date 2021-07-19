@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.gui;
+package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
 
 import com.google.gson.JsonObject;
@@ -11,7 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
+import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.gui.components.IconButton;
+import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -33,8 +36,6 @@ public class CreationGui extends CustomGui {
     private final Pattern REGEX_PATTERN_FOR_ART_OF_WAR_BONUS_FOR_ITEM_VALUE_CALCULATION = Pattern.compile(EnumChatFormatting.GOLD + "\\[\\+(\\d+)\\]");
     private List<IconButton> extraPanelButtons = new ArrayList<>();
     private static boolean isPreviewTooltip = false;
-
-    ItemStack toRender = null;
 
     public CreationGui() {
         initGui();
@@ -128,17 +129,17 @@ public class CreationGui extends CustomGui {
                 currentHeight += 22;
                 String internalName = getInternalNameFromNBT(nbt);
 
-                if (SkyhouseMod.INSTANCE.lowestBins == null) {
+                if (DataManager.lowestBins == null) {
                     GlStateManager.pushMatrix();
                     GlStateManager.scale(1, 1, 1);
                     drawCenteredString(fontRendererObj, EnumChatFormatting.RED + "Error connecting to", 128, 128-10-20, 0xffffff);
                     drawCenteredString(fontRendererObj, EnumChatFormatting.RED + "Moulberry's lowest bins API", 128, 128-10-6, 0xffffff);
                     drawCenteredString(fontRendererObj, EnumChatFormatting.RED + "D:", 128, 128-10+8, 0xffffff);
                     GlStateManager.popMatrix();
-                } else if (!SkyhouseMod.INSTANCE.lowestBins.has(internalName)) {
+                } else if (!DataManager.lowestBins.has(internalName)) {
                     drawString(fontRendererObj, EnumChatFormatting.RED + "Could not value this item", 54, currentHeight, 0xffffff);
                 } else {
-                    double lowestBinValue = SkyhouseMod.INSTANCE.lowestBins.get(internalName).getAsDouble();
+                    double lowestBinValue = DataManager.lowestBins.get(internalName).getAsDouble();
                     double value = lowestBinValue;
 
                     if (isPet) {
@@ -163,19 +164,19 @@ public class CreationGui extends CustomGui {
 
                         //TODO: add everything that could modify the value of an item here
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeHpbs()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeHpbs) {
                             for (String entry : lore) {
                                 final Matcher matcher = REGEX_PATTERN_FOR_HOT_POTATO_BOOKS_BONUS_FOR_ITEM_VALUE_CALCULATION.matcher(entry);
                                 if (!matcher.find()) continue;
                                 final int amount = Integer.parseInt(matcher.group(1)) / 2;
                                 drawString(fontRendererObj, EnumChatFormatting.GRAY + "Hot Potato Books: " + amount, 14, currentHeight, 0xffffff);
-                                if (SkyhouseMod.INSTANCE.bazaarData != null) {
-                                    int hotPotatoPrice = SkyhouseMod.INSTANCE.bazaarData.get("products").getAsJsonObject().get("HOT_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
+                                if (DataManager.bazaarData != null) {
+                                    int hotPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("HOT_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
                                     int hpbBonus = 0;
                                     if (amount <= 10) {
                                         hpbBonus = (amount * hotPotatoPrice);
                                     } else {
-                                        int fumingPotatoPrice = SkyhouseMod.INSTANCE.bazaarData.get("products").getAsJsonObject().get("FUMING_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
+                                        int fumingPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("FUMING_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
                                         hpbBonus = (10 * hotPotatoPrice) + (amount * fumingPotatoPrice);
                                     }
                                     value += hpbBonus;
@@ -189,11 +190,11 @@ public class CreationGui extends CustomGui {
                             }
                         }
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeAow()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeAow) {
                             for (String entry : lore) {
                                 final Matcher matcher = REGEX_PATTERN_FOR_ART_OF_WAR_BONUS_FOR_ITEM_VALUE_CALCULATION.matcher(entry);
                                 if (!matcher.find()) continue;
-                                int aowBonus = SkyhouseMod.INSTANCE.lowestBins.get("THE_ART_OF_WAR").getAsInt();
+                                int aowBonus = DataManager.lowestBins.get("THE_ART_OF_WAR").getAsInt();
                                 drawString(fontRendererObj, EnumChatFormatting.GRAY + "Art of War", 14, currentHeight, 0xffffff);
                                 drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(aowBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(aowBonus)), currentHeight, 0xffffff);
                                 value += aowBonus;
@@ -202,11 +203,11 @@ public class CreationGui extends CustomGui {
                             }
                         }
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeFrags()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeFrags) {
                             if (unmodifiedName.contains("\u269A")) {
                                 final String fragType = Utils.fragType(internalName);
                                 if (fragType != null) {
-                                    int fragBonus = SkyhouseMod.INSTANCE.lowestBins.get(fragType).getAsInt() * 8;
+                                    int fragBonus = DataManager.lowestBins.get(fragType).getAsInt() * 8;
                                     value += fragBonus;
                                     switch (fragType) {
                                         case "BONZO_FRAGMENT":
@@ -228,7 +229,7 @@ public class CreationGui extends CustomGui {
                             }
                         }
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeMasterStars()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeMasterStars) {
                             final char[] nameChars = unmodifiedName.toCharArray();
                             int masterStarCount = 0;
                             int masterStarBonus = 0;
@@ -241,13 +242,13 @@ public class CreationGui extends CustomGui {
                                 int count = masterStarCount;
                                 while (count > 0) {
                                     if (count == 1) {
-                                        masterStarBonus += SkyhouseMod.INSTANCE.lowestBins.get("FIRST_MASTER_STAR").getAsInt();
+                                        masterStarBonus += DataManager.lowestBins.get("FIRST_MASTER_STAR").getAsInt();
                                     } else if (count == 2) {
-                                        masterStarBonus += SkyhouseMod.INSTANCE.lowestBins.get("SECOND_MASTER_STAR").getAsInt();
+                                        masterStarBonus += DataManager.lowestBins.get("SECOND_MASTER_STAR").getAsInt();
                                     } else if (count == 3) {
-                                        masterStarBonus += SkyhouseMod.INSTANCE.lowestBins.get("THIRD_MASTER_STAR").getAsInt();
+                                        masterStarBonus += DataManager.lowestBins.get("THIRD_MASTER_STAR").getAsInt();
                                     } else if (count == 4) {
-                                        masterStarBonus += SkyhouseMod.INSTANCE.lowestBins.get("FOURTH_MASTER_STAR").getAsInt();
+                                        masterStarBonus += DataManager.lowestBins.get("FOURTH_MASTER_STAR").getAsInt();
                                     }
                                     count--;
                                 }
@@ -258,10 +259,10 @@ public class CreationGui extends CustomGui {
                             }
                         }
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeRecombs()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeRecombs) {
                             for (String line : lore) {
                                 if (line.contains(EnumChatFormatting.OBFUSCATED.toString())) {
-                                    int recombPrice = SkyhouseMod.INSTANCE.bazaarData.get("products").getAsJsonObject().get("RECOMBOBULATOR_3000").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
+                                    int recombPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("RECOMBOBULATOR_3000").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
                                     value += recombPrice;
                                     drawString(fontRendererObj, EnumChatFormatting.GRAY + "Recombobulated", 14, currentHeight, 0xffffff);
                                     drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(recombPrice), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(recombPrice)), currentHeight, 0xffffff);
@@ -271,7 +272,7 @@ public class CreationGui extends CustomGui {
                         }
 
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeAmount()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeAmount) {
                             final int stackSize = stack.stackSize;
                             if (stackSize > 1) {
                                 drawString(fontRendererObj, EnumChatFormatting.GRAY + "Amount", 14, 256 - 20 - 15, 0xffffff);
@@ -280,7 +281,7 @@ public class CreationGui extends CustomGui {
                             }
                         }
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeReforge()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeReforge) {
                             final String nameWithoutFrags = unmodifiedName.replaceFirst("\u269A", "");
                             final String[] splitName = nameWithoutFrags.split("\\s");
                             String reforge = splitName[0].replaceAll("\u00a7[0-9a-f]", "");
@@ -289,7 +290,7 @@ public class CreationGui extends CustomGui {
                             String reforgeInternalName = null;
                             int reforgeCost = -1;
                             String rarity = null;
-                            for (Entry entry : SkyhouseMod.INSTANCE.reforgeData.entrySet()) {
+                            for (Entry entry : DataManager.reforgeData.entrySet()) {
                                 JsonObject reforgeJson = SkyhouseMod.gson.toJsonTree(entry.getValue()).getAsJsonObject();
                                 if (reforgeJson.get("reforgeName").getAsString().equals(reforge)) {
                                     reforgeInternalName = reforgeJson.get("internalName").getAsString();
@@ -325,12 +326,12 @@ public class CreationGui extends CustomGui {
                                 }
                             }
                             if (reforgeInternalName != null) {
-                                int reforgeBonus = SkyhouseMod.INSTANCE.lowestBins.get(reforgeInternalName).getAsInt();
+                                int reforgeBonus = DataManager.lowestBins.get(reforgeInternalName).getAsInt();
                                 value += reforgeBonus;
                                 drawString(fontRendererObj, EnumChatFormatting.GRAY + "Reforged: " + reforge, 14, currentHeight, 0xffffff);
                                 drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(reforgeBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(reforgeBonus)), currentHeight, 0xffffff);
                                 currentHeight += 15;
-                                if (SkyhouseMod.INSTANCE.getConfigManager().getIncludeReforgeCost() && rarity != null) {
+                                if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeReforgeCost && rarity != null) {
                                     value += reforgeCost;
                                     drawString(fontRendererObj, EnumChatFormatting.GRAY + "- Reforge Cost: " + Character.toUpperCase(rarity.charAt(0)) + rarity.toLowerCase().substring(1), 14, currentHeight, 0xffffff);
                                     drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(reforgeCost), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(reforgeCost)), currentHeight, 0xffffff);
@@ -345,10 +346,10 @@ public class CreationGui extends CustomGui {
 
                         JsonObject petInfo = Utils.getPetInfoFromNbt(nbt);
 
-                        if (SkyhouseMod.INSTANCE.getConfigManager().getIncludePetItems()) {
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includePetItems) {
                             if (petInfo.has("heldItem")) {
                                 String petItem = petInfo.get("heldItem").getAsString();
-                                final int petItemBonus = SkyhouseMod.INSTANCE.lowestBins.get(petItem).getAsInt();
+                                final int petItemBonus = DataManager.lowestBins.get(petItem).getAsInt();
                                 value += petItemBonus;
                                 String prettyPetItemName = petItem.replaceAll("_", " ").toLowerCase().replace("pet item", "");
                                 StringBuilder capitalizedPrettyPetItemName = new StringBuilder();
@@ -361,7 +362,6 @@ public class CreationGui extends CustomGui {
                                 currentHeight += 15;
                             }
                         }
-
 
 
                     }

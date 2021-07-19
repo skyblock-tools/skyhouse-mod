@@ -11,16 +11,19 @@ import org.lwjgl.input.Mouse;
 import tools.skyblock.skyhouse.mcmod.gui.*;
 import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.overlays.OverlayBase;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationConfigGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.FlipListGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.SelectionGui;
+import tools.skyblock.skyhouse.mcmod.overlays.price.BitsOverlay;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static tools.skyblock.skyhouse.mcmod.util.Utils.*;
 
@@ -34,6 +37,10 @@ public class OverlayManager {
     private boolean creationConfigOpened = false;
     private boolean creationGuiOpened = false;
     private boolean flipListOpened = false;
+
+    public Map<Class<? extends OverlayBase>, OverlayBase> overlays = new HashMap<Class<? extends OverlayBase>, OverlayBase>() {{
+        put(BitsOverlay.class, null);
+    }};
 
     private CustomGui ensureInstance() {
         if (renderCreationOverlay() && isAhCreationGui()) {
@@ -88,6 +95,23 @@ public class OverlayManager {
     public void drawScreen(int mouseX, int mouseY) {
         ensureInstance().tick();
         gui.drawScreen(mouseX, mouseY);
+    }
+
+    public void drawOverlays(int mouseX, int mouseY) {
+        for (Map.Entry<Class<? extends OverlayBase>, OverlayBase> entry : overlays.entrySet()) {
+            if (entry.getValue() == null) {
+                try {
+
+                    entry.setValue(entry.getKey().newInstance());
+                } catch (ReflectiveOperationException e) {
+                    continue;
+                }
+            }
+            if (entry.getValue().shouldRender())
+                entry.getValue().render(mouseX, mouseY);
+            else if (entry.getValue().regenInstance())
+                entry.setValue(null);
+        }
     }
 
     public void initGui() {
@@ -147,22 +171,22 @@ public class OverlayManager {
     }
 
     public void resetFilter() {
-        SkyhouseMod.INSTANCE.getConfigManager().setMaxPrice(Constants.DEFAULT_MAX_PRICE);
-        SkyhouseMod.INSTANCE.getConfigManager().setMinProfit(Constants.DEFAULT_MIN_PROFIT);
-        SkyhouseMod.INSTANCE.getConfigManager().setSkinsInSearch(true);
-        SkyhouseMod.INSTANCE.getConfigManager().setCakeSoulsInSearch(true);
-        SkyhouseMod.INSTANCE.getConfigManager().setPetsInSearch(true);
-        SkyhouseMod.INSTANCE.getConfigManager().setRecombsInSearch(true);
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice = Constants.DEFAULT_MAX_PRICE;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit = Constants.DEFAULT_MIN_PROFIT;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.skinsInSearch = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.cakeSoulsInSearch = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.petsInSearch = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.recombsInSearch = true;
         gui = new SelectionGui();
     }
 
     public boolean isFilterDefault() {
-        return SkyhouseMod.INSTANCE.getConfigManager().maxPrice == Constants.DEFAULT_MAX_PRICE &&
-                SkyhouseMod.INSTANCE.getConfigManager().minProfit == Constants.DEFAULT_MIN_PROFIT &&
-                SkyhouseMod.INSTANCE.getConfigManager().skinsInSearch == Constants.DEFAULT_SKINS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfigManager().cakeSoulsInSearch == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfigManager().petsInSearch == Constants.DEFAULT_PETS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfigManager().recombsInSearch == Constants.DEFAULT_RECOMBS_IN_SEARCH;
+        return SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice  == Constants.DEFAULT_MAX_PRICE &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit  == Constants.DEFAULT_MIN_PROFIT &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.skinsInSearch  == Constants.DEFAULT_SKINS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.cakeSoulsInSearch  == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.petsInSearch  == Constants.DEFAULT_PETS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.recombsInSearch  == Constants.DEFAULT_RECOMBS_IN_SEARCH;
     }
 
     public boolean isFlipList() {

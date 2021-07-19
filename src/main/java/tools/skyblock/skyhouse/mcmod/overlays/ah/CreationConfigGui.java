@@ -1,15 +1,15 @@
-package tools.skyblock.skyhouse.mcmod.gui;
+package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
-import tools.skyblock.skyhouse.mcmod.config.ConfigOption;
-import tools.skyblock.skyhouse.mcmod.config.CreationOption;
+import tools.skyblock.skyhouse.mcmod.config.annotations.HiddenConfigOption;
+import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
+import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
 import tools.skyblock.skyhouse.mcmod.gui.components.IconButton;
-import tools.skyblock.skyhouse.mcmod.managers.ConfigManager;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -20,15 +20,14 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-
 public class CreationConfigGui extends CustomGui {
 
     private int guiLeft, guiTop;
     private float guiScale;
     private List<IconButton> extraPanelButtons = new ArrayList<>();
-    private List<ConfigOption> labels = new ArrayList<>();
+    private List<HiddenConfigOption> labels = new ArrayList<>();
     private List<CheckBox> buttons = new ArrayList<>();
-    private List<Integer> disabled = new ArrayList<Integer>();
+    private List<Integer> disabled = new ArrayList<>();
     private static int page = 0;
     private int lastPageOptions;
     private int totalPages;
@@ -88,7 +87,7 @@ public class CreationConfigGui extends CustomGui {
         drawHorizontalLine(12, 256 - 12, currentHeight, 0xff595959);
         currentHeight += 16;
         int count = 0;
-        for (ConfigOption option : labels.subList(page*6, page*6+shownOptions)) {
+        for (HiddenConfigOption option : labels.subList(page*6, page*6+shownOptions)) {
             if (!disabled.contains(count)) {
                 drawString(fontRendererObj, EnumChatFormatting.WHITE + option.value(), 16+16, currentHeight, 0xffffff);
             } else {
@@ -109,7 +108,7 @@ public class CreationConfigGui extends CustomGui {
         GlStateManager.popMatrix();
 
         currentHeight = 30;
-        for (ConfigOption option : labels.subList(page*6, page*6+shownOptions)) {
+        for (HiddenConfigOption option : labels.subList(page*6, page*6+shownOptions)) {
             if (hover(mouseX-guiLeft, mouseY-guiTop, 10, currentHeight-4, 16, 16, guiScale) && option.description().length != 0) {
                 drawHoveringText(Arrays.asList(option.description()), mouseX, mouseY);
             }
@@ -142,41 +141,40 @@ public class CreationConfigGui extends CustomGui {
         }
         int i = 0;
         int currentHeight = 26;
-        for (Field field : ConfigManager.class.getDeclaredFields()) {
-            if (!field.isAnnotationPresent(ConfigOption.class)) continue;
-            if (field.isAnnotationPresent(CreationOption.class)) labels.add(field.getAnnotation(ConfigOption.class));
+        for (Field field : SkyhouseMod.INSTANCE.getConfig().creationOptions.getClass().getDeclaredFields()) {
+            if (!field.isAnnotationPresent(HiddenConfigOption.class)) continue;
+            labels.add(field.getAnnotation(HiddenConfigOption.class));
             String methodSuffix = Character.toUpperCase(field.getName().charAt(0))
                     + field.getName().substring(1);
-            if (field.isAnnotationPresent(CreationOption.class)) {
-                Consumer<Boolean> updater = (checked) -> {
-                    try {
-                        field.getDeclaringClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
-                                .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                    } catch (ReflectiveOperationException e) {
-                        try {
-                            field.set(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                        } catch (IllegalAccessException illegalAccessException) {
-                            illegalAccessException.printStackTrace();
-                        }
-                    }
-                };
-                Predicate<Boolean> updateChecker = (checked) -> {
-                    try {
-                        return (boolean) field.getDeclaringClass().getDeclaredMethod("check" + methodSuffix, boolean.class)
-                                .invoke(SkyhouseMod.INSTANCE.getConfigManager(), checked);
-                    } catch (ReflectiveOperationException e) {
-                        return true;
-                    }
-                };
+            Consumer<Boolean> updater = (checked) -> {
                 try {
-                    buttons.add(new CheckBox(i, 256-16-16, currentHeight, updateChecker,
-                            field.getBoolean(SkyhouseMod.INSTANCE.getConfigManager()), updater));
-                } catch (ReflectiveOperationException ignored) {}
-                i++;
-                if (i == 6) {
-                    currentHeight = 26;
-                } else currentHeight += 38;
+                    field.getDeclaringClass().getDeclaredMethod("set" + methodSuffix, boolean.class)
+                            .invoke(SkyhouseMod.INSTANCE.getConfig().creationOptions, checked);
+                } catch (ReflectiveOperationException e) {
+                    try {
+                        field.set(SkyhouseMod.INSTANCE.getConfig().creationOptions, checked);
+                    } catch (IllegalAccessException illegalAccessException) {
+                        illegalAccessException.printStackTrace();
+                    }
+                }
+            };
+            Predicate<Boolean> updateChecker = (checked) -> {
+                try {
+                    return (boolean) field.getDeclaringClass().getDeclaredMethod("check" + methodSuffix, boolean.class)
+                            .invoke(SkyhouseMod.INSTANCE.getConfig().creationOptions, checked);
+                } catch (ReflectiveOperationException e) {
+                    return true;
+                }
+            };
+            try {
+                buttons.add(new CheckBox(i, 256 - 16 - 16, currentHeight, updateChecker,
+                        field.getBoolean(SkyhouseMod.INSTANCE.getConfig().creationOptions), updater));
+            } catch (ReflectiveOperationException ignored) {
             }
+            i++;
+            if (i == 6) {
+                currentHeight = 26;
+            } else currentHeight += 38;
         }
         buttonList.addAll(buttons);
         tick();

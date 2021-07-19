@@ -15,24 +15,27 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.io.IOUtils;
+import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.lang.reflect.Field;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Utils {
 
@@ -54,22 +57,22 @@ public class Utils {
         }
     }
 
-    public static boolean isAhGui() {
+    public static String invGuiName() {
         if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-            String title = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
-            return title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid");
+            return ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
         }
-        return false;
+        return null;
+    }
+
+    public static boolean isAhGui() {
+        String title = invGuiName();
+        return title != null && (title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid"));
     }
 
     public static boolean isAhCreationGui() {
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
-            GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
-            String title = ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
-            return title.toLowerCase().contains("create") && title.toLowerCase().contains("auction");
-        }
-        return false;
+        String title = invGuiName();
+        return title != null && (title.toLowerCase().contains("create") && title.toLowerCase().contains("auction"));
     }
 
     public static URL parseUrl(String url) {
@@ -121,44 +124,7 @@ public class Utils {
         });
     }
 
-    public static void getLowestBinsFromMoulberryApi() {
-        getJsonApiAsync(parseUrl("https://moulberry.codes/lowestbin.json"),
-                data -> {
-                    if (data != null) SkyhouseMod.INSTANCE.lowestBins = data;
-                },
-                e -> {
-                    System.out.println("Error connecting to Moulberry's lowest bins api");
-                    if (SkyhouseMod.INSTANCE.getListener().binsManuallyRefreshed)  {
-                        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error connecting to Moulberry's lowest bins api"));
-                    }
-                });
-    }
 
-    public static void getBazaarDataFromApi() {
-        getJsonApiAsync(parseUrl("https://api.hypixel.net/skyblock/bazaar"),
-                data -> {
-                    if (data != null) SkyhouseMod.INSTANCE.bazaarData = data;
-                },
-                e -> {
-                    System.out.println("Error connecting to Hypixel api");
-                    if (SkyhouseMod.INSTANCE.getListener().bazaarManuallyRefreshed)  {
-                        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error connecting to Hypixel api"));
-                    }
-                });
-    }
-
-    public static void getReforgeDataFromMoulberryGithub() {
-        getJsonApiAsync(parseUrl("https://raw.githubusercontent.com/Moulberry/NotEnoughUpdates-REPO/master/constants/reforgestones.json"),
-                data -> {
-                    if (data != null) SkyhouseMod.INSTANCE.reforgeData = data;
-                },
-                e -> {
-                    System.out.println("Error connecting to Moulberry's Github");
-                    if (SkyhouseMod.INSTANCE.getListener().reforgesManuallyRefreshed)  {
-                        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error connecting to Moulberry's Github"));
-                    }
-                });
-    }
 
     public static String formatNumber(double value) {
         return df.format(value);
@@ -390,29 +356,101 @@ public class Utils {
     }
 
     public static boolean renderFlippingOverlay() {
-        return SkyhouseMod.INSTANCE.getConfigManager().showFlippingOverlay;
+        return SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.showFlippingOverlay;
     }
 
     public static boolean renderCreationOverlay() {
-        return SkyhouseMod.INSTANCE.getConfigManager().showCreationOverlay;
+        return SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.showCreationOverlay;
     }
 
     public static int getGuiLeft() {
-        int savedGuiLeft = SkyhouseMod.INSTANCE.getConfigManager().guiLeft;
+        int savedGuiLeft = SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.guiLeft;
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return SkyhouseMod.INSTANCE.getConfigManager().relativeGui ? Math.round(sr.getScaledWidth() * (((float) savedGuiLeft) / 1000)) : savedGuiLeft;
+        return SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.relativeGui ? Math.round(sr.getScaledWidth() * (((float) savedGuiLeft) / 1000)) : savedGuiLeft;
     }
     public static int getGuiTop() {
-        int savedGuiTop = SkyhouseMod.INSTANCE.getConfigManager().guiTop;
+        int savedGuiTop = SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.guiTop;
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return SkyhouseMod.INSTANCE.getConfigManager().relativeGui ? Math.round(sr.getScaledHeight() * (((float) savedGuiTop) / 1000)) : savedGuiTop;
+        return SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.relativeGui ? Math.round(sr.getScaledHeight() * (((float) savedGuiTop) / 1000)) : savedGuiTop;
     }
 
     public static float getScaleFactor() {
-        float savedSf = SkyhouseMod.INSTANCE.getConfigManager().guiScale;
+        float savedSf = SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.guiScale;
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        return SkyhouseMod.INSTANCE.getConfigManager().relativeGui ? (savedSf * sr.getScaledWidth()) / 255f : savedSf;
+        return SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.relativeGui ? (savedSf * sr.getScaledWidth()) / 255f : savedSf;
 
+    }
+
+    public static int multiplyAlphaARGB(int argb, float multiplier) {
+        float alpha = (float) (argb >> 24 & 255);
+        int newAlpha = (int) (alpha * multiplier);
+        int colour = argb & 0xFFFFFF;
+        return colour | (newAlpha << 24);
+    }
+
+    public static void scissor(int x, int y, int width, int height) {
+        ScaledResolution sr = ((GuiIngameForge) Minecraft.getMinecraft().ingameGUI).getResolution();
+        int sf = sr.getScaleFactor();
+        int translatedY = sr.getScaledHeight() - y - height;
+        GL11.glScissor(x*sf, translatedY*sf, width*sf, height*sf);
+    }
+
+    public static void drawStringCentred(String text, int x, int y, int colour) {
+        Minecraft.getMinecraft().fontRendererObj.drawString(text, x - Minecraft.getMinecraft().fontRendererObj.getStringWidth(text) / 2, y, colour);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Supplier<T> fieldGetter(Field field, Object owner) {
+        return () -> {
+            try {
+                return (T) field.get(owner);
+            } catch (IllegalAccessException e) {
+                return null;
+            }
+        };
+    }
+
+    public static <T> Consumer<T> fieldSetter(Field field, Object owner) {
+        return (T value) -> {
+            try {
+                field.set(owner, value);
+            } catch (IllegalAccessException ignored) {
+            }
+        };
+    }
+
+    public static List<String> jsonArrayToStringList(JsonArray arr) {
+        List<String> list = new ArrayList<>();
+        for (JsonElement el : arr) {
+            list.add(el.getAsString());
+        }
+        return list;
+    }
+
+    public static void browseTo(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (IOException | URISyntaxException ignored) {};
+    }
+
+    public static String[] wrapText(String text, int width) {
+        return wrapText(text, EnumChatFormatting.WHITE, width);
+    }
+
+    public static String[] wrapText(String text, EnumChatFormatting colour, int width) {
+        String[] words = text.split(" ");
+        StringBuilder builder = new StringBuilder(colour + "");
+        List<String> output = new ArrayList<>();
+        for (String word : words) {
+            if (builder.length() == 0 || Minecraft.getMinecraft().fontRendererObj.getStringWidth(builder.toString()) +
+                    Minecraft.getMinecraft().fontRendererObj.getStringWidth(word) < width) builder.append(word).append(" ");
+            else {
+                output.add(builder.toString());
+                builder = new StringBuilder(colour + "").append(word).append(" ");
+            }
+        }
+        if (builder.length() != 0) output.add(builder.toString());
+        return output.toArray(new String[0]);
     }
 
 }

@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.commands;
+package tools.skyblock.skyhouse.mcmod.commands.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
@@ -7,18 +7,17 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static tools.skyblock.skyhouse.mcmod.util.Utils.getLowestBinsFromMoulberryApi;
 
-public class RefreshLowestBins implements ICommand {
+public class RefreshBazaarData implements ICommand {
 
     @Override
     public String getCommandName() {
-        return "refreshlowestbins";
+        return "refreshbazaardata";
     }
 
     @Override
@@ -28,15 +27,13 @@ public class RefreshLowestBins implements ICommand {
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList("refreshlowestbins", "refreshbins");
+        return Arrays.asList("refreshbazaardata", "refreshbaz");
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Refreshing lowest bins..."));
-        SkyhouseMod.INSTANCE.getListener().binsManuallyRefreshed = true;
-        SkyhouseMod.INSTANCE.getListener().ticksUntilRefreshBins = 0;
-        getLowestBinsFromMoulberryApi();
+        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Refreshing bazaar data..."));
+        DataManager.getBazaarDataFromApi(true);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package tools.skyblock.skyhouse.mcmod.commands;
+package tools.skyblock.skyhouse.mcmod.commands.data;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommand;
@@ -31,6 +31,7 @@ public class ReloadConfigCommand implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         SkyhouseMod.INSTANCE.loadConfig();
+        SkyhouseMod.INSTANCE.getAuthenticationManager().loadCredentials();
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Successfully loaded config from file"));
     }
 
