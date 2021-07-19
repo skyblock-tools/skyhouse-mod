@@ -65,7 +65,7 @@ public class AhOverlayPositionEditor extends GuiScreen {
         GlStateManager.color(0.3f, 0.3f, 0.3f, 0.5f);
         drawTexturedModalRect((width-176)/2, (height-222)/2, 0, 0, 176, 222);
         String label = "Auction House GUI";
-        fontRendererObj.drawStringWithShadow(label, (width-176)/2+(164-fontRendererObj.getStringWidth(label))/2, (height-222)/2+128, 0xAAAAAA | 127 << 24);
+        Utils.drawStringWithShadow(fontRendererObj, label, (width-176)/2+(164-fontRendererObj.getStringWidth(label))/2, (height-222)/2+128, 0xAAAAAA | 127 << 24);
         GlStateManager.disableBlend();
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.popMatrix();
@@ -83,7 +83,9 @@ public class AhOverlayPositionEditor extends GuiScreen {
         drawTexturedModalRect(96, 32, 64, 32, 64, 64);
         drawCenteredString(fontRendererObj, "Drag To Move", 128, 124, 0x00ff00);
         GlStateManager.popMatrix();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        for (GuiButton guiButton : this.buttonList) {
+            Utils.drawButton(guiButton, this.mc, mouseX, mouseY);
+        }
     }
 
     @Override

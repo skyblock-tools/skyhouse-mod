@@ -5,6 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.renderer.RenderHelper;
@@ -58,6 +61,55 @@ public class Utils {
     }
 
     public static String invGuiName() {
+    private static String stripStartColourCodes(String text) {
+        List<Character> allowedChars = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+        boolean hasColourCode = false;
+        if (text.length() >= 2) {
+            hasColourCode = text.charAt(0) == '\u00a7' && allowedChars.contains(text.charAt(1));
+        }
+        while (hasColourCode) {
+            text = text.substring(2);
+            if (text.length() >= 2) {
+                if (!(text.charAt(0) == '\u00a7' && allowedChars.contains(text.charAt(1)))) {
+                    hasColourCode = false;
+                }
+            }
+        }
+        return text;
+    }
+
+    public static void drawString(GuiScreen gui, FontRenderer fontRendererObject, String text, int x, int y, int colour) {
+        if (SkyhouseMod.INSTANCE.getConfigManager().getFullChromaMode()){
+            text = stripStartColourCodes(text);
+            text = "\u00a7z" + text + EnumChatFormatting.RESET;
+        }
+        gui.drawString(fontRendererObject, text, x, y, colour);
+    }
+
+    public static void drawCenteredString(GuiScreen gui, FontRenderer fontRendererObject, String text, int x, int y, int colour) {
+        if (SkyhouseMod.INSTANCE.getConfigManager().getFullChromaMode()){
+            text = stripStartColourCodes(text);
+            text = "\u00a7z" + text + EnumChatFormatting.RESET;
+        }
+        gui.drawCenteredString(fontRendererObject, text, x, y, colour);
+    }
+
+    public static void drawStringWithShadow(FontRenderer fontRendererObject, String text, int x, int y, int colour) {
+        if (SkyhouseMod.INSTANCE.getConfigManager().getFullChromaMode()){
+            text = stripStartColourCodes(text);
+            text = "\u00a7z" + text + EnumChatFormatting.RESET;
+        }
+        fontRendererObject.drawStringWithShadow(text, x, y, colour);
+    }
+
+    public static void drawButton(GuiButton button, Minecraft mc, int mouseX, int mouseY) {
+        if (SkyhouseMod.INSTANCE.getConfigManager().getFullChromaMode()) {
+            button.displayString = "\u00a7z" + stripStartColourCodes(button.displayString) + EnumChatFormatting.RESET;
+        }
+        button.drawButton(mc, mouseX, mouseY);
+    }
+
+    public static boolean isAhGui() {
         if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
             return ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();

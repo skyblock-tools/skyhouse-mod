@@ -76,12 +76,12 @@ public class SelectionGui extends CustomGui {
                         .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist::clear)
                         .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.isEmpty()));
 
-        iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 0)
+        iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 16)
                 .withTooltip(EnumChatFormatting.RED + "Reset Filter Preferences")
                 .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager()::resetFilter)
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));
 
-        iconButtons.add(new IconButton(1, 14, 12, 194, 0)
+        iconButtons.add(new IconButton(1, 14, 12, 194, 16)
                 .withTooltip(EnumChatFormatting.GREEN + "Skyhouse")
                 .withClickCallback(() -> SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui())));
     }
@@ -133,7 +133,7 @@ public class SelectionGui extends CustomGui {
             } catch (ReflectiveOperationException ignored) {
             }
             i++;
-            currentHeight -= 29;
+            currentHeight -= 24;
         }
         buttonList.addAll(buttons);
     }
@@ -167,18 +167,19 @@ public class SelectionGui extends CustomGui {
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
         drawTexturedModalRect(0, -32, 0, 45, 256, 32);
 
-        drawCenteredString(Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
+        Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
 
         drawHorizontalLine(12, 256-12, 34, 0xff595959);
 
-        drawString(Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
-        drawString(Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
+        Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
+        Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
 
-        int currentHeight = 196;
+        int currentHeight = 168;
         for (HiddenConfigOption option : labels) {
-            currentHeight -= 29;
-            drawString(fontRendererObj, EnumChatFormatting.WHITE + option.value(), 128+(64-50), currentHeight-4, 0xffffff);
+            Utils.drawString(this, fontRendererObj, EnumChatFormatting.WHITE + option.value(), 128+(64-50), currentHeight-4, 0xffffff);
+            currentHeight -= 24;
         }
+        Utils.drawString(this, fontRendererObj, "Include:", 128+(64-50), currentHeight-4, 0xffffff);
 
         for (CheckBox checkBox : checkBoxes) {
             checkBox.drawButton(Minecraft.getMinecraft(), mouseX, mouseY, SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2);
@@ -235,8 +236,7 @@ public class SelectionGui extends CustomGui {
                 button.getClickCallback().run();
         }
         for (CheckBox button : checkBoxes) {
-            if (hover(mouseX - guiLeft, mouseY - guiTop, button.xPosition, button.yPosition, button.width, button.height, guiScale) &&
-            SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel > 1) {
+            if (hover(mouseX - guiLeft, mouseY - guiTop, button.xPosition, button.yPosition, button.width, button.height, guiScale)) {
                 button.pressed();
             }
         }
