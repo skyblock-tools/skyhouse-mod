@@ -3,7 +3,6 @@ package tools.skyblock.skyhouse.mcmod.overlays.price;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.init.Blocks;
-import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
@@ -60,7 +59,7 @@ public class BitsOverlay extends OverlayBase {
         String title = Utils.invGuiName();
         if (title == null || !title.equalsIgnoreCase("community shop")) return false;
         List<ItemStack> items = getItems();
-        return items.get(13).getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) && items.get(13).getMetadata() == 5;
+        return items.get(13) != null && items.get(13).getItem() == Item.getItemFromBlock(Blocks.stained_glass_pane) && items.get(13).getMetadata() == 5;
     }
 
 }

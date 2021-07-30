@@ -243,7 +243,7 @@ public class FlipListGui extends CustomGui {
             SkyhouseMod.INSTANCE.getOverlayManager().search(filter);
         }
         String shPlusUrl = "https://skyblock.tools/skyhouse/skyhouse_plus";
-        if (mouseX >= width/2-fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseY >= 48 && mouseY <= 48+8) {
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2 && mouseX >= width/2-fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseY >= 48 && mouseY <= 48+8) {
             try {
                 Desktop.getDesktop().browse(new URI(shPlusUrl));
             } catch (URISyntaxException | IOException ignored) {

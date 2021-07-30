@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraftforge.fml.common.Loader;
+import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.annotations.*;
 
 import java.lang.reflect.Field;
@@ -57,8 +59,12 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("full_chroma_mode")
-        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA 1.6.0 or higher to function"})
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"})
         public boolean fullChromaMode = false;
+
+        public boolean checkFullChromaMode(boolean checked) {
+            return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && Loader.isModLoaded("skyblockaddons");
+        }
 
     }
 
@@ -108,6 +114,7 @@ public class SkyhouseConfig {
             guiLeft = relativeGui ?  Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
             configOpened = true;
         }
+
     }
 
 
@@ -151,6 +158,22 @@ public class SkyhouseConfig {
         @SerializedName("min_profit")
         public int minProfit;
 
+        public boolean checkSkinsInSearch(boolean checked) {
+            return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
+        }
+
+        public boolean checkCakeSoulsInSearch(boolean checked) {
+            return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
+        }
+
+        public boolean checkPetsInSearch(boolean checked) {
+            return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
+        }
+
+        public boolean checkRecombsInSearch(boolean checked) {
+            return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
+        }
+
         public void setMaxPrice(int price) {
             maxPrice = price;
         }
@@ -158,6 +181,7 @@ public class SkyhouseConfig {
         public void setMinProfit(int profit) {
             minProfit = profit;
         }
+
     }
 
     public class CreationOptions {
@@ -221,6 +245,11 @@ public class SkyhouseConfig {
         @HiddenConfigOption(value = "Include Pet Candy", description = {"\u00a77Whether or not to include Pet Candy in item value calculation", "\u00a74Not currently implemented", "", "\u00a7aIf anyone has any clue how this could be calculated please", "\u00a7amessage Septikai#1676 on discord because I have no clue"})
         @SerializedName("include_pet_candy")
         public boolean includePetCandy = true;
+
+        public boolean checkIncludeReforgeCost(boolean checked) {
+            return includeReforge;
+        }
+
     }
 
 }

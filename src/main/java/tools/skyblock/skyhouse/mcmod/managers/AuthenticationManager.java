@@ -44,8 +44,10 @@ public class AuthenticationManager {
                 SkyhouseMod.INSTANCE.getConfig().resetPremiumFeatures();
             }
         }, (err) -> {
-            if (err.getMessage().contains("401") || err.getMessage().contains("403"))
+            if (err.getMessage().contains("401") || err.getMessage().contains("403")) {
+                System.out.println("Could not authenticate with the API, please refresh your access token and try again");
                 Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not authenticate with the API, please refresh your access token and try again" + EnumChatFormatting.RESET));
+            }
         });
     }
 

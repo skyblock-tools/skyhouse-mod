@@ -76,7 +76,7 @@ public class SelectionGui extends CustomGui {
                         .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist::clear)
                         .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.isEmpty()));
 
-        iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 16)
+        iconButtons.add(new IconButton(1, 256-14-16, 12, 176, 16)
                 .withTooltip(EnumChatFormatting.RED + "Reset Filter Preferences")
                 .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager()::resetFilter)
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));

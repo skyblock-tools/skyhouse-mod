@@ -238,7 +238,7 @@ public class Utils {
     }
 
     /*
-    This was copied and pasted from https://github.com/Mouberry/NotEnoughUpdates
+    This was copied and pasted from https://github.com/Moulberry/NotEnoughUpdates
     to work with his lowest bin api (with a few changes to work here)
      */
     public static String getInternalNameFromNBT(NBTTagCompound tag) {
@@ -481,7 +481,7 @@ public class Utils {
     public static void browseTo(String url) {
         try {
             Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException | URISyntaxException ignored) {};
+        } catch (IOException | URISyntaxException ignored) {}
     }
 
     public static String[] wrapText(String text, int width) {

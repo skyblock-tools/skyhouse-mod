@@ -261,15 +261,18 @@ public class ConfigGui extends GuiScreen {
 
         GlStateManager.pushMatrix();
         GlStateManager.translate(width / 2 - fontRendererObj.getStringWidth("Skyhouse"),
-                guiTop + 2 + 4, 0);
+                guiTop + 2 + 4 + 6, 0);
         GlStateManager.scale(2, 2, 2);
         fontRendererObj.drawString("Skyhouse", 0, 0, Utils.multiplyAlphaARGB(0xff2185ff, fadeInAnimation.current / 255f));
         GlStateManager.popMatrix();
         if (openCategory != null) {
             ConfigCategory category = openCategory.getAnnotation(ConfigCategory.class);
-            Utils.drawStringCentred(EnumChatFormatting.BOLD + "Selected category: " + category.name() +
-                    EnumChatFormatting.RESET, width / 2, guiTop + 2 + 24, 0xff498ee3);
-            Utils.drawStringCentred(category.description(), width / 2, guiTop + 2 + 36, 0xff498ee3);
+            Utils.drawStringCentred(EnumChatFormatting.BOLD + "Selected Category: " + category.name() +
+                    EnumChatFormatting.RESET, width / 2, guiTop + 2 + 24 + 9, 0xff498ee3);
+            Utils.drawStringCentred(category.description(), width / 2, guiTop + 2 + 36 + 9, 0xff498ee3);
+        } else {
+            Utils.drawStringCentred("by the skyblock.tools team",
+                    width / 2, guiTop + 2 + 24 + 10, 0xff2185ff);
         }
 
     }
@@ -304,6 +307,8 @@ public class ConfigGui extends GuiScreen {
 
         optionsSlideIn.tick();
         int slideProgress = Math.round(((float) optionsSlideIn.current / (float) optionsSlideIn.target) * (optionsBoxRight - optionsBoxLeft));
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+        drawTexturedModalRect(width/2, height/8, 160, 0, 16, 16);
         Utils.scissor(optionsBoxLeft - 2, optionsBoxTop, optionsBoxRight - optionsBoxLeft, optionsBoxBottom - optionsBoxTop);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         optionsBoxLeft = optionsBoxLeft - (optionsBoxRight - optionsBoxLeft) + slideProgress;
@@ -318,10 +323,16 @@ public class ConfigGui extends GuiScreen {
             drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i, optionsBoxLeft, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 8, darkShadeColour);
             drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 8, optionsBoxRight, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 6, darkShadeColour);
             Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+
+            GlStateManager.pushMatrix();
+            GlStateManager.enableLighting();
             drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 160, 0, 16, 16);
+            GlStateManager.disableLighting();
+            GlStateManager.popMatrix();
+
             fontRendererObj.drawString(options.get(i).value(), optionsBoxLeft + 24, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 16, 0xffffffff);
 
-            component.setCoords(optionsBoxRight - 20, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12);
+            component.setCoords(optionsBoxRight - 30, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12);
             component.draw(mouseX, mouseY);
             if (mouseX > optionsBoxLeft + 4 && mouseX < optionsBoxLeft + 20 && mouseY > optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12 && mouseY < optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 28 && optionsSlideIn.ended()) {
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
@@ -355,38 +366,35 @@ public class ConfigGui extends GuiScreen {
         drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop, optionsBoxLeft, optionsScroll.getScrollStart() + optionsBoxTop + getOptionsHeight() - 2, darkShadeColour);
         drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop + getOptionsHeight() - 2, optionsBoxRight, optionsScroll.getScrollStart() + optionsBoxTop + getOptionsHeight(), darkShadeColour);
 
-
-        Utils.drawStringCentred(EnumChatFormatting.BOLD + "Skyhouse " + EnumChatFormatting.RESET + "by the skyblock.tools team",
-                optionsBoxLeft + (optionsBoxRight - optionsBoxLeft) / 2, optionsScroll.getScrollStart() + optionsBoxTop + 8, 0xff2185ff);
         int stringWidth = 0;
 
         for (JsonElement el : DataManager.contributors) {
             stringWidth = Math.max(stringWidth, fontRendererObj.getStringWidth(el.getAsJsonObject().get("name").getAsString()));
         }
+//        optionsScroll.getScrollStart() + optionsBoxTop + 8 + 4
+        int shpBoxCentreX = (optionsBoxLeft + stringWidth + 10) + ((optionsBoxRight - 4) - (optionsBoxLeft + stringWidth + 16)) / 2;
+        Utils.drawStringCentred("Skyhouse+", shpBoxCentreX, optionsScroll.getScrollStart() + optionsBoxTop + 14, 0xff00ff00);
 
-        int shpBoxCentreX = (optionsBoxLeft + stringWidth + 16) + ((optionsBoxRight - 4) - (optionsBoxLeft + stringWidth + 16)) / 2;
-        Utils.drawStringCentred("Skyhouse+", shpBoxCentreX, optionsScroll.getScrollStart() + optionsBoxTop + 36, 0xff00ff00);
-
-        optionsHeightTotal = 50;
+        optionsHeightTotal = 28;
         int i = 0;
         if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel > 1) {
             optionsHeightTotal += 8;
             String[] text = Utils.wrapText("You have a Skyhouse+ subscription", EnumChatFormatting.GREEN, (optionsBoxRight - 16) - (optionsBoxLeft + stringWidth + 16));
             for (i = 0; i < text.length; i++)
-                fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24, optionsScroll.getScrollStart() + optionsBoxTop + 50 + 12 * i, 0xff00ff00);
+                fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, 0xff00ff00);
         } else {
             String[] text = Utils.wrapText("You do not have a Skyhouse+ subscription. Get unlimited profit bin->bin flips, filters, and more with Skyhouse+",
-                    EnumChatFormatting.RED, (optionsBoxRight - 16) - (optionsBoxLeft + stringWidth + 16));
+                    EnumChatFormatting.RED, (optionsBoxRight - 10) - (optionsBoxLeft + stringWidth + 16));
             for (i = 0; i < text.length; i++) {
                 optionsHeightTotal += 8;
-                fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24, optionsScroll.getScrollStart() + optionsBoxTop + 50 + 12 * i, 0xffffffff);
+                fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, 0xffffffff);
             }
         }
-        drawRect(optionsBoxLeft + stringWidth + 16, optionsScroll.getScrollStart() + optionsBoxTop + 30, optionsBoxLeft + stringWidth + 18, optionsScroll.getScrollStart() + optionsBoxTop + 50 + 12 * i, darkShadeColour);
-        drawRect(optionsBoxLeft + stringWidth + 16, optionsScroll.getScrollStart() + optionsBoxTop + 50 + 12 * i, optionsBoxRight - 4, optionsScroll.getScrollStart() + optionsBoxTop + 50 + 12 * i + 2, darkShadeColour);
+        drawRect(optionsBoxLeft + stringWidth + 10, optionsScroll.getScrollStart() + optionsBoxTop + 8, optionsBoxLeft + stringWidth + 18 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, darkShadeColour);
+        drawRect(optionsBoxLeft + stringWidth + 10, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, optionsBoxRight - 4 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i + 2, darkShadeColour);
 
-        drawRect(optionsBoxLeft + stringWidth + 16, optionsScroll.getScrollStart() + optionsBoxTop + 30, optionsBoxRight - 4, optionsScroll.getScrollStart() + optionsBoxTop + 32, lightShadeColour);
-        drawRect(optionsBoxRight - 6, optionsScroll.getScrollStart() + optionsBoxTop + 32, optionsBoxRight - 4, optionsScroll.getScrollStart() + optionsBoxTop + 50 + 12 * i, lightShadeColour);
+        drawRect(optionsBoxLeft + stringWidth + 10, optionsScroll.getScrollStart() + optionsBoxTop + 8, optionsBoxRight - 4 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 10, lightShadeColour);
+        drawRect(optionsBoxRight - 6 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 10, optionsBoxRight - 4 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, lightShadeColour);
 
         i = 0;
 
@@ -396,15 +404,15 @@ public class ConfigGui extends GuiScreen {
             EnumChatFormatting colour = EnumChatFormatting.getValueByName(obj.get("colour").getAsString());
             String text = obj.get("name").getAsString();
 
-            if (mouseY > optionsBoxTop && mouseY < optionsBoxBottom && mouseX > optionsBoxLeft && mouseX < optionsBoxLeft + fontRendererObj.getStringWidth(text) &&
-                    mouseY > optionsScroll.getScrollStart() + optionsBoxTop + 16 + 16 * (i + 1) - 6 && mouseY < optionsScroll.getScrollStart() + optionsBoxTop + 16 + 16 * (i + 1) + 6 && optionsSlideIn.ended()) {
+            if (mouseY > optionsBoxTop && mouseY < optionsBoxBottom && mouseX > 4 + optionsBoxLeft && mouseX < 6 + optionsBoxLeft + fontRendererObj.getStringWidth(text) &&
+                    mouseY > optionsScroll.getScrollStart() + optionsBoxTop - 1 + 16 * (i + 1) - 6 && mouseY < optionsScroll.getScrollStart() + optionsBoxTop - 4 + 16 * (i + 1) + 6 && optionsSlideIn.ended()) {
                 fontRendererObj.drawString(colour + "" + EnumChatFormatting.UNDERLINE + text + EnumChatFormatting.RESET,
-                        optionsBoxLeft + 2, optionsScroll.getScrollStart() + optionsBoxTop + 16 + 16 * ++i, 0xffffffff);
+                        optionsBoxLeft + 6, optionsScroll.getScrollStart() + optionsBoxTop - 6 + 16 * ++i, 0xffffffff);
                 JsonArray note = obj.get("note").getAsJsonArray();
                 if (note.size() > 0) tooltip = Utils.jsonArrayToStringList(note);
             } else
                 fontRendererObj.drawString(colour + text + EnumChatFormatting.RESET,
-                        optionsBoxLeft + 2, optionsScroll.getScrollStart() + optionsBoxTop + 16 + 16 * ++i, 0xffffffff);
+                        optionsBoxLeft + 6, optionsScroll.getScrollStart() + optionsBoxTop - 6 + 16 * ++i, 0xffffffff);
             GlStateManager.enableLighting();
         }
 
@@ -458,10 +466,12 @@ public class ConfigGui extends GuiScreen {
         if (openCategory == null) {
             int i = 0;
             for (JsonElement el : DataManager.contributors) {
-                if (categoryBoxTop + 16 + 16 * (i + 1) + 4 > categoryBoxBottom) break;
+                if (optionsBoxTop + 16 + 16 * (i + 1) + 4 > optionsBoxBottom) break;
                 JsonObject obj = el.getAsJsonObject();
-                if (mouseX > optionsBoxLeft && mouseX < optionsBoxLeft + fontRendererObj.getStringWidth(obj.get("name").getAsString()) &&
-                        mouseY > categoryBoxTop + 16 + 16 * (++i) - 4 && mouseY < categoryBoxTop + 16 + 16 * i + 4) {
+                i++;
+                if (mouseX > 4 + optionsBoxLeft && mouseX < 6 + optionsBoxLeft + fontRendererObj.getStringWidth(obj.get("name").getAsString())
+                        && mouseY > optionsScroll.getScrollStart() + optionsBoxTop - 1 + 16 * i - 6
+                        && mouseY < optionsScroll.getScrollStart() + optionsBoxTop - 4 + 16 * i + 6) {
                     String url = obj.get("url").getAsString();
                     if (!url.isEmpty()) {
                         Utils.browseTo(url);
