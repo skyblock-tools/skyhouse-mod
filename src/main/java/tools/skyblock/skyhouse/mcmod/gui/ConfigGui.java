@@ -307,8 +307,6 @@ public class ConfigGui extends GuiScreen {
 
         optionsSlideIn.tick();
         int slideProgress = Math.round(((float) optionsSlideIn.current / (float) optionsSlideIn.target) * (optionsBoxRight - optionsBoxLeft));
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-        drawTexturedModalRect(width/2, height/8, 160, 0, 16, 16);
         Utils.scissor(optionsBoxLeft - 2, optionsBoxTop, optionsBoxRight - optionsBoxLeft, optionsBoxBottom - optionsBoxTop);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         optionsBoxLeft = optionsBoxLeft - (optionsBoxRight - optionsBoxLeft) + slideProgress;

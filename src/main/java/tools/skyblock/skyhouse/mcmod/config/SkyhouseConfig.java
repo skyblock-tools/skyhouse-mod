@@ -103,7 +103,7 @@ public class SkyhouseConfig {
         public boolean relativeGui = true;
 
         @ConfigOption(value = "Edit GUI position", description = {"\u00a77Edit the position of the overlay\u00a7r"})
-        @CommandButton(value = "skyhouseeditahoverlay", label = "edit")
+        @CommandButton(value = "skyhouseeditahoverlay", label = "Edit")
         public int editGuiPos;
 
         public void setRelativeGui(boolean relativeGui) {
