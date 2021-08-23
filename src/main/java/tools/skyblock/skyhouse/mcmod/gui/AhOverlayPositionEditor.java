@@ -118,8 +118,8 @@ public class AhOverlayPositionEditor extends GuiScreen {
         switch (button.id) {
             case 0:
                 guiScale = 1;
-                guiLeft = 0;
-                guiTop = 32;
+                guiLeft = 1;
+                guiTop = 33;
                 break;
             case 1:
                 save();

@@ -18,11 +18,12 @@ public class SkyhouseConfig {
             configOpened = true;
         }
     }
+
     public void resetPremiumFeatures() {
-        filterOptions.skinsInSearch = true;
-        filterOptions.cakeSoulsInSearch = true;
-        filterOptions.petsInSearch = true;
-        filterOptions.recombsInSearch = true;
+        filterOptions.skins = true;
+        filterOptions.souls = true;
+        filterOptions.pets = true;
+        filterOptions.recombs = true;
         generalConfig.fullChromaMode = false;
     }
 
@@ -69,17 +70,18 @@ public class SkyhouseConfig {
     }
 
     public class AhOverlayConfig {
+
         @Expose
         @SerializedName("gui_scale")
-        public float guiScale;
+        public float guiScale = 1;
 
         @Expose
         @SerializedName("gui_left")
-        public int guiLeft;
+        public int guiLeft = 0;
 
         @Expose
         @SerializedName("gui_top")
-        public int guiTop;
+        public int guiTop = 33;
 
         @Expose
         @SerializedName("show_flipping_overlay")
@@ -94,7 +96,7 @@ public class SkyhouseConfig {
         @Expose
         @SerializedName("save_options")
         @ConfigOption(value = "Save flip search options", description = {"\u00a77Whether or not the search options reset when you close the auction house\u00a7r"})
-        public boolean saveOptions;
+        public boolean saveOptions = true;
 
         @Expose
         @SerializedName("relative_gui")
@@ -109,9 +111,9 @@ public class SkyhouseConfig {
         public void setRelativeGui(boolean relativeGui) {
             this.relativeGui = relativeGui;
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-            guiScale = relativeGui ? 256f / sr.getScaledWidth() : 1;
-            guiTop = relativeGui ? (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2 : (sr.getScaledHeight() - 256) / 2;
-            guiLeft = relativeGui ?  Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
+            this.guiScale = relativeGui ? (255f * guiScale) / sr.getScaledWidth() : guiScale;
+            this.guiTop = relativeGui ? Math.round(((float) (this.guiTop == 0 ? 1 : this.guiTop) / ((float) sr.getScaledHeight())) * 1000) : this.guiTop;
+            this.guiLeft = relativeGui ?  Math.round(((float) (this.guiLeft == 0 ? 1 : this.guiLeft) / ((float) sr.getScaledWidth())) * 1000) : this.guiLeft;
             configOpened = true;
         }
 
@@ -124,31 +126,41 @@ public class SkyhouseConfig {
         @SerializedName("show_bits_overlays")
         @ConfigOption(value = "Enable bits price overlay", description = {"\u00a77Enables the bits price overlay\u00a7r",
         "\u00a7aDisplays the coins : bit ratio of each item in the bits shop\u00a7r"})
-        public boolean showBitsOverlay = true;
+        public boolean showBitsOverlay = false;
 
     }
 
     public class FilterOptions {
 
         @Expose
-        @SerializedName("search_skins")
+        @SerializedName("skins")
+        @ItemFilter("skins")
         @HiddenConfigOption(value = "Skins", description = {"\u00a77Whether or not to include skins in the search"})
-        public boolean skinsInSearch = true;
+        public boolean skins = true;
 
         @Expose
-        @SerializedName("search_cake_souls")
-        @HiddenConfigOption(value = "Cake Souls", description = {"\u00a77Whether or not to include cake souls in the search"})
-        public boolean cakeSoulsInSearch = true;
-
-        @Expose
-        @SerializedName("search_pets")
+        @SerializedName("pets")
+        @ItemFilter("pets")
         @HiddenConfigOption(value = "Pets", description = {"\u00a77Whether or not to include Pets in the search"})
-        public boolean petsInSearch = true;
+        public boolean pets = true;
 
         @Expose
-        @SerializedName("search_recombs")
+        @SerializedName("recombs")
+        @ItemFilter("recombs")
         @HiddenConfigOption(value = "Recombs", description = {"\u00a77Whether or not to include recombobulated items in the search"})
-        public boolean recombsInSearch = true;
+        public boolean recombs = true;
+
+        @Expose
+        @SerializedName("souls")
+        @ItemFilter("souls")
+        @HiddenConfigOption(value = "Cake Souls", description = {"\u00a77Whether or not to include cake souls in the search"})
+        public boolean souls = true;
+
+        @Expose
+        @SerializedName("ench_books")
+        @ItemFilter("ench_books")
+        @HiddenConfigOption(value = "Ench Books", description = {"\u00a77Whether or not to include enchanted books in the search"})
+        public boolean enchBooks = true;
 
         @Expose
         @SerializedName("max_price")
@@ -158,19 +170,23 @@ public class SkyhouseConfig {
         @SerializedName("min_profit")
         public int minProfit;
 
-        public boolean checkSkinsInSearch(boolean checked) {
+        public boolean checkSkins(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
         }
 
-        public boolean checkCakeSoulsInSearch(boolean checked) {
+        public boolean checkSouls(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
         }
 
-        public boolean checkPetsInSearch(boolean checked) {
+        public boolean checkPets(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
         }
 
-        public boolean checkRecombsInSearch(boolean checked) {
+        public boolean checkRecombs(boolean checked) {
+            return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
+        }
+
+        public boolean checkEnchBooks(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
         }
 
@@ -185,6 +201,7 @@ public class SkyhouseConfig {
     }
 
     public class CreationOptions {
+
         @Expose
         @HiddenConfigOption(value = "Include Hot Potato Books", description = {"\u00a77Whether or not to include Hot/Fuming Potato Books in item value calculation"})
         @SerializedName("include_hpbs")

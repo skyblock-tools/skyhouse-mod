@@ -31,7 +31,7 @@ public class SelectionGui extends CustomGui {
     private float guiScale;
     private List<HiddenConfigOption> labels = new ArrayList<>();
 
-    private List<CheckBox> checkBoxes = new ArrayList<>();
+    private List<CheckBox> itemFilterCheckBoxes = new ArrayList<>();
 
     private List<IconButton> iconButtons = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public class SelectionGui extends CustomGui {
     @Override
     public void initGui() {
         tick();
-        checkBoxes.clear();
+        itemFilterCheckBoxes.clear();
         labels.clear();
         guiScale = Utils.getScaleFactor();
         for (GuiButton button : buttons) {
@@ -99,7 +99,7 @@ public class SelectionGui extends CustomGui {
             button.scales(guiScale);
         }
         int i = 0;
-        int currentHeight = 168;
+        int currentHeight = 72;
         for (Field field : SkyhouseConfig.FilterOptions.class.getDeclaredFields()) {
             if (!field.isAnnotationPresent(HiddenConfigOption.class)) continue;
             labels.add(field.getAnnotation(HiddenConfigOption.class));
@@ -128,12 +128,12 @@ public class SelectionGui extends CustomGui {
                 }
             };
             try {
-                checkBoxes.add(new CheckBox(i, 256 - 16 - 16 - 8, currentHeight - 8, updateChecker,
+                itemFilterCheckBoxes.add(new CheckBox(i, 256 - 16 - 16 - 8, currentHeight - 8, updateChecker,
                         field.getBoolean(SkyhouseMod.INSTANCE.getConfig().filterOptions), updater));
             } catch (ReflectiveOperationException ignored) {
             }
             i++;
-            currentHeight -= 24;
+            currentHeight += 24;
         }
         buttonList.addAll(buttons);
     }
@@ -174,14 +174,14 @@ public class SelectionGui extends CustomGui {
         Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
         Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
 
-        int currentHeight = 168;
+        int currentHeight = 72;
         for (HiddenConfigOption option : labels) {
             Utils.drawString(this, fontRendererObj, EnumChatFormatting.WHITE + option.value(), 128+(64-50), currentHeight-4, 0xffffff);
-            currentHeight -= 24;
+            currentHeight += 24;
         }
-        Utils.drawString(this, fontRendererObj, "Include:", 128+(64-50), currentHeight-4, 0xffffff);
+        Utils.drawString(this, fontRendererObj, "Include:", 128+(64-50), 48-4, 0xffffff);
 
-        for (CheckBox checkBox : checkBoxes) {
+        for (CheckBox checkBox : itemFilterCheckBoxes) {
             checkBox.drawButton(Minecraft.getMinecraft(), mouseX, mouseY, SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2);
         }
 
@@ -235,7 +235,7 @@ public class SelectionGui extends CustomGui {
             if (button.isMouseOver() && button.enabled && button.getClickCallback() != null)
                 button.getClickCallback().run();
         }
-        for (CheckBox button : checkBoxes) {
+        for (CheckBox button : itemFilterCheckBoxes) {
             if (hover(mouseX - guiLeft, mouseY - guiTop, button.xPosition, button.yPosition, button.width, button.height, guiScale)) {
                 button.pressed();
             }

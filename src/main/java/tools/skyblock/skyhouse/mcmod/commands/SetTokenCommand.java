@@ -29,7 +29,7 @@ public class SetTokenCommand implements ICommand {
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList("shSetToken", "shst");
+        return Arrays.asList("shSetToken", "shsettoken", "shst");
     }
 
     @Override

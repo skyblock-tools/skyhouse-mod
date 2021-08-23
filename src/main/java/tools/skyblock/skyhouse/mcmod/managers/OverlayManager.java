@@ -121,8 +121,8 @@ public class OverlayManager {
 
     public void search(SearchFilter filter) {
         this.filter = filter;
-        SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/api/flip/auctions",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
-                SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter), JsonObject.class)),
+        SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/flips",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
+                SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)),
                 data -> {
                     flips = data.get("flips").getAsJsonArray();
                     createGui = true;
@@ -135,7 +135,11 @@ public class OverlayManager {
                         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Forbidden to access the API!"));
                         Minecraft.getMinecraft().displayGuiScreen(null);
                     } else if (e.getMessage().contains("429")) {
-                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are being ratelimited! Please try again in a few seconds"));                        Minecraft.getMinecraft().displayGuiScreen(null);
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You are being ratelimited! Please try again in a few seconds"));
+                        Minecraft.getMinecraft().displayGuiScreen(null);
+                    } else if (e.getMessage().contains("521")) {
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Skyhouse API down!"));
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "If you believe this to be a bug, please contact a developer in the skyblock.tools discord"));
                         Minecraft.getMinecraft().displayGuiScreen(null);
                     } else {
                         CrashReport report = CrashReport.makeCrashReport(e, "API returned unknown error");
@@ -173,20 +177,21 @@ public class OverlayManager {
     public void resetFilter() {
         SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice = Constants.DEFAULT_MAX_PRICE;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit = Constants.DEFAULT_MIN_PROFIT;
-        SkyhouseMod.INSTANCE.getConfig().filterOptions.skinsInSearch = true;
-        SkyhouseMod.INSTANCE.getConfig().filterOptions.cakeSoulsInSearch = true;
-        SkyhouseMod.INSTANCE.getConfig().filterOptions.petsInSearch = true;
-        SkyhouseMod.INSTANCE.getConfig().filterOptions.recombsInSearch = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.skins = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.souls = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.pets = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs = true;
         gui = new SelectionGui();
     }
 
     public boolean isFilterDefault() {
         return SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice  == Constants.DEFAULT_MAX_PRICE &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit  == Constants.DEFAULT_MIN_PROFIT &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.skinsInSearch  == Constants.DEFAULT_SKINS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.cakeSoulsInSearch  == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.petsInSearch  == Constants.DEFAULT_PETS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.recombsInSearch  == Constants.DEFAULT_RECOMBS_IN_SEARCH;
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.skins == Constants.DEFAULT_SKINS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.souls  == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.pets  == Constants.DEFAULT_PETS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs  == Constants.DEFAULT_RECOMBS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.enchBooks  == Constants.DEFAULT_ENCH_BOOKS_IN_SEARCH;
     }
 
     public boolean isFlipList() {
