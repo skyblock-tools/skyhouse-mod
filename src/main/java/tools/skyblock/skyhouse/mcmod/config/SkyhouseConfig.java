@@ -73,15 +73,15 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("gui_scale")
-        public float guiScale;
+        public float guiScale = 0.5f;
 
         @Expose
         @SerializedName("gui_left")
-        public int guiLeft;
+        public int guiLeft = 0;
 
         @Expose
         @SerializedName("gui_top")
-        public int guiTop;
+        public int guiTop = 0;
 
         @Expose
         @SerializedName("show_flipping_overlay")
@@ -111,9 +111,9 @@ public class SkyhouseConfig {
         public void setRelativeGui(boolean relativeGui) {
             this.relativeGui = relativeGui;
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-            guiScale = relativeGui ? 256f / sr.getScaledWidth() : 1;
+            guiScale = relativeGui ? (255f * guiScale) / sr.getScaledWidth() : guiScale * sr.getScaledWidth() / 255f;
             guiTop = relativeGui ? (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2 : (sr.getScaledHeight() - 256) / 2;
-            guiLeft = relativeGui ?  Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
+            guiLeft = relativeGui ? Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : Math.round(sr.getScaledWidth() - 256 * guiScale);
             configOpened = true;
         }
 

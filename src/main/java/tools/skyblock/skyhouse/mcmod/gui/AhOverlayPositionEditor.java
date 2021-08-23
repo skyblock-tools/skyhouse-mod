@@ -153,7 +153,7 @@ public class AhOverlayPositionEditor extends GuiScreen {
     }
 
     private boolean wouldRenderOutOfBoundsY(int y, float sf) {
-        return (y <= 32 || y >= height - 1 - 256 * sf);
+        return (y <= 32 * sf || y >= height - 1 - 256 * sf);
     }
 
 }
