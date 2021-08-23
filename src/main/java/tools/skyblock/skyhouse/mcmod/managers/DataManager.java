@@ -1,14 +1,22 @@
 package tools.skyblock.skyhouse.mcmod.managers;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +27,17 @@ public class DataManager {
     public static JsonObject lowestBins = new JsonObject();
     public static JsonObject bazaarData = new JsonObject();
     public static JsonObject reforgeData = new JsonObject();
+    public static JsonObject themes = new JsonObject();
+    private static JsonObject storedThemes = new JsonObject();
+
+    public static String[] themeNames() {
+        String[] names = new String[themes.entrySet().size()];
+        int i = 0;
+        for (Map.Entry<String, JsonElement> entry : themes.entrySet()) {
+            names[i++] = entry.getKey();
+        }
+        return names;
+    }
 
     private static final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
@@ -88,10 +107,25 @@ public class DataManager {
                 });
     }
 
+    public static void loadLocalData() {
+        File themeFile = new File(SkyhouseMod.INSTANCE.getConfigDir(), "themes.json");
+        if (themeFile.exists()) {
+            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(themeFile), StandardCharsets.UTF_8)) {
+                storedThemes = SkyhouseMod.gson.fromJson(reader, JsonObject.class);
+            } catch (IOException ignored) {}
+        }
+    }
+
     public static void loadStaticSkyhouseData() {
         SkyhouseMod.LOGGER.debug("fetching skyhouse data");
         Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "/contributors.json"), (object) -> {
             contributors = object.get("contributors").getAsJsonArray();
+        });
+        Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "/themes.json"), (object) -> {
+            themes = object;
+            for (Map.Entry<String, JsonElement> entry : storedThemes.entrySet()) {
+                themes.add(entry.getKey(), entry.getValue());
+            }
         });
     }
 

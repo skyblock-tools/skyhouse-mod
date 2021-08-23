@@ -60,6 +60,12 @@ public class SkyhouseConfig {
         @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA 1.6.0 or higher to function"})
         public boolean fullChromaMode = false;
 
+        @Expose
+        @SerializedName("theme")
+        @ConfigOption(value = "Theme")
+        @Dropdown(method = {"tools.skyblock.skyhouse.mcmod.managers.DataManager", "themeNames"})
+        public String theme = "default";
+
     }
 
     public class AhOverlayConfig {

@@ -69,6 +69,7 @@ public class SkyhouseMod {
         listener = new EventListener();
         overlayManager = new OverlayManager();
         DataManager.scheduleFetch();
+        DataManager.loadLocalData();
         MinecraftForge.EVENT_BUS.register(listener);
         ClientCommandHandler.instance.registerCommand(new ConfigCommand());
         ClientCommandHandler.instance.registerCommand(new ReloadConfigCommand());

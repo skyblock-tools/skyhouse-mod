@@ -24,12 +24,14 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
+import scala.unchecked;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -502,6 +504,24 @@ public class Utils {
         }
         if (builder.length() != 0) output.add(builder.toString());
         return output.toArray(new String[0]);
+    }
+
+    public static Method methodByName(String className, String methodName) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            return clazz.getMethod(methodName);
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T invokeMethod(Method method, Object obj, Object... args) {
+        try {
+            return (T) method.invoke(obj, args);
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
     }
 
 }

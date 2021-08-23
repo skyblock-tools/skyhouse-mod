@@ -1,5 +1,8 @@
 package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -14,6 +17,7 @@ import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
 import tools.skyblock.skyhouse.mcmod.gui.components.CustomButton;
 import tools.skyblock.skyhouse.mcmod.gui.components.CustomTextbox;
 import tools.skyblock.skyhouse.mcmod.gui.components.IconButton;
+import tools.skyblock.skyhouse.mcmod.managers.ThemeManager;
 import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
@@ -156,20 +160,24 @@ public class SelectionGui extends CustomGui {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        drawTexturedModalRect(0, 0, 0, 0, 256, 256);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
-        drawTexturedModalRect(0, -32, 0, 45, 256, 32);
+        drawRect(2, 2, 254, 254, ThemeManager.getColour("selectionGUI", "background"));
+        drawRect(2, -30, 254, -2, ThemeManager.getColour("selectionGUI", "background"));
+
+        JsonArray lines = ThemeManager.themes.get(ThemeManager.current).getAsJsonObject().get("selectionGUI").getAsJsonObject().get("lines").getAsJsonArray();
+        for (JsonElement el : lines) {
+            JsonObject lineInfo = el.getAsJsonObject();
+            drawRect(lineInfo.get("left").getAsInt(), lineInfo.get("top").getAsInt(), lineInfo.get("right").getAsInt(),
+                    lineInfo.get("bottom").getAsInt(), lineInfo.get("colour").getAsInt());
+        }
 
         Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
 
-        drawHorizontalLine(12, 256-12, 34, 0xff595959);
 
         Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
         Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
