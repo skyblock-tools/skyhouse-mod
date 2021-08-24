@@ -10,6 +10,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Blocks;
@@ -25,6 +26,9 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationConfigGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationGui;
+import tools.skyblock.skyhouse.mcmod.overlays.ah.FlipListGui;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -64,6 +68,11 @@ public class Utils {
         if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
             return ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
+        } else if (Minecraft.getMinecraft().currentScreen instanceof GuiEditSign &&
+                (SkyhouseMod.INSTANCE.getOverlayManager().getGui() instanceof FlipListGui ||
+                 SkyhouseMod.INSTANCE.getOverlayManager().getGui() instanceof CreationGui ||
+                 SkyhouseMod.INSTANCE.getOverlayManager().getGui() instanceof CreationConfigGui)) {
+            return "AhPriceSign";
         }
         return null;
     }
@@ -118,7 +127,7 @@ public class Utils {
 
     public static boolean isAhGui() {
         String title = invGuiName();
-        return title != null && (title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid"));
+        return title != null && ((title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid")) || title.equals("AhPriceSign"));
     }
 
     public static boolean isAhCreationGui() {

@@ -43,7 +43,7 @@ public class DataManager {
                     if (data != null) lowestBins = data;
                 },
                 e -> {
-                    System.out.println("Error connecting to Moulberry's lowest bins api");
+                    SkyhouseMod.LOGGER.debug("Error connecting to Moulberry's lowest bins api");
                     if (sendMessage)  {
                         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error connecting to Moulberry's lowest bins api"));
                     }
@@ -61,7 +61,7 @@ public class DataManager {
                     if (data != null) bazaarData = data;
                 },
                 e -> {
-                    System.out.println("Error connecting to Hypixel api");
+                    SkyhouseMod.LOGGER.debug("Error connecting to Hypixel api");
                     if (sendMessage)  {
                         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error connecting to Hypixel api"));
                     }
@@ -81,7 +81,7 @@ public class DataManager {
                     if (data != null) reforgeData = data;
                 },
                 e -> {
-                    System.out.println("Error connecting to Moulberry's Github");
+                    SkyhouseMod.LOGGER.debug("Error connecting to Moulberry's Github");
                     if (sendMessage)  {
                         Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "Error connecting to Moulberry's Github"));
                     }

@@ -17,7 +17,14 @@ public class AuthenticationManager {
 
     private String accessToken = "";
     private String refreshToken = "";
-    public int privLevel = 0;
+
+    /*
+    -1 = placeholder to show no successful api request has been made
+    0 = no perms to flipper
+    1 = no sh+
+    2+ = sh+
+    */
+    public int privLevel = -1;
 
     private long lastCredUpdate = 0;
 

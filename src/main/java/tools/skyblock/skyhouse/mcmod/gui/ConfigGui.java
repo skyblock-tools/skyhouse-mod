@@ -380,8 +380,15 @@ public class ConfigGui extends GuiScreen {
             String[] text = Utils.wrapText("You have a Skyhouse+ subscription", EnumChatFormatting.GREEN, (optionsBoxRight - 16) - (optionsBoxLeft + stringWidth + 16));
             for (i = 0; i < text.length; i++)
                 fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, 0xff00ff00);
-        } else {
+        } else if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel == 0) {
             String[] text = Utils.wrapText("You do not have a Skyhouse+ subscription. Get unlimited profit bin->bin flips, filters, and more with Skyhouse+",
+                    EnumChatFormatting.RED, (optionsBoxRight - 10) - (optionsBoxLeft + stringWidth + 16));
+            for (i = 0; i < text.length; i++) {
+                optionsHeightTotal += 8;
+                fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24 - 6, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, 0xffffffff);
+            }
+        } else {
+            String[] text = Utils.wrapText("Log in with /skyhouselogin to access auction flipping",
                     EnumChatFormatting.RED, (optionsBoxRight - 10) - (optionsBoxLeft + stringWidth + 16));
             for (i = 0; i < text.length; i++) {
                 optionsHeightTotal += 8;
