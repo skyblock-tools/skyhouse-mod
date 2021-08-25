@@ -19,6 +19,10 @@ public class Auction {
     @Expose
     private int price;
 
+    @SerializedName("resell_price")
+    @Expose
+    private int resellPrice;
+
     @SerializedName("profit")
     @Expose
     private int profit;
@@ -59,6 +63,10 @@ public class Auction {
 
     public int getPrice() {
         return price;
+    }
+
+    public int getResellPrice() {
+        return resellPrice;
     }
 
     public int getProfit() {

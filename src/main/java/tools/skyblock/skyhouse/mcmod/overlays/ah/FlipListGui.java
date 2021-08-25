@@ -188,7 +188,7 @@ public class FlipListGui extends CustomGui {
             if (hover(mouseX - guiLeft, mouseY - guiTop, 19 + 135, -19 + i * 55 - 3, 15, 15, guiScale))
                 drawHoveringText(Arrays.asList(
                         EnumChatFormatting.GREEN + "Price: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getPrice()),
-                        EnumChatFormatting.GREEN + "Resell: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getPrice() + auction.getProfit()),
+                        EnumChatFormatting.GREEN + "Resell: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getResellPrice()),
                         EnumChatFormatting.GREEN + "Profit: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getProfit()) + "" + EnumChatFormatting.RESET
                 ), mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
         }
