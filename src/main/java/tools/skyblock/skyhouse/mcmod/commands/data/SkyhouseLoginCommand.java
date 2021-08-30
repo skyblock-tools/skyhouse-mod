@@ -33,9 +33,9 @@ public class SkyhouseLoginCommand implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        ChatComponentText link = new ChatComponentText(EnumChatFormatting.GREEN + Constants.BASE_URL + "/skyhouse/dynaoauth?r=profile%2F"); // INSERT OAUTH LINK
-        link.setChatStyle(link.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, Constants.BASE_URL + "/skyhouse-v2/dynaoauth?r=profile%2F" + EnumChatFormatting.RESET)));
-        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "To log in, click the link below and run the command you are given:\n").appendSibling(link));
+        ChatComponentText link = new ChatComponentText(EnumChatFormatting.GREEN + Constants.BASE_URL + "/skyhouse/profile"); // INSERT OAUTH LINK
+        link.setChatStyle(link.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, Constants.BASE_URL + "/skyhouse/profile")));
+        Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "To log in, click the link below, then click the button labelled \"login via discord\" and run the command you are given to set your mod token:\n").appendSibling(link));
     }
 
     @Override

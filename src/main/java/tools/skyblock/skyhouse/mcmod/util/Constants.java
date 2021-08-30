@@ -11,7 +11,7 @@ public class Constants {
     public static final boolean DEFAULT_ENCH_BOOKS_IN_SEARCH = true;
     public static final String BASE_URL = "https://skyblock.tools";
     public static final String API_BASE_URL = "https://api.skyblock.tools/api";
-    public static final String STATIC_BASE_URL = BASE_URL + "/skyhouse/static";
+    public static final String STATIC_BASE_URL = "https://static.skyblock.tools/skyhouse-static";
     public static final long TRY_UPDATE_CRED_DELAY = 10 * 1000;
 
 }

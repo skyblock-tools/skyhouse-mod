@@ -8,7 +8,6 @@ import net.minecraft.util.EnumChatFormatting;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -90,7 +89,7 @@ public class DataManager {
 
     public static void loadStaticSkyhouseData() {
         SkyhouseMod.LOGGER.debug("fetching skyhouse data");
-        Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "/contributors.json"), (object) -> {
+        Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "/mod/contributors.json"), (object) -> {
             contributors = object.get("contributors").getAsJsonArray();
         });
     }
