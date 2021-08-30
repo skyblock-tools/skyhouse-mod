@@ -20,7 +20,7 @@ buildscript {
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-version = "1.0-PRE1"
+version = "1.0"
 group= "tools.skyblock.skyhouse.mcmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Skyhouse"
 runClient {

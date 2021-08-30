@@ -177,15 +177,14 @@ public class CreationGui extends CustomGui {
                                         hpbBonus = (amount * hotPotatoPrice);
                                     } else {
                                         int fumingPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("FUMING_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
-                                        hpbBonus = (10 * hotPotatoPrice) + (amount * fumingPotatoPrice);
+                                        hpbBonus = (10 * hotPotatoPrice) + ((amount-10) * fumingPotatoPrice);
                                     }
                                     value += hpbBonus;
                                     drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(hpbBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(hpbBonus)), currentHeight, 0xffffff);
-                                    currentHeight += 15;
                                 } else {
                                     Utils.drawString(this, fontRendererObj, EnumChatFormatting.RED + "No Data", 256 - 14 - fontRendererObj.getStringWidth("No Data"), currentHeight, 0xffffff);
-                                    currentHeight += 15;
                                 }
+                                currentHeight += 15;
                                 break;
                             }
                         }

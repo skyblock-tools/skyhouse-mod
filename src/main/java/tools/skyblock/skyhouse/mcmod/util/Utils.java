@@ -68,11 +68,6 @@ public class Utils {
         if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
             GuiChest chest = (GuiChest) Minecraft.getMinecraft().currentScreen;
             return ((ContainerChest) chest.inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
-        } else if (Minecraft.getMinecraft().currentScreen instanceof GuiEditSign &&
-                (SkyhouseMod.INSTANCE.getOverlayManager().getGui() instanceof FlipListGui ||
-                 SkyhouseMod.INSTANCE.getOverlayManager().getGui() instanceof CreationGui ||
-                 SkyhouseMod.INSTANCE.getOverlayManager().getGui() instanceof CreationConfigGui)) {
-            return "AhPriceSign";
         }
         return null;
     }
@@ -127,7 +122,7 @@ public class Utils {
 
     public static boolean isAhGui() {
         String title = invGuiName();
-        return title != null && ((title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid")) || title.equals("AhPriceSign"));
+        return title != null && (title.toLowerCase().contains("auction") || title.toLowerCase().contains("bid"));
     }
 
     public static boolean isAhCreationGui() {
@@ -142,7 +137,6 @@ public class Utils {
             return null;
         }
     }
-
 
     public static URL getUrl(String url, JsonObject query) {
         StringBuilder bobTheBuilder = new StringBuilder(url);
@@ -183,8 +177,6 @@ public class Utils {
             }
         });
     }
-
-
 
     public static String formatNumber(double value) {
         return df.format(value);

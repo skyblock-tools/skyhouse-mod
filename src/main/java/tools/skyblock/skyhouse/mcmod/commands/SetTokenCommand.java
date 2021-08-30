@@ -9,6 +9,9 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,6 +49,10 @@ public class SetTokenCommand implements ICommand {
             writer.write(token);
             writer.close();
             SkyhouseMod.INSTANCE.getAuthenticationManager().loadCredentials();
+            if (args.length > 1 && args[1].equals("site")) {
+                StringSelection string = new StringSelection("/shst [Redacted]");
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(string, string);
+            }
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Successfully set token" + EnumChatFormatting.RESET));
         } catch (IOException ignored) {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An unknown error occurred" + EnumChatFormatting.RESET));

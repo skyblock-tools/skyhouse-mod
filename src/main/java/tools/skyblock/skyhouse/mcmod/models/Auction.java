@@ -31,19 +31,19 @@ public class Auction {
     @Expose
     private String nbt;
 
-    @SerializedName("isRecomb")
+    @SerializedName("recomb")
     @Expose
     private boolean recomb;
 
-    @SerializedName("isPet")
+    @SerializedName("pet")
     @Expose
     private boolean pet;
 
-    @SerializedName("isSoul")
+    @SerializedName("soul")
     @Expose
     private boolean soul;
 
-    @SerializedName("isSkin")
+    @SerializedName("skin")
     @Expose
     private boolean skin;
 
