@@ -40,6 +40,9 @@ public class SetTokenCommand implements ICommand {
         if (args.length < 1) {
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You must specify a token" + EnumChatFormatting.RESET));
             return;
+        } else if (args[0].equals("undefined")) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "\"undefined\" is not a valid token. Please log out and in of the website to refresh the command and get a valid token." + EnumChatFormatting.RESET));
+            return;
         }
         String token = args[0];
         File file = new File(SkyhouseMod.INSTANCE.getConfigDir(), "very-secret-do-not-share.txt");

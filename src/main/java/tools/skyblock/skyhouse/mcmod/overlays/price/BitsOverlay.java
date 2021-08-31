@@ -2,6 +2,7 @@ package tools.skyblock.skyhouse.mcmod.overlays.price;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,10 +43,12 @@ public class BitsOverlay extends OverlayBase {
                 }
             }
         }
+        GlStateManager.disableLighting();
         for (Integer price : toDisplay.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
             drawString(fontRendererObj, toDisplay.get(price), 20, 10*drawI+20, 0xffffff);
             drawI++;
         }
+        GlStateManager.enableLighting();
     }
 
     private static List<ItemStack> getItems() {

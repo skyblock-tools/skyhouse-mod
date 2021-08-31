@@ -60,7 +60,7 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("full_chroma_mode")
-        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"})
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
         public boolean fullChromaMode = false;
 
         public boolean checkFullChromaMode(boolean checked) {

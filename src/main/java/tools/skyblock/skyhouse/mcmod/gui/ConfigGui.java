@@ -334,7 +334,8 @@ public class ConfigGui extends GuiScreen {
             component.draw(mouseX, mouseY);
             if (mouseX > optionsBoxLeft + 4 && mouseX < optionsBoxLeft + 20 && mouseY > optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12 && mouseY < optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 28 && optionsSlideIn.ended()) {
                 GL11.glDisable(GL11.GL_SCISSOR_TEST);
-                tooltip = Arrays.asList(options.get(i).description());
+                tooltip = new ArrayList<>(Arrays.asList(options.get(i).description()));
+                if (options.get(i).premium()) tooltip.add(0, "\u00a7cThis feature requires Skyhouse+\u00a7r");
                 GL11.glEnable(GL11.GL_SCISSOR_TEST);
             }
             i++;

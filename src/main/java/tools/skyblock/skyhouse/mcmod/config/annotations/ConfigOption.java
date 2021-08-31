@@ -11,5 +11,6 @@ public @interface ConfigOption {
 
     String value();
     String[] description() default {};
+    boolean premium() default false;
 
 }
