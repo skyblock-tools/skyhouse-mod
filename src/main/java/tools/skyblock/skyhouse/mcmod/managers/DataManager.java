@@ -34,6 +34,8 @@ public class DataManager {
         getLowestBinsFromMoulberryApi(false);
     }
 
+    // Moulberry's api here is only used for the CreationGui and BitsOverlay,
+    // the actual flipper itself uses our api, which uses the hypixel api.
     @SuppressWarnings("SpellCheckingInspection")
     public static void getLowestBinsFromMoulberryApi(boolean sendMessage) {
         SkyhouseMod.LOGGER.debug("fetching lowest bin data");
