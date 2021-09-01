@@ -323,9 +323,12 @@ public class ConfigGui extends GuiScreen {
             Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
 
             GlStateManager.pushMatrix();
-            GlStateManager.enableLighting();
-            drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 160, 0, 16, 16);
-            GlStateManager.disableLighting();
+            GlStateManager.color(1, 1, 1, 1);
+            if (options.get(i).premium() && SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
+                drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 96, 0, 16, 16);
+            } else {
+                drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 160, 0, 16, 16);
+            }
             GlStateManager.popMatrix();
 
             fontRendererObj.drawString(options.get(i).value(), optionsBoxLeft + 24, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 16, 0xffffffff);
@@ -381,7 +384,7 @@ public class ConfigGui extends GuiScreen {
             String[] text = Utils.wrapText("You have a Skyhouse+ subscription", EnumChatFormatting.GREEN, (optionsBoxRight - 16) - (optionsBoxLeft + stringWidth + 16));
             for (i = 0; i < text.length; i++)
                 fontRendererObj.drawString(text[i], optionsBoxLeft + stringWidth + 24, optionsScroll.getScrollStart() + optionsBoxTop + 28 + 12 * i, 0xff00ff00);
-        } else if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel == 0) {
+        } else if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel == 1) {
             String[] text = Utils.wrapText("You do not have a Skyhouse+ subscription. Get unlimited profit bin->bin flips, filters, and more with Skyhouse+",
                     EnumChatFormatting.RED, (optionsBoxRight - 10) - (optionsBoxLeft + stringWidth + 16));
             for (i = 0; i < text.length; i++) {

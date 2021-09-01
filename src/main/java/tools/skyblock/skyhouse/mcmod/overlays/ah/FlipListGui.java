@@ -13,6 +13,7 @@ import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
 import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.models.Auction;
 import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
+import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -157,7 +158,7 @@ public class FlipListGui extends CustomGui {
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GlStateManager.color(1f, 1f, 1f, 0.75f);
                 GlStateManager.scale(0.0625, 0.0625, 0.0625);
-                drawTexturedModalRect((20 + 135 + 16) * 16, (-19 + (i + 1) * 55 - 3) * 16, 0, 0, 256, 256);
+                drawTexturedModalRect((20 + 143 + 16) * 16, (-19 + (i + 1) * 55 - 3) * 16, 0, 0, 256, 256);
                 GlStateManager.color(1, 1, 1, 1);
                 GlStateManager.disableBlend();
                 GlStateManager.popMatrix();
@@ -174,7 +175,7 @@ public class FlipListGui extends CustomGui {
             drawTexturedModalRect(19, -20 + i * 55 - 3, 0, 0, 216, 45);
             Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
             drawTexturedModalRect(19 + 199, -19 + i * 55 - 3, 80, 0, 16, 16);
-            drawTexturedModalRect(19 + 135, -19 + i * 55 - 3, 160, 0, 16, 16);
+            drawTexturedModalRect(19 + 143, -19 + i * 55 - 3, 160, 0, 16, 16);
             String nameToDraw = Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(auction.getStack().getDisplayName(), 150).trim();
             if (!nameToDraw.equals(auction.getStack().getDisplayName()))
                 nameToDraw += (EnumChatFormatting.GRAY + "...");
@@ -188,9 +189,9 @@ public class FlipListGui extends CustomGui {
         i = 0;
         for (Auction auction : auctions.subList(page * 4, page * 4 + shownAucs)) {
             ItemStack toRender = auction.getStack();
-            if (hover(mouseX - guiLeft, mouseY - guiTop, 25, -16 + 55 * ++i - 2, 32, 32, guiScale))
+            if (hover(mouseX - guiLeft, mouseY - guiTop, 25, -16 + 55 * ++i, 32, 32, guiScale))
                 toRender.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
-            if (hover(mouseX - guiLeft, mouseY - guiTop, 19 + 135, -19 + i * 55 - 3, 15, 15, guiScale))
+            if (hover(mouseX - guiLeft, mouseY - guiTop, 19 + 143, -19 + i * 55 - 3, 15, 15, guiScale))
                 drawHoveringText(Arrays.asList(
                         EnumChatFormatting.GREEN + "Price: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getPrice()),
                         EnumChatFormatting.GREEN + "Resell: " + NumberFormat.getNumberInstance(Locale.UK).format(auction.getResellPrice()),
@@ -246,10 +247,9 @@ public class FlipListGui extends CustomGui {
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230, -32+8, 16, 16, guiScale)) {
             SkyhouseMod.INSTANCE.getOverlayManager().search(filter);
         }
-        String shPlusUrl = "https://skyblock.tools/skyhouse/skyhouse_plus";
-        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2 && mouseX >= width/2-fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(shPlusUrl)/2 && mouseY >= 64 && mouseY <= 64+8) {
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2 && mouseX >= width/2-fontRendererObj.getStringWidth(Constants.SKYHOUSE_PLUS_URL)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(Constants.SKYHOUSE_PLUS_URL)/2 && mouseY >= 64 && mouseY <= 64+8) {
             try {
-                Desktop.getDesktop().browse(new URI(shPlusUrl));
+                Desktop.getDesktop().browse(new URI(Constants.SKYHOUSE_PLUS_URL));
             } catch (URISyntaxException | IOException ignored) {
             }
         }

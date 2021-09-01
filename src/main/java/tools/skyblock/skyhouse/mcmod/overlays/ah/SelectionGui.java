@@ -1,10 +1,12 @@
 package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
+import scala.actors.threadpool.Arrays;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
 import tools.skyblock.skyhouse.mcmod.config.annotations.HiddenConfigOption;
@@ -19,7 +21,11 @@ import tools.skyblock.skyhouse.mcmod.util.Utils;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 
+import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,6 +42,8 @@ public class SelectionGui extends CustomGui {
     private List<IconButton> iconButtons = new ArrayList<>();
 
     private SearchFilter searchFilter = new SearchFilter();
+
+    private final List<String> skyhousePlusOnlyTooltip = Lists.newArrayList(EnumChatFormatting.RED + "The greyed out filters below require", EnumChatFormatting.RED + "Skyhouse+, click to learn more.");
 
     public SelectionGui() {
         createElements();
@@ -180,6 +188,10 @@ public class SelectionGui extends CustomGui {
             currentHeight += 24;
         }
         Utils.drawString(this, fontRendererObj, "Include:", 128+(64-50), 48-4, 0xffffff);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
+            drawTexturedModalRect(128 + 64 + 32 - 8, 48 - 7, 96, 0, 16, 16);
+        }
 
         for (CheckBox checkBox : itemFilterCheckBoxes) {
             checkBox.drawButton(Minecraft.getMinecraft(), mouseX, mouseY, SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2);
@@ -189,7 +201,6 @@ public class SelectionGui extends CustomGui {
             guiButton.drawButton(Minecraft.getMinecraft(), mouseX, mouseY);
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         for (IconButton button : iconButtons) {
             button.tick();
         }
@@ -220,6 +231,11 @@ public class SelectionGui extends CustomGui {
             if (button.getTooltip().size() > 0 && button.isMouseOver() && button.enabled)
                 drawHoveringText(button.getTooltip(), mouseX, mouseY);
         }
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
+            if (hover(mouseX - guiLeft, mouseY - guiTop, 128 + 64 + 32 - 8, 48 - 7, 16, 16, guiScale)) {
+                drawHoveringText(skyhousePlusOnlyTooltip, mouseX, mouseY);
+            }
+        }
     }
 
     @Override
@@ -238,6 +254,14 @@ public class SelectionGui extends CustomGui {
         for (CheckBox button : itemFilterCheckBoxes) {
             if (hover(mouseX - guiLeft, mouseY - guiTop, button.xPosition, button.yPosition, button.width, button.height, guiScale)) {
                 button.pressed();
+            }
+        }
+        if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
+            if (hover(mouseX - guiLeft, mouseY - guiTop, 128 + 64 + 32 - 8, 48 - 7, 16, 16, guiScale)) {
+                try {
+                    Desktop.getDesktop().browse(new URI(Constants.SKYHOUSE_PLUS_URL));
+                } catch (URISyntaxException | IOException ignored) {
+                }
             }
         }
     }

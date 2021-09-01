@@ -21,9 +21,10 @@ public class SkyhouseConfig {
 
     public void resetPremiumFeatures() {
         filterOptions.skins = true;
-        filterOptions.souls = true;
         filterOptions.pets = true;
         filterOptions.recombs = true;
+        filterOptions.souls = true;
+        filterOptions.enchBooks = true;
         generalConfig.fullChromaMode = false;
     }
 
