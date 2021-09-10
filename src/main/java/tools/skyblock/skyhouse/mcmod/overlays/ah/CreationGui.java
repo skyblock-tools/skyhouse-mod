@@ -317,7 +317,7 @@ public class CreationGui extends CustomGui {
                                             break;
                                         }
                                     }
-                                    if (rarity != null) reforgeCost = reforgeJson.get("reforgeCosts").getAsJsonObject().get(rarity).getAsInt();
+                                    if (rarity != null && reforgeJson.get("reforgeCosts").getAsJsonObject().has(rarity))
                                     break;
                                 }
                             }
