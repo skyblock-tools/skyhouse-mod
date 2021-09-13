@@ -1,7 +1,12 @@
 package tools.skyblock.skyhouse.mcmod.managers;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.client.renderer.GlStateManager;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+
+import net.minecraft.client.gui.Gui;
 
 public class ThemeManager {
 
@@ -42,6 +47,25 @@ public class ThemeManager {
             }
         }
         return 0;
+    }
+    public static void drawAhOverlayThemeFor(String gui) {
+        JsonObject currentData = themes.get(current).getAsJsonObject().get(gui).getAsJsonObject();
+        if (currentData.has("ref")) {
+            gui = currentData.get("ref").getAsString();
+        }
+        Gui.drawRect(2, 2, 254, 254, ThemeManager.getColour(gui, "background"));
+        Gui.drawRect(2, -30, 254, -2, ThemeManager.getColour(gui, "background"));
+
+        if (themes.get(current).getAsJsonObject().has(gui)) {
+            JsonArray lines = themes.get(current).getAsJsonObject().get(gui).getAsJsonObject().get("lines").getAsJsonArray();
+            for (JsonElement el : lines) {
+                JsonObject lineInfo = el.getAsJsonObject();
+                Gui.drawRect(lineInfo.get("left").getAsInt(), lineInfo.get("top").getAsInt(), lineInfo.get("right").getAsInt(),
+                        lineInfo.get("bottom").getAsInt(), lineInfo.get("colour").getAsInt());
+            }
+        }
+        GlStateManager.color(1, 1, 1, 1);
+
     }
 
 }

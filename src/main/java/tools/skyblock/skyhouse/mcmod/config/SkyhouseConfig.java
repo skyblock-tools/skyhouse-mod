@@ -53,22 +53,22 @@ public class SkyhouseConfig {
     @SerializedName("config_opened")
     public boolean configOpened = false;
 
-    public class GeneralConfig {
+    public static class GeneralConfig {
 
         @Expose
         @SerializedName("full_chroma_mode")
-        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA 1.6.0 or higher to function"})
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and grey text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders,", "\u00a74and as such requires SBA 1.6.0 or higher to function"})
         public boolean fullChromaMode = false;
 
         @Expose
         @SerializedName("theme")
-        @ConfigOption(value = "Theme")
+        @ConfigOption(value = "Theme", description = {"\u00a77Skyhouse GUI and overlay theme"})
         @Dropdown(method = {"tools.skyblock.skyhouse.mcmod.managers.DataManager", "themeNames"})
         public String theme = "default";
 
     }
 
-    public class AhOverlayConfig {
+    public static class AhOverlayConfig {
         @Expose
         @SerializedName("gui_scale")
         public float guiScale;
@@ -112,12 +112,11 @@ public class SkyhouseConfig {
             guiScale = relativeGui ? 256f / sr.getScaledWidth() : 1;
             guiTop = relativeGui ? (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2 : (sr.getScaledHeight() - 256) / 2;
             guiLeft = relativeGui ?  Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
-            configOpened = true;
         }
     }
 
 
-    public class PriceOverlayOptions {
+    public static class PriceOverlayOptions {
 
         @Expose
         @SerializedName("show_bits_overlays")
@@ -166,7 +165,7 @@ public class SkyhouseConfig {
         }
     }
 
-    public class CreationOptions {
+    public static class CreationOptions {
         @Expose
         @HiddenConfigOption(value = "Include Hot Potato Books", description = {"\u00a77Whether or not to include Hot/Fuming Potato Books in item value calculation"})
         @SerializedName("include_hpbs")

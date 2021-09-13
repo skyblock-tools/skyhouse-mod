@@ -3,9 +3,8 @@ package tools.skyblock.skyhouse.mcmod.config.gui;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
-import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
-import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 import tools.skyblock.skyhouse.mcmod.managers.ThemeManager;
 
 import java.util.function.Consumer;
@@ -18,17 +17,24 @@ public class DropdownComponent implements ConfigGuiComponent {
     private Consumer<String> updater;
     private Supplier<String[]> optionsSupplier;
     private static final String[] themeBasePath = new String[]{"components", "dropdown"};
+    private boolean fromRight;
+    private float guiScale = 1;
 
     boolean open = false;
 
-    public DropdownComponent(String[] options, String selected, Consumer<String> updater) {
-        this(() -> options, selected, updater);
+    public DropdownComponent(String[] options, String selected, Consumer<String> updater, boolean fromRight) {
+        this(() -> options, selected, updater, fromRight);
     }
 
-    public DropdownComponent(Supplier<String[]> optionsSupplier, String selected, Consumer<String> updater) {
+    public void scales(float sf) {
+        guiScale = sf;
+    }
+
+    public DropdownComponent(Supplier<String[]> optionsSupplier, String selected, Consumer<String> updater, boolean fromRight) {
         this.optionsSupplier = optionsSupplier;
         this.selected = selected;
         this.updater = updater;
+        this.fromRight = fromRight;
         xPos = 0;
         yPos = 0;
     }
@@ -40,19 +46,20 @@ public class DropdownComponent implements ConfigGuiComponent {
     public void draw(int mouseX, int mouseY) {
         tick();
 
-        int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected);
+        char arrow = open ? '▲' : '▼';
+        int arrowWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(" " + arrow);
+        int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected) + arrowWidth;
         for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str));
 
-        int xStart = xPos - maxWidth;
-
+        int xStart = fromRight ? xPos - maxWidth : xPos;
 
         Gui.drawRect(xStart, yPos, xStart + maxWidth + 16, yPos + 16,
                 (mouseX > xStart && mouseX < xStart + maxWidth + 16 && mouseY > yPos && mouseY < yPos + 16) ?
                         ThemeManager.getColour(themeBasePath, "selected", "background:hover") :
                         ThemeManager.getColour(themeBasePath,"selected", "background:default"));
 
-        int centreX = xStart + ((xStart + maxWidth + 16) - xStart) / 2;
-        Minecraft.getMinecraft().fontRendererObj.drawString(selected, centreX - Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected) / 2,
+        int centreX = xStart + ((xStart + maxWidth + 16 - arrowWidth) - xStart) / 2;
+        Minecraft.getMinecraft().fontRendererObj.drawString(selected + ' ' + arrow, centreX - Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected) / 2,
                 yPos + 4,  (mouseX > xStart && mouseX < xStart + maxWidth + 16 && mouseY > yPos && mouseY < yPos + 16) ?
                         ThemeManager.getColour(themeBasePath, "selected", "text:hover") :
                         ThemeManager.getColour(themeBasePath, "selected", "text:default"));
@@ -64,16 +71,16 @@ public class DropdownComponent implements ConfigGuiComponent {
             for (int i = 0; i < optionsSupplier.get().length; i++) {
 
                 Gui.drawRect(xStart, yPos + 16 * (i + 1), xStart + maxWidth + 16,yPos + 16 * (i + 2),
-                        (mouseX > xStart && mouseX < xStart + maxWidth + 16 && mouseY > yPos + 16 * (i + 1) &&
-                                mouseY < yPos + 16 * (i + 2)) ?
+                        (mouseX > xStart * guiScale && mouseX < (xStart + maxWidth + 16) * guiScale && mouseY > (yPos + 16 * (i + 1)) * guiScale &&
+                                mouseY < (yPos + 16 * (i + 2)) * guiScale) ?
                                 ThemeManager.getColour(themeBasePath, "options", "background:hover") :
                                 ThemeManager.getColour(themeBasePath,"options", "background:default"));
 
                 Gui.drawRect(xStart, yPos + 16 * (i + 1), xStart + maxWidth + 16, yPos + 16 * (i + 1) + 1,
                         ThemeManager.getColour(themeBasePath, "options", "separator"));
                 Minecraft.getMinecraft().fontRendererObj.drawString(optionsSupplier.get()[i], centreX - Minecraft.getMinecraft().fontRendererObj.getStringWidth(optionsSupplier.get()[i]) / 2,
-                        yPos + 4 + 16 * (i + 1), (mouseX > xStart && mouseX < xStart + maxWidth + 16 && mouseY > yPos + 16 * (i + 1) &&
-                                mouseY < yPos + 16 * (i + 2)) ?
+                        yPos + 4 + 16 * (i + 1), (mouseX > xStart * guiScale && mouseX < (xStart + maxWidth + 16 ) * guiScale && mouseY > (yPos + 16 * (i + 1)) * guiScale &&
+                                mouseY < (yPos + 16 * (i + 2)) * guiScale) ?
                                 ThemeManager.getColour(themeBasePath, "options", "text:hover") :
                                 ThemeManager.getColour(themeBasePath, "options", "text:default"));
             }
@@ -83,6 +90,7 @@ public class DropdownComponent implements ConfigGuiComponent {
 
 
             if (scissor) GL11.glEnable(GL11.GL_SCISSOR_TEST);
+            GlStateManager.color(1, 1, 1, 1);
         }
 
     }
@@ -94,16 +102,19 @@ public class DropdownComponent implements ConfigGuiComponent {
     }
 
     @Override
-    public void mousePressed(int mouseX, int mouseY) {
-        int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected);
+    public boolean mousePressed(int mouseX, int mouseY) {
+        boolean ret = false;
+        char arrow = open ? '▲' : '▼';
+        int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected + ' ' + arrow);
         for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str));
 
-        int xStart = xPos - maxWidth;
-        if (mouseX > xStart && mouseX < xStart + maxWidth + 16 && mouseY > yPos && mouseY < yPos + 16) {
+        int xStart = fromRight ? xPos - maxWidth : xPos;
+        if (mouseX > xStart * guiScale && mouseX < (xStart + maxWidth + 16) * guiScale && mouseY > yPos * guiScale && mouseY < (yPos + 16) * guiScale) {
             open = !open;
+            ret = true;
         } else if (open) {
             for (int i = 0; i < optionsSupplier.get().length; i++) {
-                if (mouseX < xStart + maxWidth + 16 && mouseY > yPos + 16 * (i + 1) && mouseY < yPos + 16 * (i + 2)) {
+                if (mouseX < (xStart + maxWidth + 16) * guiScale && mouseY > (yPos + 16 * (i + 1)) * guiScale  && mouseY < (yPos + 16 * (i + 2)) * guiScale) {
                     selected = optionsSupplier.get()[i];
                     updater.accept(selected);
                     open = false;
@@ -111,7 +122,9 @@ public class DropdownComponent implements ConfigGuiComponent {
                 }
             }
             open = false;
+            ret = true;
         }
+        return ret;
 
 
     }

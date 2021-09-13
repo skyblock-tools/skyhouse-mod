@@ -6,6 +6,6 @@ public interface ConfigGuiComponent {
 
     void setCoords(int x, int y);
 
-    void mousePressed(int mouseX, int mouseY);
+    boolean mousePressed(int mouseX, int mouseY);
 
 }

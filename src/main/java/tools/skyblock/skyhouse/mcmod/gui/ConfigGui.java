@@ -220,7 +220,7 @@ public class ConfigGui extends GuiScreen {
                     String label;
                     if (!dropdown.label().isEmpty()) label = dropdown.label();
                     else label = Utils.<String>fieldGetter(field, subCategory).get();
-                    components.add(new DropdownComponent(supplier, label, Utils.fieldSetter(field, subCategory)));
+                    components.add(new DropdownComponent(supplier, label, Utils.fieldSetter(field, subCategory), true));
                 } else if (field.getType().equals(boolean.class)) {
                     components.add(new BooleanComponent(0, width / 2 + guiWidth - 20,
                             categoryBoxTop + 24 * i++,
@@ -356,6 +356,7 @@ public class ConfigGui extends GuiScreen {
             drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 8, optionsBoxRight, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 6, darkShadeColour);
             if (options.get(i).description().length > 0) {
                 Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+                GlStateManager.color(1, 1, 1, 1);
                 drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 160, 0, 16, 16);
             }
             fontRendererObj.drawString(options.get(i).value(), optionsBoxLeft + 24, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 16, 0xffffffff);

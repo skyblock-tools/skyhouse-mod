@@ -1,8 +1,6 @@
 package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -12,7 +10,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
 import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
@@ -70,7 +67,6 @@ public class CreationGui extends CustomGui {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-//        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
@@ -78,25 +74,12 @@ public class CreationGui extends CustomGui {
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-
-
-        drawRect(2, 2, 254, 254, ThemeManager.getColour("selectionGUI", "background"));
-        drawRect(2, -30, 254, -2, ThemeManager.getColour("selectionGUI", "background"));
-
-
-        JsonArray lines = ThemeManager.themes.get(ThemeManager.current).getAsJsonObject().get("selectionGUI").getAsJsonObject().get("lines").getAsJsonArray();
-        for (JsonElement el : lines) {
-            JsonObject lineInfo = el.getAsJsonObject();
-            drawRect(lineInfo.get("left").getAsInt(), lineInfo.get("top").getAsInt(), lineInfo.get("right").getAsInt(),
-                    lineInfo.get("bottom").getAsInt(), lineInfo.get("colour").getAsInt());
-        }
-        drawTexturedModalRect(-100, -8-16, 194, 0, 16, 16);
+        ThemeManager.drawAhOverlayThemeFor("creationGUI");
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230, -8-16, 194, 0, 16, 16);
-        drawTexturedModalRect(8, -32+8, 194, 16, 16, 16);
+        drawTexturedModalRect(8, -32+8, 194, 0, 16, 16);
 
-//        drawTexturedModalRect(-230, -8-16, 194, 0, 16, 16);
         drawTexturedModalRect(-8, -32+8, 194, 16, 16, 16);
         if (SkyhouseMod.INSTANCE.getOverlayManager().hasFlips()) {
             drawTexturedModalRect(8+22, -32+8+1, 32, 0, 16, 16);

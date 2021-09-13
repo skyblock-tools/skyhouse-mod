@@ -1,8 +1,5 @@
 package tools.skyblock.skyhouse.mcmod.overlays.ah;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,6 +8,7 @@ import org.lwjgl.input.Keyboard;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
 import tools.skyblock.skyhouse.mcmod.config.annotations.HiddenConfigOption;
+import tools.skyblock.skyhouse.mcmod.config.gui.DropdownComponent;
 import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
 import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
@@ -25,6 +23,7 @@ import tools.skyblock.skyhouse.mcmod.util.Resources;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -40,6 +39,11 @@ public class SelectionGui extends CustomGui {
     private List<IconButton> iconButtons = new ArrayList<>();
 
     private SearchFilter searchFilter = new SearchFilter();
+
+    private HashMap<String, CustomTextbox> textboxes = new HashMap<>();
+
+    private DropdownComponent textboxDropdown;
+    private String currentTextbox = "";
 
     public SelectionGui() {
         createElements();
@@ -57,19 +61,27 @@ public class SelectionGui extends CustomGui {
         inputs.clear();
         buttons.clear();
         iconButtons.clear();
-        inputs.add(
-                new CustomTextbox(0, Minecraft.getMinecraft().fontRendererObj, 128+(64-50), 198, 90, 20, CustomTextbox.DIGITS_ONLY)
+        textboxes.clear();
+        int textboxX = 16, textboxY = 88;
+        textboxes.put("Min Profit",
+                new CustomTextbox(0, Minecraft.getMinecraft().fontRendererObj, textboxX, textboxY, 90, 20, CustomTextbox.DIGITS_ONLY)
                         .withDefaultText(String.valueOf(minProfit))
                         .withStateUpdater(Utils.createStringToIntCallback(searchFilter::withMinProfit,
                                 Constants.DEFAULT_MIN_PROFIT))
                         .withStateUpdater(Utils.createStringToIntCallback(config.filterOptions::setMinProfit, Constants.DEFAULT_MIN_PROFIT))
         );
-        inputs.add(
-                new CustomTextbox(1, Minecraft.getMinecraft().fontRendererObj, 14+10, 198, 90, 20, CustomTextbox.DIGITS_ONLY)
+        textboxes.put("Max price",
+                new CustomTextbox(1, Minecraft.getMinecraft().fontRendererObj, textboxX, textboxY, 90, 20, CustomTextbox.DIGITS_ONLY)
                         .withDefaultText(String.valueOf(maxPrice))
                         .withStateUpdater(Utils.createStringToIntCallback(searchFilter::withMaxPrice, Constants.DEFAULT_MAX_PRICE))
                         .withStateUpdater(Utils.createStringToIntCallback(config.filterOptions::setMaxPrice, Constants.DEFAULT_MAX_PRICE))
         );
+        currentTextbox = "Min Profit";
+        textboxDropdown = new DropdownComponent(() -> textboxes.keySet().toArray(new String[0]), currentTextbox, (textbox) -> {
+            currentTextbox = textbox;
+        }, false);
+        textboxDropdown.setCoords(16, 64);
+
         buttons.add(
                 new CustomButton(0, (128-40), 236-10, 80, 20, "Search")
                         .withExecutor(() -> SkyhouseMod.INSTANCE.getOverlayManager().search(searchFilter))
@@ -80,7 +92,7 @@ public class SelectionGui extends CustomGui {
                         .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist::clear)
                         .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.isEmpty()));
 
-        iconButtons.add(new IconButton(1, 256-14-16, 12, 80, 16)
+        iconButtons.add(new IconButton(1, 256-14-16, 12, 176, 16)
                 .withTooltip(EnumChatFormatting.RED + "Reset Filter Preferences")
                 .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager()::resetFilter)
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));
@@ -99,6 +111,7 @@ public class SelectionGui extends CustomGui {
         for (GuiButton button : buttons) {
             if (button instanceof CustomButton) ((CustomButton) button).scales(guiScale);
         }
+        textboxDropdown.scales(guiScale);
         for (IconButton button : iconButtons) {
             button.scales(guiScale);
         }
@@ -148,14 +161,13 @@ public class SelectionGui extends CustomGui {
         super.tick();
         guiLeft = Utils.getGuiLeft();
         guiTop = Utils.getGuiTop();
+
     }
 
     @Override
     public void keyEvent() {
         if (Keyboard.getEventKeyState())
-        for (GuiTextField field : inputs) {
-            field.textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-        }
+            textboxes.get(currentTextbox).textboxKeyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
     }
 
     @Override
@@ -166,21 +178,10 @@ public class SelectionGui extends CustomGui {
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        drawRect(2, 2, 254, 254, ThemeManager.getColour("selectionGUI", "background"));
-        drawRect(2, -30, 254, -2, ThemeManager.getColour("selectionGUI", "background"));
-
-        JsonArray lines = ThemeManager.themes.get(ThemeManager.current).getAsJsonObject().get("selectionGUI").getAsJsonObject().get("lines").getAsJsonArray();
-        for (JsonElement el : lines) {
-            JsonObject lineInfo = el.getAsJsonObject();
-            drawRect(lineInfo.get("left").getAsInt(), lineInfo.get("top").getAsInt(), lineInfo.get("right").getAsInt(),
-                    lineInfo.get("bottom").getAsInt(), lineInfo.get("colour").getAsInt());
-        }
+        ThemeManager.drawAhOverlayThemeFor("selectionGUI");
 
         Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
 
-
-        Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Minimum Profit", 256-90-(14+10), 192-6, 0xffffff);
-        Utils.drawString(this, Minecraft.getMinecraft().fontRendererObj, "Maximum Price", 14+10, 192-6, 0xffffff);
 
         int currentHeight = 168;
         for (HiddenConfigOption option : labels) {
@@ -212,15 +213,14 @@ public class SelectionGui extends CustomGui {
     }
 
     private void drawComponents(int mouseX, int mouseY) {
-        for (GuiTextField textField : inputs) {
-            textField.drawTextBox();
-        }
+        textboxes.get(currentTextbox).drawTextBox();
         for (IconButton button : iconButtons) {
             button.drawButton(Minecraft.getMinecraft(), mouseX - guiLeft, mouseY - guiTop);
         }
         for (GuiButton button : buttons) {
             button.drawButton(Minecraft.getMinecraft(), mouseX - guiLeft, mouseY - guiTop);
         }
+        textboxDropdown.draw(mouseX - guiLeft, mouseY - guiTop);
     }
 
     private void drawTooltips(int mouseX, int mouseY) {
@@ -232,9 +232,10 @@ public class SelectionGui extends CustomGui {
 
     @Override
     public void click(int mouseX, int mouseY) {
-        for (GuiTextField textField : inputs) {
-            textField.setFocused(hover(mouseX-guiLeft, mouseY-guiTop, textField.xPosition, textField.yPosition, textField.width, textField.height, guiScale));
-        }
+        if (textboxDropdown.mousePressed(mouseX - guiLeft, mouseY - guiTop))
+            return;
+        CustomTextbox current = textboxes.get(currentTextbox);
+        current.setFocused(hover(mouseX - guiLeft, mouseY - guiTop, current.xPosition, current.yPosition, current.width, current.height, guiScale));
         for (GuiButton button : buttons) {
             if (button.mousePressed(Minecraft.getMinecraft(), mouseX-guiLeft, mouseY-guiTop))
                 button.playPressSound(Minecraft.getMinecraft().getSoundHandler());
