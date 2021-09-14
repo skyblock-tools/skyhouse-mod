@@ -121,7 +121,8 @@ public class OverlayManager {
 
     public void search(SearchFilter filter) {
         this.filter = filter;
-        SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/flips",//"https://api.skyblock.tools/skyhouse/api/flip/auctions",
+        System.out.println(Utils.getUrl(Constants.API_BASE_URL+"/flips", SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)));
+        SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/flips",//"https://api.skyblock.tools/api/flips",
                 SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)),
                 data -> {
                     flips = data.get("flips").getAsJsonArray();
@@ -178,9 +179,10 @@ public class OverlayManager {
         SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice = Constants.DEFAULT_MAX_PRICE;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit = Constants.DEFAULT_MIN_PROFIT;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.skins = true;
-        SkyhouseMod.INSTANCE.getConfig().filterOptions.souls = true;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.pets = true;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.souls = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.enchBooks = true;
         gui = new SelectionGui();
     }
 
@@ -188,9 +190,9 @@ public class OverlayManager {
         return SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice  == Constants.DEFAULT_MAX_PRICE &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit  == Constants.DEFAULT_MIN_PROFIT &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.skins == Constants.DEFAULT_SKINS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.souls  == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.pets  == Constants.DEFAULT_PETS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs  == Constants.DEFAULT_RECOMBS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.pets  == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs  == Constants.DEFAULT_PETS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.souls  == Constants.DEFAULT_RECOMBS_IN_SEARCH &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.enchBooks  == Constants.DEFAULT_ENCH_BOOKS_IN_SEARCH;
     }
 

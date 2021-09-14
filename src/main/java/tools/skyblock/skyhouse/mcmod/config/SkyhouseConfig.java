@@ -7,6 +7,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.Loader;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.annotations.*;
+import tools.skyblock.skyhouse.mcmod.util.Constants;
 
 import java.lang.reflect.Field;
 
@@ -61,7 +62,8 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("full_chroma_mode")
-        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and grey text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and grey text to chroma",
+                "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
         public boolean fullChromaMode = false;
 
         @Expose
@@ -121,7 +123,7 @@ public class SkyhouseConfig {
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
             guiScale = relativeGui ? (255f * guiScale) / sr.getScaledWidth() : guiScale * sr.getScaledWidth() / 255f;
             guiTop = relativeGui ? (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2 : (sr.getScaledHeight() - 256) / 2;
-            guiLeft = relativeGui ? Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
+            guiLeft = relativeGui ? Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : Math.round(sr.getScaledWidth() - 256 * guiScale);
         }
 
     }
@@ -171,7 +173,7 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("max_price")
-        public int maxPrice;
+        public int maxPrice = Constants.DEFAULT_MAX_PRICE;
 
         @Expose
         @SerializedName("min_profit")
