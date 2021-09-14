@@ -7,6 +7,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.common.Loader;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.annotations.*;
+import tools.skyblock.skyhouse.mcmod.util.Constants;
 
 import java.lang.reflect.Field;
 
@@ -61,7 +62,8 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("full_chroma_mode")
-        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma",
+                "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
         public boolean fullChromaMode = false;
 
         public boolean checkFullChromaMode(boolean checked) {
@@ -165,11 +167,11 @@ public class SkyhouseConfig {
 
         @Expose
         @SerializedName("max_price")
-        public int maxPrice;
+        public int maxPrice = Constants.DEFAULT_MAX_PRICE;
 
         @Expose
         @SerializedName("min_profit")
-        public int minProfit;
+        public int minProfit = Constants.DEFAULT_MIN_PROFIT;
 
         public boolean checkSkins(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;

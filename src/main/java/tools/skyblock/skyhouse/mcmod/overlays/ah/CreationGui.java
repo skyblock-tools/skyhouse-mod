@@ -165,28 +165,24 @@ public class CreationGui extends CustomGui {
                         //TODO: add everything that could modify the value of an item here
 
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeHpbs) {
-                            for (String entry : lore) {
-                                final Matcher matcher = REGEX_PATTERN_FOR_HOT_POTATO_BOOKS_BONUS_FOR_ITEM_VALUE_CALCULATION.matcher(entry);
-                                if (!matcher.find()) continue;
-                                final int amount = Integer.parseInt(matcher.group(1)) / 2;
-                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Hot Potato Books: " + amount, 14, currentHeight, 0xffffff);
-                                if (DataManager.bazaarData != null) {
-                                    int hotPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("HOT_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
-                                    int hpbBonus = 0;
-                                    if (amount <= 10) {
-                                        hpbBonus = (amount * hotPotatoPrice);
-                                    } else {
-                                        int fumingPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("FUMING_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
-                                        hpbBonus = (10 * hotPotatoPrice) + ((amount-10) * fumingPotatoPrice);
-                                    }
-                                    value += hpbBonus;
-                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(hpbBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(hpbBonus)), currentHeight, 0xffffff);
+                            NBTTagCompound extraAttributes = nbt.getCompoundTag("ExtraAttributes");
+                            final int amount = extraAttributes.getInteger("hot_potato_count");
+                            Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Hot Potato Books: " + amount, 14, currentHeight, 0xffffff);
+                            if (DataManager.bazaarData != null) {
+                                int hotPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("HOT_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
+                                int hpbBonus = 0;
+                                if (amount <= 10) {
+                                    hpbBonus = (amount * hotPotatoPrice);
                                 } else {
-                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.RED + "No Data", 256 - 14 - fontRendererObj.getStringWidth("No Data"), currentHeight, 0xffffff);
+                                    int fumingPotatoPrice = DataManager.bazaarData.get("products").getAsJsonObject().get("FUMING_POTATO_BOOK").getAsJsonObject().get("quick_status").getAsJsonObject().get("buyPrice").getAsInt();
+                                    hpbBonus = (10 * hotPotatoPrice) + ((amount-10) * fumingPotatoPrice);
                                 }
-                                currentHeight += 15;
-                                break;
+                                value += hpbBonus;
+                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(hpbBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(hpbBonus)), currentHeight, 0xffffff);
+                            } else {
+                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.RED + "No Data", 256 - 14 - fontRendererObj.getStringWidth("No Data"), currentHeight, 0xffffff);
                             }
+                            currentHeight += 15;
                         }
 
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeAow) {

@@ -2,6 +2,7 @@ package tools.skyblock.skyhouse.mcmod.gui.components;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
+import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,8 @@ public class CustomTextbox extends GuiTextField {
     private List<Consumer<String>> stateUpdaters = new ArrayList<>();
 
     private int opt;
+
+    private boolean premium = false;
 
 
     public CustomTextbox(int componentId, FontRenderer fontrendererObj, int x, int y, int par5Width, int par6Height, int options) {
@@ -35,8 +38,14 @@ public class CustomTextbox extends GuiTextField {
         return this;
     }
 
+    public CustomTextbox setPremium(boolean premium) {
+        this.premium = premium;
+        return this;
+    }
+
     @Override
     public boolean textboxKeyTyped(char typedChar, int keyCode) {
+        if (this.premium && SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel > 2) return false;
         if ((opt & DIGITS_ONLY) != 0 && (Character.isLetter(typedChar))) return false;
         boolean success = super.textboxKeyTyped(typedChar, keyCode);
         if (success && stateUpdaters != null)
