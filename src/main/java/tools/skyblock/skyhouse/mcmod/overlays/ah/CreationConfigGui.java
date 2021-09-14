@@ -10,6 +10,7 @@ import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
 import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
 import tools.skyblock.skyhouse.mcmod.gui.components.CheckBox;
 import tools.skyblock.skyhouse.mcmod.gui.components.IconButton;
+import tools.skyblock.skyhouse.mcmod.managers.ThemeManager;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -39,24 +40,19 @@ public class CreationConfigGui extends CustomGui {
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        drawTexturedModalRect(0, 0, 0, 0, 256, 256);
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
-        drawTexturedModalRect(0, -32, 0, 45, 256, 32);
+        ThemeManager.drawAhOverlayThemeFor("creationGUI");
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230, -8-16, 194, 0, 16, 16);
         drawTexturedModalRect(8, -32+8, 194, 16, 16, 16);
 
         GlStateManager.popMatrix();
-
 
 
         GlStateManager.pushMatrix();

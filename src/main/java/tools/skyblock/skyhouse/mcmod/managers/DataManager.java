@@ -123,7 +123,7 @@ public class DataManager {
         Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "/mod/contributors.json"), (object) -> {
             contributors = object.get("contributors").getAsJsonArray();
         });
-        Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "mod/themes.json"), (object) -> {
+        Utils.getJsonApiAsync(Utils.parseUrl(Constants.STATIC_BASE_URL + "/mod/themes.json"), (object) -> {
             themes = object;
             for (Map.Entry<String, JsonElement> entry : storedThemes.entrySet()) {
                 themes.add(entry.getKey(), entry.getValue());

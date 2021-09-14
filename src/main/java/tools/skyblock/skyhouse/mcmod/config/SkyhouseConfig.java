@@ -70,14 +70,12 @@ public class SkyhouseConfig {
         @Dropdown(method = {"tools.skyblock.skyhouse.mcmod.managers.DataManager", "themeNames"})
         public String theme = "default";
 
-    }
-
-    public static class AhOverlayConfig {
         public boolean checkFullChromaMode(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && Loader.isModLoaded("skyblockaddons");
         }
 
     }
+
 
     public class AhOverlayConfig {
 
@@ -123,7 +121,7 @@ public class SkyhouseConfig {
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
             guiScale = relativeGui ? (255f * guiScale) / sr.getScaledWidth() : guiScale * sr.getScaledWidth() / 255f;
             guiTop = relativeGui ? (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2 : (sr.getScaledHeight() - 256) / 2;
-            guiLeft = relativeGui ?  Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
+            guiLeft = relativeGui ? Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
         }
 
     }
@@ -134,7 +132,7 @@ public class SkyhouseConfig {
         @Expose
         @SerializedName("show_bits_overlays")
         @ConfigOption(value = "Enable bits price overlay", description = {"\u00a77Enables the bits price overlay\u00a7r",
-        "\u00a7aDisplays the coins : bit ratio of each item in the bits shop\u00a7r"})
+                "\u00a7aDisplays the coins : bit ratio of each item in the bits shop\u00a7r"})
         public boolean showBitsOverlay = false;
 
     }

@@ -128,7 +128,7 @@ public class FlipListGui extends CustomGui {
         drawTexturedModalRect(0, 0, 144, 0, 16, 16);
         GlStateManager.popMatrix();
 
-        drawTexturedModalRect(8, -32 + 8, 194, 0, 16, 16);
+        drawTexturedModalRect(8, -32 + 8, 194, 16, 16, 16);
         if (Utils.isAhCreationGui() && Utils.renderCreationOverlay()) {
             drawTexturedModalRect(8+22, -32+8+1, 32, 0, 16, 16);
         }
