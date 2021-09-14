@@ -57,13 +57,22 @@ public class SkyhouseConfig {
     @SerializedName("config_opened")
     public boolean configOpened = false;
 
-    public class GeneralConfig {
+    public static class GeneralConfig {
 
         @Expose
         @SerializedName("full_chroma_mode")
-        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and gray text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
+        @ConfigOption(value = "Enable chroma in all Skyhouse GUIs", description = {"\u00a77Turns all white and grey text to chroma", "\u00a74This uses SkyblockAddon's chroma shaders, and", "\u00a74as such it requires SBA 1.6.0 or higher to function"}, premium = true)
         public boolean fullChromaMode = false;
 
+        @Expose
+        @SerializedName("theme")
+        @ConfigOption(value = "Theme", description = {"\u00a77Skyhouse GUI and overlay theme"})
+        @Dropdown(method = {"tools.skyblock.skyhouse.mcmod.managers.DataManager", "themeNames"})
+        public String theme = "default";
+
+    }
+
+    public static class AhOverlayConfig {
         public boolean checkFullChromaMode(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2 && Loader.isModLoaded("skyblockaddons");
         }
@@ -114,14 +123,13 @@ public class SkyhouseConfig {
             ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
             guiScale = relativeGui ? (255f * guiScale) / sr.getScaledWidth() : guiScale * sr.getScaledWidth() / 255f;
             guiTop = relativeGui ? (sr.getScaledHeight() - Math.round(256f * guiScale)) / 2 : (sr.getScaledHeight() - 256) / 2;
-            guiLeft = relativeGui ? Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : Math.round(sr.getScaledWidth() - 256 * guiScale);
-            configOpened = true;
+            guiLeft = relativeGui ?  Math.round(sr.getScaledWidth() - 256f * (guiScale * sr.getScaledWidth()) / 255f) : sr.getScaledWidth() - 266;
         }
 
     }
 
 
-    public class PriceOverlayOptions {
+    public static class PriceOverlayOptions {
 
         @Expose
         @SerializedName("show_bits_overlays")
@@ -201,7 +209,7 @@ public class SkyhouseConfig {
 
     }
 
-    public class CreationOptions {
+    public static class CreationOptions {
 
         @Expose
         @HiddenConfigOption(value = "Include Hot Potato Books", description = {"\u00a77Whether or not to include Hot/Fuming Potato Books in item value calculation"})

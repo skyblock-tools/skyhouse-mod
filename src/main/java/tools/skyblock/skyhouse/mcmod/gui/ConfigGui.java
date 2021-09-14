@@ -10,18 +10,22 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import scala.annotation.meta.field;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
 import tools.skyblock.skyhouse.mcmod.config.annotations.CommandButton;
 import tools.skyblock.skyhouse.mcmod.config.annotations.ConfigCategory;
 import tools.skyblock.skyhouse.mcmod.config.annotations.ConfigOption;
+import tools.skyblock.skyhouse.mcmod.config.annotations.Dropdown;
 import tools.skyblock.skyhouse.mcmod.config.gui.BooleanComponent;
 import tools.skyblock.skyhouse.mcmod.config.gui.CommandComponent;
 import tools.skyblock.skyhouse.mcmod.config.gui.ConfigGuiComponent;
+import tools.skyblock.skyhouse.mcmod.config.gui.DropdownComponent;
 import tools.skyblock.skyhouse.mcmod.gui.helpers.ScaleManager;
 import tools.skyblock.skyhouse.mcmod.gui.helpers.ScrollManager;
 import tools.skyblock.skyhouse.mcmod.gui.helpers.SimpleAnimationStateManager;
 import tools.skyblock.skyhouse.mcmod.managers.DataManager;
+import tools.skyblock.skyhouse.mcmod.managers.ThemeManager;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -31,6 +35,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ConfigGui extends GuiScreen {
 
@@ -50,11 +55,17 @@ public class ConfigGui extends GuiScreen {
     ScaledResolution sr;
 
     // colours
-    private static final int bgColour = 0x884d4a69;
-    private static final int mainBoxColour = 0x994c497a;
-    private static final int optBoxColour = 0xcc302e59;
-    private static final int lightShadeColour = 0xdd27254f;
-    private static final int darkShadeColour = 0xdd222240;
+//    private static int bgColour = 0x884d4a69;
+//    private static int mainBoxColour = 0x994c497a;
+//    private static int optBoxColour = 0xcc302e59;
+//    private static int lightShadeColour = 0xdd27254f;
+//    private static int darkShadeColour = 0xdd222240;
+
+    private static int bgColour = 0xffffffff;
+    private static int mainBoxColour = 0xffffffff;
+    private static int optBoxColour = 0xffffffff;
+    private static int lightShadeColour = 0xffffffff;
+    private static int darkShadeColour = 0xffffffff;
 
     private SimpleAnimationStateManager openWidthAnimation = SimpleAnimationStateManager.builder()
             .withCurrent(0)
@@ -100,6 +111,19 @@ public class ConfigGui extends GuiScreen {
     }
 
     private void tick() {
+        JsonObject theme = DataManager.themes.get(SkyhouseMod.INSTANCE.getConfig().generalConfig.theme).getAsJsonObject().get("config").getAsJsonObject();
+        bgColour = ThemeManager.getColour("config", "background");
+        mainBoxColour = ThemeManager.getColour("config", "sectionBoxes");
+        optBoxColour = ThemeManager.getColour("config", "optionBoxes");
+        lightShadeColour = ThemeManager.getColour("config", "lightShade");
+        darkShadeColour = ThemeManager.getColour("config", "darkShade");
+
+        bgColour = theme.get("background").getAsInt();
+        mainBoxColour = theme.get("sectionBoxes").getAsInt();
+        optBoxColour = theme.get("optionBoxes").getAsInt();
+        lightShadeColour = theme.get("lightShade").getAsInt();
+        darkShadeColour = theme.get("darkShade").getAsInt();
+
         if (!openWidthAnimation.ended())
             openWidthAnimation.tick();
         else {
@@ -184,6 +208,19 @@ public class ConfigGui extends GuiScreen {
                     CommandButton commandButton = field.getAnnotation(CommandButton.class);
                     components.add(new CommandComponent(0, width / 2 + guiWidth - 20,
                             categoryBoxTop + 24 * i++, commandButton.label(), commandButton.value()));
+                } else if (field.isAnnotationPresent(Dropdown.class)) {
+                    Dropdown dropdown = field.getAnnotation(Dropdown.class);
+                    Supplier<String[]> supplier;
+                    if (dropdown.options().length > 0) {
+                        supplier = dropdown::options;
+                    } else {
+                        Method method = Utils.methodByName(dropdown.method()[0], dropdown.method()[1]);
+                        supplier = () -> Utils.invokeMethod(method, null);
+                    }
+                    String label;
+                    if (!dropdown.label().isEmpty()) label = dropdown.label();
+                    else label = Utils.<String>fieldGetter(field, subCategory).get();
+                    components.add(new DropdownComponent(supplier, label, Utils.fieldSetter(field, subCategory), true));
                 } else if (field.getType().equals(boolean.class)) {
                     components.add(new BooleanComponent(0, width / 2 + guiWidth - 20,
                             categoryBoxTop + 24 * i++,
@@ -320,17 +357,15 @@ public class ConfigGui extends GuiScreen {
             drawRect(optionsBoxLeft, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i, optionsBoxRight, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 8, optBoxColour);
             drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i, optionsBoxLeft, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 8, darkShadeColour);
             drawRect(optionsBoxLeft - 2, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 8, optionsBoxRight, optionsScroll.getScrollStart() + optionsBoxTop + 48 * (i + 1) - 6, darkShadeColour);
-            Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
-
-            GlStateManager.pushMatrix();
             GlStateManager.color(1, 1, 1, 1);
-            if (options.get(i).premium() && SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
-                drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 96, 0, 16, 16);
-            } else {
-                drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 160, 0, 16, 16);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
+            if (options.get(i).description().length > 0) {
+                if (options.get(i).premium() && SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
+                    drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 96, 0, 16, 16);
+                } else {
+                    drawTexturedModalRect(optionsBoxLeft + 4, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12, 160, 0, 16, 16);
+                }
             }
-            GlStateManager.popMatrix();
-
             fontRendererObj.drawString(options.get(i).value(), optionsBoxLeft + 24, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 16, 0xffffffff);
 
             component.setCoords(optionsBoxRight - 30, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12);
@@ -373,7 +408,6 @@ public class ConfigGui extends GuiScreen {
         for (JsonElement el : DataManager.contributors) {
             stringWidth = Math.max(stringWidth, fontRendererObj.getStringWidth(el.getAsJsonObject().get("name").getAsString()));
         }
-//        optionsScroll.getScrollStart() + optionsBoxTop + 8 + 4
         int shpBoxCentreX = (optionsBoxLeft + stringWidth + 10) + ((optionsBoxRight - 4) - (optionsBoxLeft + stringWidth + 16)) / 2;
         Utils.drawStringCentred("Skyhouse+", shpBoxCentreX, optionsScroll.getScrollStart() + optionsBoxTop + 14, 0xff00ff00);
 

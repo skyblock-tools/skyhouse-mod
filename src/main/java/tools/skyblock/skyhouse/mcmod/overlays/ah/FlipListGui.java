@@ -11,6 +11,8 @@ import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
 import tools.skyblock.skyhouse.mcmod.gui.ConfigGui;
+import tools.skyblock.skyhouse.mcmod.gui.helpers.SimpleAnimationStateManager;
+import tools.skyblock.skyhouse.mcmod.managers.ThemeManager;
 import tools.skyblock.skyhouse.mcmod.models.Auction;
 import tools.skyblock.skyhouse.mcmod.models.SearchFilter;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
@@ -38,6 +40,11 @@ public class FlipListGui extends CustomGui {
     private int lastPageAuctions;
     private int totalPages;
     private int shownAucs;
+    private SimpleAnimationStateManager refreshAnimationManager = SimpleAnimationStateManager.builder()
+            .withCurrent(0)
+            .withTarget(360)
+            .withStep(2)
+            .build();
 
 
     public FlipListGui(JsonArray json, SearchFilter searchFilter) {
@@ -70,6 +77,7 @@ public class FlipListGui extends CustomGui {
     @Override
     public void tick() {
         super.tick();
+        if (refreshAnimationManager.started()) refreshAnimationManager.tick();
         guiLeft = Utils.getGuiLeft();
         guiTop = Utils.getGuiTop();
         if (auctions.size() == 0) {
@@ -84,7 +92,6 @@ public class FlipListGui extends CustomGui {
         }
 
     }
-
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
@@ -104,25 +111,24 @@ public class FlipListGui extends CustomGui {
 
             GlStateManager.enableLighting();
             GlStateManager.disableAlpha();
-            GlStateManager.color(1, 1, 1, 1);
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.disableDepth();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        drawTexturedModalRect(0, 0, 0, 0, 256, 256);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
-        drawTexturedModalRect(0, -32, 0, 45, 256, 32);
-
+        ThemeManager.drawAhOverlayThemeFor("flipListGUI");
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230 - 16 - 10, -32 + 8, 176, 0, 16, 16);
-        drawTexturedModalRect(230, -32 + 8, 144, 0, 16, 16);
-        drawTexturedModalRect(8, -32 + 8, 194, 16, 16, 16);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(238, -32 + 16, 0);
+        GlStateManager.rotate(-refreshAnimationManager.current, 0, 0, 1f);
+        GlStateManager.translate(-8, -8, 0);
+        drawTexturedModalRect(0, 0, 144, 0, 16, 16);
+        GlStateManager.popMatrix();
+
+        drawTexturedModalRect(8, -32 + 8, 194, 0, 16, 16);
         if (Utils.isAhCreationGui() && Utils.renderCreationOverlay()) {
             drawTexturedModalRect(8+22, -32+8+1, 32, 0, 16, 16);
         }
@@ -245,6 +251,8 @@ public class FlipListGui extends CustomGui {
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230-16-10, -32+8, 16, 16, guiScale)) {
             SkyhouseMod.INSTANCE.getOverlayManager().close();
         } else if (hover(mouseX-guiLeft, mouseY-guiTop, 230, -32+8, 16, 16, guiScale)) {
+            refreshAnimationManager.reset();
+            refreshAnimationManager.start();
             SkyhouseMod.INSTANCE.getOverlayManager().search(filter);
         }
         if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2 && mouseX >= width/2-fontRendererObj.getStringWidth(Constants.SKYHOUSE_PLUS_URL)/2 && mouseX <= width/2+fontRendererObj.getStringWidth(Constants.SKYHOUSE_PLUS_URL)/2 && mouseY >= 64 && mouseY <= 64+8) {

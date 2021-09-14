@@ -32,8 +32,8 @@ public class BooleanComponent extends GuiButton implements ConfigGuiComponent {
     }
 
     @Override
-    public void mousePressed(int mouseX, int mouseY) {
-        mousePressed(Minecraft.getMinecraft(), mouseX, mouseY);
+    public boolean mousePressed(int mouseX, int mouseY) {
+        return mousePressed(Minecraft.getMinecraft(), mouseX, mouseY);
     }
 
     @Override

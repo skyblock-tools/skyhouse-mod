@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.managers.ThemeManager;
 import tools.skyblock.skyhouse.mcmod.util.Resources;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
@@ -74,10 +75,7 @@ public class AhOverlayPositionEditor extends GuiScreen {
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
         tick(mouseX, mouseY);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.AH_OVERLAY_BACKGROUND);
-        drawTexturedModalRect(0, 0, 0, 0, 256, 256);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_COMPONENTS);
-        drawTexturedModalRect(0, -32, 0, 45, 256, 32);
+        ThemeManager.drawAhOverlayThemeFor("selectionGUI");
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(96, 164, 0, 32, 64, 64);
         drawTexturedModalRect(96, 32, 64, 32, 64, 64);

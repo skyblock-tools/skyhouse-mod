@@ -42,8 +42,10 @@ public class CommandComponent extends GuiButton implements ConfigGuiComponent {
     }
 
     @Override
-    public void mousePressed(int mouseX, int mouseY) {
-        if (super.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY))
+    public boolean mousePressed(int mouseX, int mouseY) {
+        boolean ret = super.mousePressed(Minecraft.getMinecraft(), mouseX, mouseY);
+        if (ret)
             ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().thePlayer, "/" + command);
+        return ret;
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
+import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,8 @@ public class ReloadConfigCommand implements ICommand {
     public void processCommand(ICommandSender sender, String[] args) {
         SkyhouseMod.INSTANCE.loadConfig();
         SkyhouseMod.INSTANCE.getAuthenticationManager().loadCredentials();
+        DataManager.loadLocalData();
+        DataManager.loadStaticSkyhouseData();
         Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Successfully loaded config"));
     }
 
