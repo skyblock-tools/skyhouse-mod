@@ -10,11 +10,9 @@ import net.minecraft.client.gui.Gui;
 
 public class ThemeManager {
 
-    public static String current;
-    public static JsonObject themes;
+    public static String current = SkyhouseMod.INSTANCE.getConfig().generalConfig.theme;
 
     private static void tick() {
-        themes = DataManager.themes;
         current = SkyhouseMod.INSTANCE.getConfig().generalConfig.theme;
     }
 
@@ -28,7 +26,7 @@ public class ThemeManager {
     public static int getColour(String... props) {
         tick();
 
-        JsonObject head = themes.get(current).getAsJsonObject();
+        JsonObject head = DataManager.themes.get(current).getAsJsonObject();
 
         for (int i = 0; i < props.length; i++) {
             String prop = props[i];
@@ -49,15 +47,15 @@ public class ThemeManager {
         return 0;
     }
     public static void drawAhOverlayThemeFor(String gui) {
-        JsonObject currentData = themes.get(current).getAsJsonObject().get(gui).getAsJsonObject();
+        JsonObject currentData = DataManager.themes.get(current).getAsJsonObject().get(gui).getAsJsonObject();
         if (currentData.has("ref")) {
             gui = currentData.get("ref").getAsString();
         }
         Gui.drawRect(2, 2, 254, 254, ThemeManager.getColour(gui, "background"));
         Gui.drawRect(2, -30, 254, -2, ThemeManager.getColour(gui, "background"));
 
-        if (themes.get(current).getAsJsonObject().has(gui)) {
-            JsonArray lines = themes.get(current).getAsJsonObject().get(gui).getAsJsonObject().get("lines").getAsJsonArray();
+        if (DataManager.themes.get(current).getAsJsonObject().has(gui)) {
+            JsonArray lines = DataManager.themes.get(current).getAsJsonObject().get(gui).getAsJsonObject().get("lines").getAsJsonArray();
             for (JsonElement el : lines) {
                 JsonObject lineInfo = el.getAsJsonObject();
                 Gui.drawRect(lineInfo.get("left").getAsInt(), lineInfo.get("top").getAsInt(), lineInfo.get("right").getAsInt(),

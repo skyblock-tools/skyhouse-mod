@@ -46,7 +46,7 @@ public class DropdownComponent implements ConfigGuiComponent {
     public void draw(int mouseX, int mouseY) {
         tick();
 
-        char arrow = open ? '▲' : '▼';
+        char arrow = open ? '\u25B2' : '\u25BC';
         int arrowWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(" " + arrow);
         int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected) + arrowWidth;
         for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str));
@@ -104,7 +104,7 @@ public class DropdownComponent implements ConfigGuiComponent {
     @Override
     public boolean mousePressed(int mouseX, int mouseY) {
         boolean ret = false;
-        char arrow = open ? '▲' : '▼';
+        char arrow = open ? '\u25B2' : '\u25BC';
         int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected + ' ' + arrow);
         for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str));
 
