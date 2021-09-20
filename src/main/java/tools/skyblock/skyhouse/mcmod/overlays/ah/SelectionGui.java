@@ -63,14 +63,22 @@ public class SelectionGui extends CustomGui {
         boolean save = config.ahOverlayConfig.saveOptions;
         int minProfit = save ? config.filterOptions.minProfit : Constants.DEFAULT_MIN_PROFIT;
         int maxPrice = save ? config.filterOptions.maxPrice : Constants.DEFAULT_MAX_PRICE;
+        int houseQuantity = save ? config.filterOptions.houseQuantity : Constants.DEFAULT_HOUSE_QUANTITY;
         searchFilter
                 .withMinProfit(minProfit)
-                .withMaxPrice(maxPrice);
+                .withMaxPrice(maxPrice)
+                .withHouseQuantity(houseQuantity);
         inputs.clear();
         buttons.clear();
         iconButtons.clear();
         textboxes.clear();
-        int textboxX = 16, textboxY = 88;
+        int textboxX = 64-50, textboxY = 200;
+        textboxes.put("Min Quantity",
+                new CustomTextbox(1, Minecraft.getMinecraft().fontRendererObj, textboxX, textboxY, 90, 20, CustomTextbox.DIGITS_ONLY)
+                        .withDefaultText(String.valueOf(houseQuantity))
+                        .withStateUpdater(Utils.createStringToIntCallback(searchFilter::withHouseQuantity, Constants.DEFAULT_HOUSE_QUANTITY))
+                        .withStateUpdater(Utils.createStringToIntCallback(config.filterOptions::setHouseQuantity, Constants.DEFAULT_HOUSE_QUANTITY))
+        );
         textboxes.put("Min Profit",
                 new CustomTextbox(0, Minecraft.getMinecraft().fontRendererObj, textboxX, textboxY, 90, 20, CustomTextbox.DIGITS_ONLY)
                         .withDefaultText(String.valueOf(minProfit))
@@ -78,7 +86,7 @@ public class SelectionGui extends CustomGui {
                                 Constants.DEFAULT_MIN_PROFIT))
                         .withStateUpdater(Utils.createStringToIntCallback(config.filterOptions::setMinProfit, Constants.DEFAULT_MIN_PROFIT))
         );
-        textboxes.put("Max price",
+        textboxes.put("Max Price",
                 new CustomTextbox(1, Minecraft.getMinecraft().fontRendererObj, textboxX, textboxY, 90, 20, CustomTextbox.DIGITS_ONLY)
                         .withDefaultText(String.valueOf(maxPrice))
                         .withStateUpdater(Utils.createStringToIntCallback(searchFilter::withMaxPrice, Constants.DEFAULT_MAX_PRICE))
@@ -88,8 +96,7 @@ public class SelectionGui extends CustomGui {
         textboxDropdown = new DropdownComponent(() -> textboxes.keySet().toArray(new String[0]), currentTextbox, (textbox) -> {
             currentTextbox = textbox;
         }, false);
-        textboxDropdown.setCoords(16, 64);
-
+        textboxDropdown.setCoords(64-50-1, 200-16-2);
         buttons.add(
                 new CustomButton(0, (128-40), 236-10, 80, 20, "Search")
                         .withExecutor(() -> SkyhouseMod.INSTANCE.getOverlayManager().search(searchFilter))
@@ -100,12 +107,12 @@ public class SelectionGui extends CustomGui {
                         .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist::clear)
                         .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.isEmpty()));
 
-        iconButtons.add(new IconButton(1, 256-14-16, -24, 176, 16)
+        iconButtons.add(new IconButton(1, 230, -32+8, 176, 16)
                 .withTooltip(EnumChatFormatting.RED + "Reset Filter Preferences")
                 .withClickCallback(SkyhouseMod.INSTANCE.getOverlayManager()::resetFilter)
                 .withEnabledPredicate(() -> !SkyhouseMod.INSTANCE.getOverlayManager().isFilterDefault()));
 
-        iconButtons.add(new IconButton(1, 14, -24, 194, 16)
+        iconButtons.add(new IconButton(1, 8, -32+8, 194, 16)
                 .withTooltip(EnumChatFormatting.GREEN + "Skyhouse")
                 .withClickCallback(() -> SkyhouseMod.INSTANCE.getListener().openGui(new ConfigGui())));
     }
@@ -124,7 +131,7 @@ public class SelectionGui extends CustomGui {
             button.scales(guiScale);
         }
         int i = 0;
-        int currentHeight = 72;
+        int currentHeight = 16 + 16 + 10;
         for (Field field : SkyhouseConfig.FilterOptions.class.getDeclaredFields()) {
             if (!field.isAnnotationPresent(HiddenConfigOption.class)) continue;
             labels.add(field.getAnnotation(HiddenConfigOption.class));
@@ -153,7 +160,7 @@ public class SelectionGui extends CustomGui {
                 }
             };
             try {
-                itemFilterCheckBoxes.add(new CheckBox(i, 256 - 16 - 16 - 8, currentHeight - 8, updateChecker,
+                itemFilterCheckBoxes.add(new CheckBox(i, 128 - 16 - 16 - 8 + 1, currentHeight - 8, updateChecker,
                         field.getBoolean(SkyhouseMod.INSTANCE.getConfig().filterOptions), updater));
             } catch (ReflectiveOperationException ignored) {
             }
@@ -181,7 +188,6 @@ public class SelectionGui extends CustomGui {
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.disableDepth();
         GlStateManager.disableLighting();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
@@ -191,12 +197,12 @@ public class SelectionGui extends CustomGui {
         Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
 
 
-        int currentHeight = 72;
+        int currentHeight = 16 + 16 + 10;
         for (HiddenConfigOption option : labels) {
-            Utils.drawString(this, fontRendererObj, EnumChatFormatting.WHITE + option.value(), 128+(64-50), currentHeight-4, 0xffffff);
+            Utils.drawString(this, fontRendererObj, EnumChatFormatting.WHITE + option.value(), 64-50+2, currentHeight-4, 0xffffff);
             currentHeight += 24;
         }
-        Utils.drawString(this, fontRendererObj, "Include:", 128+(64-50), 48-4, 0xffffff);
+        Utils.drawString(this, fontRendererObj, "Include:", 64-50+2, 18-2, 0xffffff);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
             drawTexturedModalRect(128 + 64 + 32 - 8, 48 - 7, 96, 0, 16, 16);
@@ -220,7 +226,6 @@ public class SelectionGui extends CustomGui {
         drawTooltips(mouseX, mouseY);
 
 
-        GlStateManager.enableDepth();
     }
 
     private void drawComponents(int mouseX, int mouseY) {

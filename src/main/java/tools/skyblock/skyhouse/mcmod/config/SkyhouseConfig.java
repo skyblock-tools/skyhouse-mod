@@ -104,11 +104,6 @@ public class SkyhouseConfig {
         public boolean showCreationOverlay = false;
 
         @Expose
-        @SerializedName("save_options")
-        @ConfigOption(value = "Save flip search options", description = {"\u00a77Whether or not the search options reset when you close the auction house\u00a7r"})
-        public boolean saveOptions = true;
-
-        @Expose
         @SerializedName("relative_gui")
         @ConfigOption(value = "Relative GUI position", description = {"\u00a7aOn: \u00a7r\u00a77Overlay GUI is positioned and scaled relative to the screen size\u00a7r",
                 "\u00a74Off: \u00a7r\u00a77Overlay GUI is positioned at a fixed location and scale\u00a7r"})
@@ -117,6 +112,11 @@ public class SkyhouseConfig {
         @ConfigOption(value = "Edit GUI position", description = {"\u00a77Edit the position of the overlay\u00a7r"})
         @CommandButton(value = "skyhouseeditahoverlay", label = "Edit")
         public int editGuiPos;
+
+        @Expose
+        @SerializedName("save_options")
+        @ConfigOption(value = "Save flip search options", description = {"\u00a77Whether or not the search options reset when you close the auction house\u00a7r"})
+        public boolean saveOptions = true;
 
         public void setRelativeGui(boolean relativeGui) {
             this.relativeGui = relativeGui;
@@ -172,6 +172,10 @@ public class SkyhouseConfig {
         public boolean enchBooks = true;
 
         @Expose
+        @SerializedName("min_house_quantity")
+        public int houseQuantity = Constants.DEFAULT_HOUSE_QUANTITY;
+
+        @Expose
         @SerializedName("max_price")
         public int maxPrice = Constants.DEFAULT_MAX_PRICE;
 
@@ -197,6 +201,10 @@ public class SkyhouseConfig {
 
         public boolean checkEnchBooks(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;
+        }
+
+        public void setHouseQuantity(int quantity) {
+            houseQuantity = quantity;
         }
 
         public void setMaxPrice(int price) {
@@ -251,12 +259,6 @@ public class SkyhouseConfig {
         @SerializedName("include_aow")
         public boolean includeAow = true;
 
-
-        @Expose
-        @HiddenConfigOption(value = "Include Skins", description = {"\u00a77Whether or not to include equipped Skins in item value calculation", "\u00a74Not currently implemented"})
-        @SerializedName("include_skins")
-        public boolean includeSkins = true;
-
         @Expose
         @HiddenConfigOption(value = "Include Amount", description = {"\u00a77Whether or not to multiply item value by the amount of items there are in item value calculation"})
         @SerializedName("include_amount")
@@ -268,9 +270,14 @@ public class SkyhouseConfig {
         public boolean includePetItems = true;
 
         @Expose
-        @HiddenConfigOption(value = "Include Pet Candy", description = {"\u00a77Whether or not to include Pet Candy in item value calculation", "\u00a74Not currently implemented", "", "\u00a7aIf anyone has any clue how this could be calculated please", "\u00a7amessage Septikai#1676 on discord because I have no clue"})
-        @SerializedName("include_pet_candy")
-        public boolean includePetCandy = true;
+        @HiddenConfigOption(value = "Include Item Skins", description = {"\u00a77Whether or not to include equipped Item Skins in item value calculation", "\u00a74Not currently implemented"})
+        @SerializedName("include_item_skins")
+        public boolean includeItemSkins = true;
+
+        @Expose
+        @HiddenConfigOption(value = "Include Pet Skins", description = {"\u00a77Whether or not to include equipped Pet Skins in item value calculation"})
+        @SerializedName("include_pet_skins")
+        public boolean includePetSkins = true;
 
         public boolean checkIncludeReforgeCost(boolean checked) {
             return includeReforge;

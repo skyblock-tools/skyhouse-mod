@@ -21,6 +21,10 @@ public class SearchFilter {
     @Expose
     public int maxPrice = Constants.DEFAULT_MAX_PRICE;
 
+    @SerializedName("min_quantity")
+    @Expose
+    public int houseQuantity = Constants.DEFAULT_HOUSE_QUANTITY;
+
     @SerializedName("item_filter")
     @Expose
     public int itemFilter = 0;
@@ -36,6 +40,11 @@ public class SearchFilter {
 
     public SearchFilter withMaxPrice(int maxPrice) {
         this.maxPrice = maxPrice;
+        return this;
+    }
+
+    public SearchFilter withHouseQuantity(int houseQuantity) {
+        this.houseQuantity = houseQuantity;
         return this;
     }
 

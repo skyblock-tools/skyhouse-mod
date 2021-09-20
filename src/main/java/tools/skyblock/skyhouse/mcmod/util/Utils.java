@@ -243,16 +243,16 @@ public class Utils {
      */
     public static String getInternalNameFromNBT(NBTTagCompound tag) {
         String internalName = null;
-        if(tag != null && tag.hasKey("ExtraAttributes", 10)) {
+        if (tag != null && tag.hasKey("ExtraAttributes", 10)) {
             NBTTagCompound ea = tag.getCompoundTag("ExtraAttributes");
 
-            if(ea.hasKey("id", 8)) {
+            if (ea.hasKey("id", 8)) {
                 internalName = ea.getString("id").replaceAll(":", "-");
             } else {
                 return null;
             }
 
-            if("PET".equals(internalName)) {
+            if ("PET".equals(internalName)) {
                 String petInfo = ea.getString("petInfo");
                 if(petInfo.length() > 0) {
                     JsonObject petInfoObject = SkyhouseMod.gson.fromJson(petInfo, JsonObject.class);
@@ -274,7 +274,7 @@ public class Utils {
                     }
                 }
             }
-            if("ENCHANTED_BOOK".equals(internalName)) {
+            if ("ENCHANTED_BOOK".equals(internalName)) {
                 NBTTagCompound enchants = ea.getCompoundTag("enchantments");
 
                 for(String enchname : enchants.getKeySet()) {
