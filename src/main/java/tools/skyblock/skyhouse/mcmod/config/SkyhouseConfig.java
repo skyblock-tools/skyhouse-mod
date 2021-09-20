@@ -114,6 +114,12 @@ public class SkyhouseConfig {
         public int editGuiPos;
 
         @Expose
+        @SerializedName("auction_not_found_position")
+        @ConfigOption(value = "\"Auction Not Found\" Notification", description = {"\u00a77Selects whether the \"Auction Not Found\" notification", "\u00a77is above or below the main overlay"})
+        @Dropdown(options = {"Disabled", "Top of GUI", "Top of Inv", "Bottom of GUI", "Bottom of Inv"})
+        public String auctionNotFoundPosition = "Disabled";
+
+        @Expose
         @SerializedName("save_options")
         @ConfigOption(value = "Save flip search options", description = {"\u00a77Whether or not the search options reset when you close the auction house\u00a7r"})
         public boolean saveOptions = true;

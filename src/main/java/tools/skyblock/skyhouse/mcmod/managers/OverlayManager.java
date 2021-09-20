@@ -121,7 +121,7 @@ public class OverlayManager {
 
     public void search(SearchFilter filter) {
         this.filter = filter;
-        System.out.println(Utils.getUrl(Constants.API_BASE_URL+"/flips", SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)));
+//        System.out.println(Utils.getUrl(Constants.API_BASE_URL+"/flips", SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)));
         SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/flips",//"https://api.skyblock.tools/api/flips",
                 SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)),
                 data -> {
