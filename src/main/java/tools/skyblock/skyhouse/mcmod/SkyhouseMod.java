@@ -2,13 +2,15 @@ package tools.skyblock.skyhouse.mcmod;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.oneandone.compositejks.SslContextUtils;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tools.skyblock.skyhouse.mcmod.commands.*;
@@ -18,15 +20,18 @@ import tools.skyblock.skyhouse.mcmod.listeners.EventListener;
 import tools.skyblock.skyhouse.mcmod.managers.AuthenticationManager;
 import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 import tools.skyblock.skyhouse.mcmod.managers.OverlayManager;
+import tools.skyblock.skyhouse.mcmod.util.Utils;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
 
 @Mod(modid = SkyhouseMod.MODID, version = SkyhouseMod.VERSION, clientSideOnly = true)
 public class SkyhouseMod {
 
     public static final String MODID = "skyhouse";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1.0";
     public static final Gson serializeGson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .disableHtmlEscaping()
@@ -34,6 +39,9 @@ public class SkyhouseMod {
             .create();
     public static final Gson gson = new Gson();
     public static final Logger LOGGER = LogManager.getLogger(MODID);
+    public static SSLContext sslctx;
+    public static HttpClient httpClient;
+
     public static SkyhouseMod INSTANCE;
     private EventListener listener;
     private OverlayManager overlayManager;
@@ -57,6 +65,7 @@ public class SkyhouseMod {
     public void preInit(FMLPreInitializationEvent event) {
         if (ForgeVersion.getBuildVersion() != 2318)
             throw new WrongForgeVersion("[SKYHOUSE] This mod is incompatible with forge version " + ForgeVersion.getVersion() + ", Please upgrade to 11.15.1.2318 or remove this mod");
+        loadLE_CA_cert();
         configDir = new File(event.getModConfigurationDirectory(), "skyhouse");
         getConfigDir().mkdirs();
         configFile = new File(getConfigDir(), "config.json");
@@ -121,4 +130,33 @@ public class SkyhouseMod {
     public SkyhouseConfig getConfig() {
         return config;
     }
+
+    /*
+    The vanilla Minecraft launcher is bundled with java 1.8.0_51
+    The root CA certificate for "Let's Encrypt" is not included in the JRE's trusted certificate store until java 1.8.0_141
+    This function loads the certificate into a separate SSLContext so that https can be used for services with a cerficate signed by let's encrypt
+     */
+    private static void loadLE_CA_cert() {
+
+        int jvmV_update = Utils.parseInt(System.getProperty("java.runtime.version").split("\\.|_|-b")[3], 0);
+        if (jvmV_update >= 141) {
+            try {
+                sslctx = SSLContext.getDefault();
+            } catch (Exception ignored) {}
+            httpClient = HttpClients.createDefault();
+        }
+
+        try {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(SkyhouseMod.class.getClassLoader().getResourceAsStream("j51_le_ca_cert.jks"), "changeit".toCharArray());
+            sslctx = SslContextUtils.buildMergedWithSystem(keyStore);
+            httpClient = HttpClients.custom()
+                    .setSslcontext(sslctx)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

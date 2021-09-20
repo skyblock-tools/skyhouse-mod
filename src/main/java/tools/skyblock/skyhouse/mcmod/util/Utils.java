@@ -24,12 +24,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.lwjgl.opengl.GL11;
-import scala.unchecked;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
-import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationConfigGui;
-import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationGui;
-import tools.skyblock.skyhouse.mcmod.overlays.ah.FlipListGui;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -37,7 +35,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
@@ -153,15 +150,15 @@ public class Utils {
     }
 
     public static JsonObject getJsonApi(URL url, String[]... headers) throws IOException {
-        URLConnection conn = url.openConnection();
-        conn.setConnectTimeout(3_000);
-        conn.setReadTimeout(15_000);
-        conn.setRequestProperty("accept", "application/json");
-        conn.setRequestProperty("user-agent", "forge/skyhouse");
-        for (String[] header : headers) {
-            conn.setRequestProperty(header[0], header[1]);
-        }
-        String res = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
+
+        HttpUriRequest req = new HttpGet(url.toString());
+        req.setHeader("Accept", "application/json");
+        req.setHeader("User-Agent", "forge-skyhouse/" + SkyhouseMod.VERSION);
+
+        for (String[] header : headers)
+            req.setHeader(header[0], header[1]);
+
+        String res = IOUtils.toString(SkyhouseMod.httpClient.execute(req).getEntity().getContent());
         return SkyhouseMod.gson.fromJson(res, JsonObject.class);
     }
 

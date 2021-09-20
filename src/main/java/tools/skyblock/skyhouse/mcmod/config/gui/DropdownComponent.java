@@ -1,6 +1,5 @@
 package tools.skyblock.skyhouse.mcmod.config.gui;
 
-import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -49,7 +48,7 @@ public class DropdownComponent implements ConfigGuiComponent {
         char arrow = open ? '▲' : '▼';
         int arrowWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(" " + arrow);
         int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected) + arrowWidth;
-        for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str));
+        for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str) + arrowWidth);
 
         int xStart = fromRight ? xPos - maxWidth : xPos;
 
@@ -106,7 +105,8 @@ public class DropdownComponent implements ConfigGuiComponent {
         boolean ret = false;
         char arrow = open ? '▲' : '▼';
         int maxWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(selected + ' ' + arrow);
-        for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str));
+        for (String str : optionsSupplier.get()) maxWidth = Math.max(maxWidth, Minecraft.getMinecraft().fontRendererObj.getStringWidth(str)
+            + Minecraft.getMinecraft().fontRendererObj.getStringWidth(" " + arrow));
 
         int xStart = fromRight ? xPos - maxWidth : xPos;
         if (mouseX > xStart * guiScale && mouseX < (xStart + maxWidth + 16) * guiScale && mouseY > yPos * guiScale && mouseY < (yPos + 16) * guiScale) {
@@ -114,7 +114,7 @@ public class DropdownComponent implements ConfigGuiComponent {
             ret = true;
         } else if (open) {
             for (int i = 0; i < optionsSupplier.get().length; i++) {
-                if (mouseX < (xStart + maxWidth + 16) * guiScale && mouseY > (yPos + 16 * (i + 1)) * guiScale  && mouseY < (yPos + 16 * (i + 2)) * guiScale) {
+                if (mouseX > xStart * guiScale && mouseX < (xStart + maxWidth + 16) * guiScale && mouseY > (yPos + 16 * (i + 1)) * guiScale  && mouseY < (yPos + 16 * (i + 2)) * guiScale) {
                     selected = optionsSupplier.get()[i];
                     updater.accept(selected);
                     open = false;
@@ -125,7 +125,6 @@ public class DropdownComponent implements ConfigGuiComponent {
             ret = true;
         }
         return ret;
-
 
     }
 }

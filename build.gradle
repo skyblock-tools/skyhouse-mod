@@ -16,14 +16,23 @@ buildscript {
     }
     dependencies {
         classpath "com.github.asbyth:ForgeGradle:63fde26"
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-version = "1.0.2"
+apply plugin: 'com.github.johnrengelman.shadow'
+version = "1.1.0"
 group= "tools.skyblock.skyhouse.mcmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Skyhouse"
 runClient {
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('com.oneandone:composite-jks:1.0'))
+    }
+    exclude 'dummyThing'
 }
 
 minecraft {
@@ -43,8 +52,16 @@ minecraft {
 }
 
 dependencies {
-
+    implementation 'com.oneandone:composite-jks:1.0'
 }
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+build.dependsOn(shadowJar)
 
 processResources
 {
