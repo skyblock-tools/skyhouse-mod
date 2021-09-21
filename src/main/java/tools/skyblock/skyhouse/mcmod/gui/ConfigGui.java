@@ -34,6 +34,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -374,9 +375,9 @@ public class ConfigGui extends GuiScreen {
                 if (options.get(i).premium() && SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) tooltip.add(0, "\u00a7cThis feature requires Skyhouse+\u00a7r");
             }
             i++;
-            GlStateManager.enableLighting();
         }
-        for (ConfigGuiComponent component : components) component.draw(mouseX, mouseY);
+        components.stream().sorted(Comparator.comparing(ConfigGuiComponent::priority)).forEachOrdered((component) -> component.draw(mouseX, mouseY));
+        GlStateManager.enableLighting();
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
 

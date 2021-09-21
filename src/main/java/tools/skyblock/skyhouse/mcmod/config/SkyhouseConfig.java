@@ -79,7 +79,7 @@ public class SkyhouseConfig {
     }
 
 
-    public class AhOverlayConfig {
+    public static class AhOverlayConfig {
 
         @Expose
         @SerializedName("gui_scale")

@@ -8,4 +8,8 @@ public interface ConfigGuiComponent {
 
     boolean mousePressed(int mouseX, int mouseY);
 
+    default int priority() {
+        return 0;
+    }
+
 }
