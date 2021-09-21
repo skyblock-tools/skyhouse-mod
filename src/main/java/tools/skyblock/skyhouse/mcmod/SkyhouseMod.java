@@ -22,6 +22,7 @@ import tools.skyblock.skyhouse.mcmod.managers.DataManager;
 import tools.skyblock.skyhouse.mcmod.managers.OverlayManager;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +41,6 @@ public class SkyhouseMod {
     public static final Gson gson = new Gson();
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static SSLContext sslctx;
-    public static HttpClient httpClient;
 
     public static SkyhouseMod INSTANCE;
     private EventListener listener;
@@ -143,16 +143,13 @@ public class SkyhouseMod {
             try {
                 sslctx = SSLContext.getDefault();
             } catch (Exception ignored) {}
-            httpClient = HttpClients.createDefault();
         }
 
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(SkyhouseMod.class.getClassLoader().getResourceAsStream("j51_le_ca_cert.jks"), "changeit".toCharArray());
             sslctx = SslContextUtils.buildMergedWithSystem(keyStore);
-            httpClient = HttpClients.custom()
-                    .setSslcontext(sslctx)
-                    .build();
+            HttpsURLConnection.setDefaultSSLSocketFactory(sslctx.getSocketFactory());
         } catch (Exception e) {
             e.printStackTrace();
         }

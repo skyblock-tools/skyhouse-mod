@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Blocks;
@@ -24,17 +23,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.util.Constants;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.lwjgl.opengl.GL11;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
@@ -151,14 +150,15 @@ public class Utils {
 
     public static JsonObject getJsonApi(URL url, String[]... headers) throws IOException {
 
-        HttpUriRequest req = new HttpGet(url.toString());
-        req.setHeader("Accept", "application/json");
-        req.setHeader("User-Agent", "forge-skyhouse/" + SkyhouseMod.VERSION);
-
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        conn.setRequestProperty("Accept", "application/json");
+        conn.setRequestProperty("User-Agent", "forge-skyhouse/" + SkyhouseMod.VERSION);
+        conn.setConnectTimeout(3_000);
+        conn.setReadTimeout(15_000);
         for (String[] header : headers)
-            req.setHeader(header[0], header[1]);
+            conn.setRequestProperty(header[0], header[1]);
 
-        String res = IOUtils.toString(SkyhouseMod.httpClient.execute(req).getEntity().getContent());
+        String res = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
         return SkyhouseMod.gson.fromJson(res, JsonObject.class);
     }
 
@@ -521,5 +521,7 @@ public class Utils {
             return null;
         }
     }
+
+
 
 }
