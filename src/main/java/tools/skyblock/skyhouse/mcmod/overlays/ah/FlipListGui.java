@@ -24,10 +24,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
 
 public class FlipListGui extends CustomGui {
 
@@ -40,6 +38,8 @@ public class FlipListGui extends CustomGui {
     private int lastPageAuctions;
     private int totalPages;
     private int shownAucs;
+    private long auctionNotFoundStart = 0;
+
     private SimpleAnimationStateManager refreshAnimationManager = SimpleAnimationStateManager.builder()
             .withCurrent(0)
             .withTarget(360)
@@ -189,10 +189,26 @@ public class FlipListGui extends CustomGui {
             drawString(Minecraft.getMinecraft().fontRendererObj, NumberFormat.getNumberInstance(Locale.UK).format(auction.getProfit()) + " Profit",
                     67, -15 + 55 * i - 3, 0x00ff00);
         }
-        GlStateManager.popMatrix();
+
+        if (System.currentTimeMillis() < this.auctionNotFoundStart + 5000) {
+            if (Objects.equals(SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition, "Top of GUI")) {
+                drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.RED + "Auction Not Found", 128, -12 - 32, 0xffffff);
+            } else if (Objects.equals(SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition, "Bottom of GUI")) {
+                drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.RED + "Auction Not Found", 128, 256 + 6, 0xffffff);
+            }
+            GlStateManager.popMatrix();
+            if (Objects.equals(SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition, "Top of Inv")) {
+                drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.RED + "Auction Not Found", width / 2, (height / 20) * 5, 0xffffff);
+            } else if (Objects.equals(SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition, "Bottom of Inv")) {
+                drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.RED + "Auction Not Found", width / 2, (height / 20) * 15, 0xffffff);
+            }
+        } else GlStateManager.popMatrix();
+
         GlStateManager.disableBlend();
         GlStateManager.enableLighting();
         i = 0;
+
+
         for (Auction auction : auctions.subList(page * 4, page * 4 + shownAucs)) {
             ItemStack toRender = auction.getStack();
             if (hover(mouseX - guiLeft, mouseY - guiTop, 25, -16 + 55 * ++i, 32, 32, guiScale))
@@ -266,6 +282,13 @@ public class FlipListGui extends CustomGui {
     public void removeNotFoundAuction(int index) {
         SkyhouseMod.INSTANCE.getOverlayManager().auctionBlacklist.add(auctions.get(index).getUuid());
         auctions.remove(index);
+        if (!SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition.equals("Disabled")) {
+            renderAuctionNotFound();
+        }
+    }
+
+    private void renderAuctionNotFound() {
+        this.auctionNotFoundStart  = System.currentTimeMillis();
     }
 
     @Override

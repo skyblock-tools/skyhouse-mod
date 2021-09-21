@@ -75,6 +75,9 @@ public class EventListener {
             ChatComponentText text = (ChatComponentText) event.message;
             if (text.getUnformattedText().equals("This auction wasn't found!")) {
                 ((FlipListGui) SkyhouseMod.INSTANCE.getOverlayManager().getGui()).removeNotFoundAuction(lastAuctionIndex);
+                if (!SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition.equals("disabled")) {
+                    event.setCanceled(true);
+                }
             }
         }
     }

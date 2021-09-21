@@ -93,7 +93,6 @@ public class CreationGui extends CustomGui {
         if (stack != null && !stack.serializeNBT().getString("id").equals("minecraft:stone_button")) {
             NBTTagCompound nbt = stack.getTagCompound();
             String[] lore = Utils.getLoreFromNBT(nbt);
-            System.out.println(nbt);
             if (lore.length > 1) {
 
                 GlStateManager.pushMatrix();
@@ -357,7 +356,6 @@ public class CreationGui extends CustomGui {
 
 
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includePetSkins) {
-                            System.out.println("petInfo = " + petInfo);
                             if (petInfo.has("skin")) {
                                 String skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
                                 final int petSkinBonus = DataManager.lowestBins.get(skin).getAsInt();
