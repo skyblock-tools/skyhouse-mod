@@ -369,16 +369,14 @@ public class ConfigGui extends GuiScreen {
             fontRendererObj.drawString(options.get(i).value(), optionsBoxLeft + 24, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 16, 0xffffffff);
 
             component.setCoords(optionsBoxRight - 30, optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12);
-            component.draw(mouseX, mouseY);
             if (mouseX > optionsBoxLeft + 4 && mouseX < optionsBoxLeft + 20 && mouseY > optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 12 && mouseY < optionsScroll.getScrollStart() + optionsBoxTop + 48 * i + 28 && optionsSlideIn.ended()) {
-                GL11.glDisable(GL11.GL_SCISSOR_TEST);
                 tooltip = new ArrayList<>(Arrays.asList(options.get(i).description()));
                 if (options.get(i).premium() && SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) tooltip.add(0, "\u00a7cThis feature requires Skyhouse+\u00a7r");
-                GL11.glEnable(GL11.GL_SCISSOR_TEST);
             }
             i++;
             GlStateManager.enableLighting();
         }
+        for (ConfigGuiComponent component : components) component.draw(mouseX, mouseY);
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
 
