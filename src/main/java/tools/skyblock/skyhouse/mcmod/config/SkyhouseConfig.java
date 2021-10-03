@@ -146,7 +146,7 @@ public class SkyhouseConfig {
 
     }
 
-    public class FilterOptions {
+    public static class FilterOptions {
 
         @Expose
         @SerializedName("skins")
