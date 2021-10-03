@@ -5,6 +5,10 @@ public class Constants {
     public static final int DEFAULT_MIN_PROFIT = 100_000;
     public static final int DEFAULT_MAX_PRICE = 10_000_000;
     public static final int DEFAULT_HOUSE_QUANTITY = 7;
+    public static final int DEFAULT_AUCTION_TYPE_VALUE = 3;
+    public static final String DEFAULT_AUCTION_TYPE_STRING = "All Auctions";
+    public static final int DEFAULT_AUCTION_SORT_VALUE = 1;
+    public static final String DEFAULT_AUCTION_SORT_STRING = "Highest Profit";
     public static final boolean DEFAULT_SKINS_IN_SEARCH = true;
     public static final boolean DEFAULT_CAKE_SOULS_IN_SEARCH = true;
     public static final boolean DEFAULT_PETS_IN_SEARCH = true;

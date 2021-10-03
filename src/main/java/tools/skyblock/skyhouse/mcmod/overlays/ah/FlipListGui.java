@@ -116,6 +116,7 @@ public class FlipListGui extends CustomGui {
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
         GlStateManager.pushMatrix();
+        GlStateManager.enableAlpha();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
         ThemeManager.drawAhOverlayThemeFor("flipListGUI");
@@ -190,6 +191,7 @@ public class FlipListGui extends CustomGui {
                     67, -15 + 55 * i - 3, 0x00ff00);
         }
 
+        GlStateManager.disableAlpha();
         if (System.currentTimeMillis() < this.auctionNotFoundStart + 5000) {
             if (Objects.equals(SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.auctionNotFoundPosition, "Top of GUI")) {
                 drawCenteredString(Minecraft.getMinecraft().fontRendererObj, EnumChatFormatting.RED + "Auction Not Found", 128, -12 - 32, 0xffffff);

@@ -221,7 +221,7 @@ public class ConfigGui extends GuiScreen {
                     String label;
                     if (!dropdown.label().isEmpty()) label = dropdown.label();
                     else label = Utils.<String>fieldGetter(field, subCategory).get();
-                    components.add(new DropdownComponent(supplier, label, Utils.fieldSetter(field, subCategory), true));
+                    components.add(new DropdownComponent(supplier, label, Utils.fieldSetter(field, subCategory), true, false));
                 } else if (field.getType().equals(boolean.class)) {
                     components.add(new BooleanComponent(0, width / 2 + guiWidth - 20,
                             categoryBoxTop + 24 * i++,

@@ -26,6 +26,7 @@ public class SkyhouseConfig {
         filterOptions.recombs = true;
         filterOptions.souls = true;
         filterOptions.enchBooks = true;
+        filterOptions.auctionSort = "Highest Profit";
         generalConfig.fullChromaMode = false;
     }
 
@@ -188,6 +189,16 @@ public class SkyhouseConfig {
         @Expose
         @SerializedName("min_profit")
         public int minProfit;
+
+        @Expose
+        @SerializedName("type")
+        @Dropdown(options = {"Auction Only", "Bin Only", "All Auctions"})
+        public String auctionType = "All Auctions";
+
+        @Expose
+        @SerializedName("sort")
+        @Dropdown(options = {"Highest Profit", "Lowest Price", "Profit Proportion", "AH Quantity"})
+        public String auctionSort = "Highest Profit";
 
         public boolean checkSkins(boolean checked) {
             return SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel >= 2;

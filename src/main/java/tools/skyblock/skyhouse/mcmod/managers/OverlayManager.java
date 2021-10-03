@@ -120,10 +120,11 @@ public class OverlayManager {
     }
 
     public void search(SearchFilter filter) {
+        filter.withItemFilter().withAuctionType().withAuctionSort();
         this.filter = filter;
-//        System.out.println(Utils.getUrl(Constants.API_BASE_URL+"/flips", SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)));
+//        System.out.println(Utils.getUrl(Constants.API_BASE_URL+"/flips", SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter), JsonObject.class)));
         SkyhouseMod.INSTANCE.getAuthenticationManager().authenticateJsonApiAsync(Utils.getUrl(Constants.API_BASE_URL+"/flips",//"https://api.skyblock.tools/api/flips",
-                SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter.withItemFilter()), JsonObject.class)),
+                SkyhouseMod.gson.fromJson(SkyhouseMod.serializeGson.toJson(filter), JsonObject.class)),
                 data -> {
                     flips = data.get("flips").getAsJsonArray();
                     createGui = true;
@@ -178,22 +179,28 @@ public class OverlayManager {
     public void resetFilter() {
         SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice = Constants.DEFAULT_MAX_PRICE;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit = Constants.DEFAULT_MIN_PROFIT;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.houseQuantity = Constants.DEFAULT_HOUSE_QUANTITY;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.skins = true;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.pets = true;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs = true;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.souls = true;
         SkyhouseMod.INSTANCE.getConfig().filterOptions.enchBooks = true;
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.auctionType = "All Auctions";
+        SkyhouseMod.INSTANCE.getConfig().filterOptions.auctionSort = "Highest Profit";
         gui = new SelectionGui();
     }
 
     public boolean isFilterDefault() {
         return SkyhouseMod.INSTANCE.getConfig().filterOptions.maxPrice  == Constants.DEFAULT_MAX_PRICE &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.minProfit  == Constants.DEFAULT_MIN_PROFIT &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.houseQuantity  == Constants.DEFAULT_HOUSE_QUANTITY &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.skins == Constants.DEFAULT_SKINS_IN_SEARCH &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.pets  == Constants.DEFAULT_CAKE_SOULS_IN_SEARCH &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.recombs  == Constants.DEFAULT_PETS_IN_SEARCH &&
                 SkyhouseMod.INSTANCE.getConfig().filterOptions.souls  == Constants.DEFAULT_RECOMBS_IN_SEARCH &&
-                SkyhouseMod.INSTANCE.getConfig().filterOptions.enchBooks  == Constants.DEFAULT_ENCH_BOOKS_IN_SEARCH;
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.enchBooks  == Constants.DEFAULT_ENCH_BOOKS_IN_SEARCH &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.auctionType.equals("All Auctions") &&
+                SkyhouseMod.INSTANCE.getConfig().filterOptions.auctionSort.equals("Highest Profit");
     }
 
     public boolean isFlipList() {

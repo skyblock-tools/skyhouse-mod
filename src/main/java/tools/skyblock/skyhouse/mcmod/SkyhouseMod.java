@@ -134,7 +134,7 @@ public class SkyhouseMod {
     /*
     The vanilla Minecraft launcher is bundled with java 1.8.0_51
     The root CA certificate for "Let's Encrypt" is not included in the JRE's trusted certificate store until java 1.8.0_141
-    This function loads the certificate into a separate SSLContext so that https can be used for services with a cerficate signed by let's encrypt
+    This function loads the certificate into a separate SSLContext so that https can be used for services with a certificate signed by let's encrypt
      */
     private static void loadLE_CA_cert() {
 

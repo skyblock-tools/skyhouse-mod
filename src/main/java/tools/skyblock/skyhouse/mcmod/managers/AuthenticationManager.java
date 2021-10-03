@@ -52,8 +52,10 @@ public class AuthenticationManager {
             }
         }, (err) -> {
             if (err.getMessage().contains("401") || err.getMessage().contains("403")) {
-                SkyhouseMod.LOGGER.debug("Could not authenticate with the API, please refresh your access token and try again");
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not authenticate with the API, please refresh your access token and try again" + EnumChatFormatting.RESET));
+                SkyhouseMod.LOGGER.debug("Could not authenticate with the API, try running \"/skyhouselogin\". If that doesn't work refresh your access token and try again");
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Could not authenticate with the API, try running \"/skyhouselogin\"" + EnumChatFormatting.RESET));
+                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "If that doesn't work then refresh your access token and try again" + EnumChatFormatting.RESET));
+
             }
         });
     }

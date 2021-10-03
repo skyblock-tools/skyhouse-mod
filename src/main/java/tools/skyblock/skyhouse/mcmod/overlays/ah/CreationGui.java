@@ -66,6 +66,7 @@ public class CreationGui extends CustomGui {
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
+        GlStateManager.enableAlpha();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
@@ -94,7 +95,6 @@ public class CreationGui extends CustomGui {
             NBTTagCompound nbt = stack.getTagCompound();
             String[] lore = Utils.getLoreFromNBT(nbt);
             if (lore.length > 1) {
-
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(2, 2, 2);
                 GlStateManager.enableDepth();
@@ -185,11 +185,15 @@ public class CreationGui extends CustomGui {
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeAow) {
                             NBTTagCompound extraAttributes = nbt.getCompoundTag("ExtraAttributes");
                             final int amount = extraAttributes.getInteger("art_of_war_count");
-                            int aowBonus = DataManager.lowestBins.get("THE_ART_OF_WAR").getAsInt() * amount;
                             if (amount > 0) {
-                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Art of War", 14, currentHeight, 0xffffff);
-                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(aowBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(aowBonus)), currentHeight, 0xffffff);
-                                value += aowBonus;
+                                if (DataManager.lowestBins.has("THE_ART_OF_WAR")) {
+                                    int aowBonus = DataManager.lowestBins.get("THE_ART_OF_WAR").getAsInt() * amount;
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Art of War", 14, currentHeight, 0xffffff);
+                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(aowBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(aowBonus)), currentHeight, 0xffffff);
+                                    value += aowBonus;
+                                } else {
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for THE_ART_OF_WAR", 14, currentHeight, 0xffffff);
+                                }
                                 currentHeight += 15;
                             }
                         }
@@ -198,20 +202,24 @@ public class CreationGui extends CustomGui {
                             if (unmodifiedName.contains("\u269A")) {
                                 final String fragType = Utils.fragType(internalName);
                                 if (fragType != null) {
-                                    int fragBonus = DataManager.lowestBins.get(fragType).getAsInt() * 8;
-                                    value += fragBonus;
-                                    switch (fragType) {
-                                        case "BONZO_FRAGMENT":
-                                            Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Bonzo)", 14, currentHeight, 0xffffff);
-                                            break;
-                                        case "SCARF_FRAGMENT":
-                                            Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Scarf)", 14, currentHeight, 0xffffff);
-                                            break;
-                                        case "LIVID_FRAGMENT":
-                                            Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Livid)", 14, currentHeight, 0xffffff);
-                                            break;
+                                    if (DataManager.lowestBins.has(fragType)) {
+                                        switch (fragType) {
+                                            case "BONZO_FRAGMENT":
+                                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Bonzo)", 14, currentHeight, 0xffffff);
+                                                break;
+                                            case "SCARF_FRAGMENT":
+                                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Scarf)", 14, currentHeight, 0xffffff);
+                                                break;
+                                            case "LIVID_FRAGMENT":
+                                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Livid)", 14, currentHeight, 0xffffff);
+                                                break;
+                                        }
+                                        int fragBonus = DataManager.lowestBins.get(fragType).getAsInt() * 8;
+                                        value += fragBonus;
+                                        drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(fragBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(fragBonus)), currentHeight, 0xffffff);
+                                    } else {
+                                        Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + fragType, 14, currentHeight, 0xffffff);
                                     }
-                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(fragBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(fragBonus)), currentHeight, 0xffffff);
                                 } else {
                                     Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Fragged (Unknown)", 14, currentHeight, 0xffffff);
                                     drawString(fontRendererObj, EnumChatFormatting.GREEN + "+0", 256 - 14 - fontRendererObj.getStringWidth("+0"), currentHeight, 0xffffff);
@@ -225,16 +233,33 @@ public class CreationGui extends CustomGui {
                             final int masterStarCount = extraAttributes.getInteger("dungeon_item_level") - 5;
                             int masterStarBonus = 0;
                             if (masterStarCount > 0) {
+                                ArrayList<String> noPriceFound = new ArrayList<>();
                                 int count = masterStarCount;
                                 while (count > 0) {
                                     if (count == 1) {
-                                        masterStarBonus += DataManager.lowestBins.get("FIRST_MASTER_STAR").getAsInt();
+                                        if (DataManager.lowestBins.has("FIRST_MASTER_STAR")) {
+                                            masterStarBonus += DataManager.lowestBins.get("FIRST_MASTER_STAR").getAsInt();
+                                        } else {
+                                            noPriceFound.add("FIRST_MASTER_STAR");
+                                        }
                                     } else if (count == 2) {
-                                        masterStarBonus += DataManager.lowestBins.get("SECOND_MASTER_STAR").getAsInt();
+                                        if (DataManager.lowestBins.has("SECOND_MASTER_STAR")) {
+                                            masterStarBonus += DataManager.lowestBins.get("SECOND_MASTER_STAR").getAsInt();
+                                        } else {
+                                            noPriceFound.add("SECOND_MASTER_STAR");
+                                        }
                                     } else if (count == 3) {
-                                        masterStarBonus += DataManager.lowestBins.get("THIRD_MASTER_STAR").getAsInt();
+                                        if (DataManager.lowestBins.has("THIRD_MASTER_STAR")) {
+                                            masterStarBonus += DataManager.lowestBins.get("THIRD_MASTER_STAR").getAsInt();
+                                        } else {
+                                            noPriceFound.add("THIRD_MASTER_STAR");
+                                        }
                                     } else if (count == 4) {
-                                        masterStarBonus += DataManager.lowestBins.get("FOURTH_MASTER_STAR").getAsInt();
+                                        if (DataManager.lowestBins.has("FOURTH_MASTER_STAR")) {
+                                            masterStarBonus += DataManager.lowestBins.get("FOURTH_MASTER_STAR").getAsInt();
+                                        } else {
+                                            noPriceFound.add("FOURTH_MASTER_STAR");
+                                        }
                                     }
                                     count--;
                                 }
@@ -242,6 +267,12 @@ public class CreationGui extends CustomGui {
                                 Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Master Stars: " + masterStarCount, 14, currentHeight, 0xffffff);
                                 drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(masterStarBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(masterStarBonus)), currentHeight, 0xffffff);
                                 currentHeight += 15;
+                                if (!noPriceFound.isEmpty()) {
+                                    for (String item : noPriceFound) {
+                                        Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "- No Price Data For " + item, 14, currentHeight, 0xffffff);
+                                        currentHeight += 15;
+                                    }
+                                }
                             }
                         }
 
@@ -254,16 +285,6 @@ public class CreationGui extends CustomGui {
                                 Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Recombobulated", 14, currentHeight, 0xffffff);
                                 drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(recombPrice), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(recombPrice)), currentHeight, 0xffffff);
                                 currentHeight += 15;
-                            }
-                        }
-
-
-                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeAmount) {
-                            final int stackSize = stack.stackSize;
-                            if (stackSize > 1) {
-                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Amount", 14, 256 - 20 - 15, 0xffffff);
-                                value *= stackSize;
-                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "x" + stackSize, 256 - 14 - fontRendererObj.getStringWidth("x" + stackSize), 256 - 20 - 15, 0xffffff);
                             }
                         }
 
@@ -310,22 +331,36 @@ public class CreationGui extends CustomGui {
                             }
 
                             if (reforgeInternalName != null) {
-                                int reforgeBonus = DataManager.lowestBins.get(reforgeInternalName).getAsInt();
-                                value += reforgeBonus;
                                 StringBuilder capitalisedReforge = new StringBuilder();
                                 for (String word : reforge.split("\\s")) {
                                     capitalisedReforge.append(word.substring(0, 1).toUpperCase() + word.substring(1)).append(" ");
                                 }
                                 capitalisedReforge = new StringBuilder(capitalisedReforge.toString().trim());
-                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Reforged: " + capitalisedReforge, 14, currentHeight, 0xffffff);
-                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(reforgeBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(reforgeBonus)), currentHeight, 0xffffff);
-                                currentHeight += 15;
-                                if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeReforgeCost && rarity != null) {
-                                    value += reforgeCost;
-                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "- Reforge Cost: " + Character.toUpperCase(rarity.charAt(0)) + rarity.toLowerCase().substring(1), 14, currentHeight, 0xffffff);
-                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(reforgeCost), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(reforgeCost)), currentHeight, 0xffffff);
+                                if (DataManager.lowestBins.has(reforgeInternalName)) {
+                                    int reforgeBonus = DataManager.lowestBins.get(reforgeInternalName).getAsInt();
+                                    value += reforgeBonus;
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Reforged: " + capitalisedReforge, 14, currentHeight, 0xffffff);
+                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(reforgeBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(reforgeBonus)), currentHeight, 0xffffff);
+                                    currentHeight += 15;
+                                    if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeReforgeCost && rarity != null) {
+                                        value += reforgeCost;
+                                        Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "- Reforge Cost: " + Character.toUpperCase(rarity.charAt(0)) + rarity.toLowerCase().substring(1), 14, currentHeight, 0xffffff);
+                                        drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(reforgeCost), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(reforgeCost)), currentHeight, 0xffffff);
+                                        currentHeight += 15;
+                                    }
+                                } else {
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + capitalisedReforge, 14, currentHeight, 0xffffff);
                                     currentHeight += 15;
                                 }
+                            }
+                        }
+
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeAmount) {
+                            final int stackSize = stack.stackSize;
+                            if (stackSize > 1) {
+                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Amount", 14, 256 - 20 - 15, 0xffffff);
+                                value *= stackSize;
+                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "x" + stackSize, 256 - 14 - fontRendererObj.getStringWidth("x" + stackSize), 256 - 20 - 15, 0xffffff);
                             }
                         }
 
@@ -338,18 +373,24 @@ public class CreationGui extends CustomGui {
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includePetItems) {
                             if (petInfo.has("heldItem")) {
                                 String petItem = petInfo.get("heldItem").getAsString();
-                                final int petItemBonus = DataManager.lowestBins.get(petItem).getAsInt();
-                                value += petItemBonus;
                                 String prettyPetItemName = petItem.replaceAll("_", " ").toLowerCase().replace("pet item", "");
                                 StringBuilder capitalizedPrettyPetItemName = new StringBuilder();
                                 for (String word : prettyPetItemName.split("\\s")) {
-                                    if (word.length() >= 2) capitalizedPrettyPetItemName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+                                    if (word.length() >= 2)
+                                        capitalizedPrettyPetItemName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
                                     else capitalizedPrettyPetItemName.append(word.toUpperCase());
                                 }
                                 capitalizedPrettyPetItemName = new StringBuilder(capitalizedPrettyPetItemName.toString().trim());
-                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);
-                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petItemBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petItemBonus)), currentHeight, 0xffffff);
-                                currentHeight += 15;
+                                if (DataManager.lowestBins.has(petItem)) {
+                                    final int petItemBonus = DataManager.lowestBins.get(petItem).getAsInt();
+                                    value += petItemBonus;
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);
+                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petItemBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petItemBonus)), currentHeight, 0xffffff);
+                                    currentHeight += 15;
+                                } else {
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);
+                                    currentHeight += 15;
+                                }
                             }
                         }
 
@@ -358,17 +399,22 @@ public class CreationGui extends CustomGui {
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includePetSkins) {
                             if (petInfo.has("skin")) {
                                 String skin = "PET_SKIN_" + petInfo.get("skin").getAsString();
-                                final int petSkinBonus = DataManager.lowestBins.get(skin).getAsInt();
-                                value += petSkinBonus;
                                 String prettyPetSkinName = skin.replaceAll("_", " ").toLowerCase().replace("pet skin", "");
                                 StringBuilder capitalizedPrettyPetSkinName = new StringBuilder();
                                 for (String word : prettyPetSkinName.split("\\s")) {
                                     if (word.length() >= 2) capitalizedPrettyPetSkinName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
                                     else capitalizedPrettyPetSkinName.append(word.toUpperCase());
                                 }
-                                Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Skin: " + capitalizedPrettyPetSkinName, 14, currentHeight, 0xffffff);
-                                drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petSkinBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petSkinBonus)), currentHeight, 0xffffff);
-                                currentHeight += 15;
+                                if (DataManager.lowestBins.has(skin)) {
+                                    final int petSkinBonus = DataManager.lowestBins.get(skin).getAsInt();
+                                    value += petSkinBonus;
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Skin: " + capitalizedPrettyPetSkinName, 14, currentHeight, 0xffffff);
+                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petSkinBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petSkinBonus)), currentHeight, 0xffffff);
+                                    currentHeight += 15;
+                                } else {
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + capitalizedPrettyPetSkinName, 14, currentHeight, 0xffffff);
+                                    currentHeight += 15;
+                                }
                             }
                         }
 
@@ -392,6 +438,7 @@ public class CreationGui extends CustomGui {
         }
 
         GlStateManager.popMatrix();
+        GlStateManager.disableAlpha();
         GlStateManager.enableDepth();
 
         GlStateManager.enableLighting();

@@ -95,6 +95,11 @@ public class Utils {
         gui.drawString(fontRendererObject, text, x, y, colour);
     }
 
+    public static void drawString(GuiScreen gui, FontRenderer fontRendererObject, String text, int x, int y, int colour, boolean fromRight) {
+        if (fromRight) x -= fontRendererObject.getStringWidth(text);
+        Utils.drawString(gui, fontRendererObject, text, x, y, colour);
+    }
+
     public static void drawCenteredString(GuiScreen gui, FontRenderer fontRendererObject, String text, int x, int y, int colour) {
         if (SkyhouseMod.INSTANCE.getConfig().generalConfig.fullChromaMode) {
             text = stripStartColourCodes(text);

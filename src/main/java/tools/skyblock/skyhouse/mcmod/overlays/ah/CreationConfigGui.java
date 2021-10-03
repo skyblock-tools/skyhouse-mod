@@ -43,6 +43,7 @@ public class CreationConfigGui extends CustomGui {
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
+        GlStateManager.enableAlpha();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
@@ -102,6 +103,7 @@ public class CreationConfigGui extends CustomGui {
         disabled.clear();
 
         GlStateManager.popMatrix();
+        GlStateManager.disableAlpha();
 
         currentHeight = 30;
         for (HiddenConfigOption option : labels.subList(page*6, page*6+shownOptions)) {

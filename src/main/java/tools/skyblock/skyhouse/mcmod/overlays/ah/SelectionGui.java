@@ -6,9 +6,9 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
-import scala.actors.threadpool.Arrays;
 import tools.skyblock.skyhouse.mcmod.SkyhouseMod;
 import tools.skyblock.skyhouse.mcmod.config.SkyhouseConfig;
+import tools.skyblock.skyhouse.mcmod.config.annotations.Dropdown;
 import tools.skyblock.skyhouse.mcmod.config.annotations.HiddenConfigOption;
 import tools.skyblock.skyhouse.mcmod.config.gui.DropdownComponent;
 import tools.skyblock.skyhouse.mcmod.gui.CustomGui;
@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class SelectionGui extends CustomGui {
 
@@ -46,11 +47,13 @@ public class SelectionGui extends CustomGui {
 
     private SearchFilter searchFilter = new SearchFilter();
 
-    private final List<String> skyhousePlusOnlyTooltip = Lists.newArrayList(EnumChatFormatting.RED + "The greyed out filters below require", EnumChatFormatting.RED + "Skyhouse+, click to learn more.");
+    private final List<String> skyhousePlusOnlyTooltip = Lists.newArrayList(EnumChatFormatting.RED + "All greyed out filters require Skyhouse+,", EnumChatFormatting.RED + "click here to learn more.");
 
     private HashMap<String, CustomTextbox> textboxes = new HashMap<>();
 
     private DropdownComponent textboxDropdown;
+    private DropdownComponent sortDropdown;
+    private DropdownComponent typeDropdown;
     private String currentTextbox = "";
 
     public SelectionGui() {
@@ -63,7 +66,9 @@ public class SelectionGui extends CustomGui {
         boolean save = config.ahOverlayConfig.saveOptions;
         int minProfit = save ? config.filterOptions.minProfit : Constants.DEFAULT_MIN_PROFIT;
         int maxPrice = save ? config.filterOptions.maxPrice : Constants.DEFAULT_MAX_PRICE;
-        int houseQuantity = save ? config.filterOptions.houseQuantity : Constants.DEFAULT_HOUSE_QUANTITY;
+        int houseQuantity = save  ? config.filterOptions.houseQuantity : Constants.DEFAULT_HOUSE_QUANTITY;
+        String currentType = save && config.filterOptions.auctionType != null  ? config.filterOptions.auctionType : Constants.DEFAULT_AUCTION_TYPE_STRING;
+        String currentSort = save && config.filterOptions.auctionSort != null ? config.filterOptions.auctionSort : Constants.DEFAULT_AUCTION_SORT_STRING;
         searchFilter
                 .withMinProfit(minProfit)
                 .withMaxPrice(maxPrice)
@@ -72,6 +77,7 @@ public class SelectionGui extends CustomGui {
         buttons.clear();
         iconButtons.clear();
         textboxes.clear();
+
         int textboxX = 64-50, textboxY = 200;
         textboxes.put("Min Quantity",
                 new CustomTextbox(1, Minecraft.getMinecraft().fontRendererObj, textboxX, textboxY, 90, 20, CustomTextbox.DIGITS_ONLY)
@@ -95,8 +101,45 @@ public class SelectionGui extends CustomGui {
         currentTextbox = "Min Profit";
         textboxDropdown = new DropdownComponent(() -> textboxes.keySet().toArray(new String[0]), currentTextbox, (textbox) -> {
             currentTextbox = textbox;
-        }, false);
+        }, false, false);
         textboxDropdown.setCoords(64-50-1, 200-16-2);
+
+        Dropdown typeDropdownAnnotation;
+        Supplier<String[]> typeSupplier = null;
+        try {
+            typeDropdownAnnotation = SkyhouseMod.INSTANCE.getConfig().filterOptions.getClass().getDeclaredField("auctionType").getAnnotation(Dropdown.class);
+            typeSupplier = typeDropdownAnnotation::options;
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        Consumer<String> typeUpdater = null;
+        try {
+            typeUpdater = Utils.fieldSetter(SkyhouseMod.INSTANCE.getConfig().filterOptions.getClass().getDeclaredField("auctionType"),
+                    SkyhouseMod.INSTANCE.getConfig().filterOptions);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        typeDropdown = new DropdownComponent(typeSupplier, currentType, typeUpdater, true, false);
+        typeDropdown.setCoords(256-21, 18-5+24+23);;
+
+        Dropdown sortDropdownAnnotation;
+        Supplier<String[]> sortSupplier = null;
+        try {
+            sortDropdownAnnotation = SkyhouseMod.INSTANCE.getConfig().filterOptions.getClass().getDeclaredField("auctionSort").getAnnotation(Dropdown.class);
+            sortSupplier = sortDropdownAnnotation::options;
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        Consumer<String> sortUpdater = null;
+        try {
+            sortUpdater = Utils.fieldSetter(SkyhouseMod.INSTANCE.getConfig().filterOptions.getClass().getDeclaredField("auctionSort"),
+                    SkyhouseMod.INSTANCE.getConfig().filterOptions);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        sortDropdown = new DropdownComponent(sortSupplier, currentSort, sortUpdater, true, true);
+        sortDropdown.setCoords(256-21, 18-5+15);
+
         buttons.add(
                 new CustomButton(0, (128-40), 236-10, 80, 20, "Search")
                         .withExecutor(() -> SkyhouseMod.INSTANCE.getOverlayManager().search(searchFilter))
@@ -127,6 +170,7 @@ public class SelectionGui extends CustomGui {
             if (button instanceof CustomButton) ((CustomButton) button).scales(guiScale);
         }
         textboxDropdown.scales(guiScale);
+        typeDropdown.scales(guiScale);
         for (IconButton button : iconButtons) {
             button.scales(guiScale);
         }
@@ -162,8 +206,7 @@ public class SelectionGui extends CustomGui {
             try {
                 itemFilterCheckBoxes.add(new CheckBox(i, 128 - 16 - 16 - 8 + 1, currentHeight - 8, updateChecker,
                         field.getBoolean(SkyhouseMod.INSTANCE.getConfig().filterOptions), updater));
-            } catch (ReflectiveOperationException ignored) {
-            }
+            } catch (ReflectiveOperationException ignored) {}
             i++;
             currentHeight += 24;
         }
@@ -189,6 +232,7 @@ public class SelectionGui extends CustomGui {
     public void drawScreen(int mouseX, int mouseY) {
         GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableLighting();
+        GlStateManager.enableAlpha();
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
@@ -203,9 +247,11 @@ public class SelectionGui extends CustomGui {
             currentHeight += 24;
         }
         Utils.drawString(this, fontRendererObj, "Include:", 64-50+2, 18-2, 0xffffff);
+        Utils.drawString(this, fontRendererObj, "Sort By", 256-16, 18-2, 0xffffff, true);
+        Utils.drawString(this, fontRendererObj, "Type", 256-16, 18-5+24+11, 0xffffff, true);
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
-            drawTexturedModalRect(128 + 64 + 32 - 8, 48 - 7, 96, 0, 16, 16);
+            drawTexturedModalRect(106-16, 18-2-3, 96, 0, 16, 16);
         }
 
         for (CheckBox checkBox : itemFilterCheckBoxes) {
@@ -222,6 +268,7 @@ public class SelectionGui extends CustomGui {
 
         drawComponents(mouseX, mouseY);
         GlStateManager.popMatrix();
+        GlStateManager.disableAlpha();
         GlStateManager.enableLighting();
         drawTooltips(mouseX, mouseY);
 
@@ -237,6 +284,8 @@ public class SelectionGui extends CustomGui {
             button.drawButton(Minecraft.getMinecraft(), mouseX - guiLeft, mouseY - guiTop);
         }
         textboxDropdown.draw(mouseX - guiLeft, mouseY - guiTop);
+        typeDropdown.draw(mouseX - guiLeft, mouseY - guiTop);
+        sortDropdown.draw(mouseX - guiLeft, mouseY - guiTop);
     }
 
     private void drawTooltips(int mouseX, int mouseY) {
@@ -245,7 +294,7 @@ public class SelectionGui extends CustomGui {
                 drawHoveringText(button.getTooltip(), mouseX, mouseY);
         }
         if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
-            if (hover(mouseX - guiLeft, mouseY - guiTop, 128 + 64 + 32 - 8, 48 - 7, 16, 16, guiScale)) {
+            if (hover(mouseX - guiLeft, mouseY - guiTop, 105-16, 18-2-3, 16, 16, guiScale)) {
                 drawHoveringText(skyhousePlusOnlyTooltip, mouseX, mouseY);
             }
         }
@@ -253,7 +302,9 @@ public class SelectionGui extends CustomGui {
 
     @Override
     public void click(int mouseX, int mouseY) {
-        if (textboxDropdown.mousePressed(mouseX - guiLeft, mouseY - guiTop))
+        if (sortDropdown.mousePressed(mouseX - guiLeft, mouseY - guiTop) ||
+            typeDropdown.mousePressed(mouseX - guiLeft, mouseY - guiTop) ||
+            textboxDropdown.mousePressed(mouseX - guiLeft, mouseY - guiTop))
             return;
         CustomTextbox current = textboxes.get(currentTextbox);
         current.setFocused(hover(mouseX - guiLeft, mouseY - guiTop, current.xPosition, current.yPosition, current.width, current.height, guiScale));
