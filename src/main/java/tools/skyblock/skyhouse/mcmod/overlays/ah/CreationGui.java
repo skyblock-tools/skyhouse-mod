@@ -288,6 +288,28 @@ public class CreationGui extends CustomGui {
                             }
                         }
 
+                        if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeItemSkins) {
+                            NBTTagCompound extraAttributes = nbt.getCompoundTag("ExtraAttributes");
+                            if (extraAttributes.hasKey("skin")) {
+                                String skin = extraAttributes.getString("skin");
+                                String prettySkinName = skin.replaceAll("_", " ").toLowerCase();
+                                StringBuilder capitalizedPrettySkinName = new StringBuilder();
+                                for (String word : prettySkinName.split("\\s")) {
+                                    if (word.length() >= 2) capitalizedPrettySkinName.append(word.substring(0, 1).toUpperCase()).append(word.substring(1)).append(" ");
+                                    else capitalizedPrettySkinName.append(word.toUpperCase());
+                                }
+                                if (DataManager.lowestBins.has(skin)) {
+                                    final int skinBonus = DataManager.lowestBins.get(skin).getAsInt();
+                                    value += skinBonus;
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Skin: " + capitalizedPrettySkinName, 14, currentHeight, 0xffffff);
+                                    drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(skinBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(skinBonus)), currentHeight, 0xffffff);
+                                } else {
+                                    Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + capitalizedPrettySkinName, 14, currentHeight, 0xffffff);
+                                }
+                                currentHeight += 15;
+                            }
+                        }
+
                         if (SkyhouseMod.INSTANCE.getConfig().creationOptions.includeReforge) {
                             NBTTagCompound extraAttributes = nbt.getCompoundTag("ExtraAttributes");
                             String reforge = extraAttributes.getString("modifier");
@@ -386,11 +408,10 @@ public class CreationGui extends CustomGui {
                                     value += petItemBonus;
                                     Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Item: " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);
                                     drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petItemBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petItemBonus)), currentHeight, 0xffffff);
-                                    currentHeight += 15;
                                 } else {
                                     Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + capitalizedPrettyPetItemName, 14, currentHeight, 0xffffff);
-                                    currentHeight += 15;
                                 }
+                                currentHeight += 15;
                             }
                         }
 
@@ -410,11 +431,10 @@ public class CreationGui extends CustomGui {
                                     value += petSkinBonus;
                                     Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "Pet Skin: " + capitalizedPrettyPetSkinName, 14, currentHeight, 0xffffff);
                                     drawString(fontRendererObj, EnumChatFormatting.GREEN + "+" + formatNumber(petSkinBonus), 256 - 14 - fontRendererObj.getStringWidth("+" + formatNumber(petSkinBonus)), currentHeight, 0xffffff);
-                                    currentHeight += 15;
                                 } else {
                                     Utils.drawString(this, fontRendererObj, EnumChatFormatting.GRAY + "No Price Data for " + capitalizedPrettyPetSkinName, 14, currentHeight, 0xffffff);
-                                    currentHeight += 15;
                                 }
+                                currentHeight += 15;
                             }
                         }
 
