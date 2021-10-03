@@ -322,7 +322,7 @@ public class SelectionGui extends CustomGui {
             }
         }
         if (SkyhouseMod.INSTANCE.getAuthenticationManager().privLevel < 2) {
-            if (hover(mouseX - guiLeft, mouseY - guiTop, 128 + 64 + 32 - 8, 48 - 7, 16, 16, guiScale)) {
+            if (hover(mouseX - guiLeft, mouseY - guiTop, 105-16, 18-2-3, 16, 16, guiScale)) {
                 try {
                     Desktop.getDesktop().browse(new URI(Constants.SKYHOUSE_PLUS_URL));
                 } catch (URISyntaxException | IOException ignored) {
