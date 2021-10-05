@@ -2,9 +2,12 @@ package tools.skyblock.skyhouse.mcmod.listeners;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -31,10 +34,17 @@ public class EventListener {
         toOpen = guiScreen;
     }
 
+//    private ResourceLocation slotBackground;
+//    private int slotId;
 
     public void setLastAuction(int lastAuctionIndex) {
         this.lastAuctionIndex = lastAuctionIndex;
     }
+
+//    public void setSlotBackground(int slotId, ResourceLocation slotBackground) {
+//        this.slotId = slotId;
+//        this.slotBackground = slotBackground;
+//    }
 
 
     @SubscribeEvent
@@ -58,7 +68,7 @@ public class EventListener {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onGuiBackgroundDraw(GuiScreenEvent.DrawScreenEvent.Post event) {
         SkyhouseMod.INSTANCE.getOverlayManager().drawOverlays(event.mouseX, event.mouseY);
-        if ((Utils.renderCreationOverlay() && isAhCreationGui()) || (Utils.renderFlippingOverlay() && Utils.isAhGui())) {
+        if ((Utils.renderCreationOverlay() && isAhCreationGui()) || (Utils.renderFlippingOverlay() && Utils.isAhGui()) || (Utils.renderCraftFlipOverlay() && Utils.isCraftingGui())) {
             SkyhouseMod.INSTANCE.getOverlayManager().drawScreen(event.mouseX, event.mouseY);
         }
         if (tooltipToRender != null) {
@@ -96,5 +106,20 @@ public class EventListener {
         else return;
         event.toolTip.clear();
     }
+
+//    @SubscribeEvent
+//    public void onTextureStitch(TextureStitchEvent.Pre event) {
+//        System.out.println(slotId);
+//        System.out.println(slotBackground);
+//        if (this.slotId != -1 && this.slotBackground != null) {
+//            event.map.registerSprite(slotBackground);
+//            if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer) {
+//                GuiContainer container = (GuiContainer) Minecraft.getMinecraft().currentScreen;
+//                container.inventorySlots.getSlot(slotId).setBackgroundLocation(slotBackground);
+//            }
+//            this.slotId = -1;
+//            this.slotBackground = null;
+//        }
+//    }
 
 }

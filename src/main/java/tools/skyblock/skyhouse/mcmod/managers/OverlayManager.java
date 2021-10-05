@@ -16,6 +16,7 @@ import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationConfigGui;
 import tools.skyblock.skyhouse.mcmod.overlays.ah.CreationGui;
 import tools.skyblock.skyhouse.mcmod.overlays.ah.FlipListGui;
 import tools.skyblock.skyhouse.mcmod.overlays.ah.SelectionGui;
+import tools.skyblock.skyhouse.mcmod.overlays.crafting.CraftFlipOverlay;
 import tools.skyblock.skyhouse.mcmod.overlays.price.BitsOverlay;
 import tools.skyblock.skyhouse.mcmod.util.Constants;
 import tools.skyblock.skyhouse.mcmod.util.Utils;
@@ -43,7 +44,10 @@ public class OverlayManager {
     }};
 
     private CustomGui ensureInstance() {
-        if (renderCreationOverlay() && isAhCreationGui()) {
+        if (renderCraftFlipOverlay() && isCraftingGui()) {
+            gui = new CraftFlipOverlay();
+            return gui;
+        } else if (renderCreationOverlay() && isAhCreationGui()) {
             if (flipListOpened) {
                 if (!(gui instanceof FlipListGui)) gui = new FlipListGui(flips, filter);
                 return gui;
@@ -58,7 +62,7 @@ public class OverlayManager {
                 this.creationGuiOpened = true;
                 return gui;
             }
-        } else if (gui == null || (isAhGui() && (gui instanceof CreationGui || gui instanceof CreationConfigGui))) {
+        } else if (gui == null || (isAhGui() && (gui instanceof CreationGui || gui instanceof CreationConfigGui || gui instanceof CraftFlipOverlay))) {
             flipListOpened = false;
             gui = new SelectionGui();
         } else if (flips != null && (gui instanceof SelectionGui || createGui)) {

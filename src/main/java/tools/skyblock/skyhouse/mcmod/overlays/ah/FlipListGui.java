@@ -119,7 +119,7 @@ public class FlipListGui extends CustomGui {
         GlStateManager.enableAlpha();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        ThemeManager.drawAhOverlayThemeFor("flipListGUI");
+        ThemeManager.drawOverlayThemeFor("flipListGUI");
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230 - 16 - 10, -32 + 8, 176, 0, 16, 16);
         GlStateManager.pushMatrix();

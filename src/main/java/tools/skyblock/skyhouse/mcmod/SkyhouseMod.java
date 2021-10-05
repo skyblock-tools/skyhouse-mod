@@ -78,6 +78,7 @@ public class SkyhouseMod {
         DataManager.loadLocalData();
         MinecraftForge.EVENT_BUS.register(listener);
         ClientCommandHandler.instance.registerCommand(new SkyhouseLoginCommand());
+        ClientCommandHandler.instance.registerCommand(new CraftFlipCommand());
         ClientCommandHandler.instance.registerCommand(new ConfigCommand());
         ClientCommandHandler.instance.registerCommand(new ReloadConfigCommand());
         ClientCommandHandler.instance.registerCommand(new RefreshLowestBins());

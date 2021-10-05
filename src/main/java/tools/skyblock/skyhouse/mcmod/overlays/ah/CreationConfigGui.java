@@ -47,7 +47,7 @@ public class CreationConfigGui extends CustomGui {
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        ThemeManager.drawAhOverlayThemeFor("creationGUI");
+        ThemeManager.drawOverlayThemeFor("creationGUI");
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(230, -8-16, 194, 0, 16, 16);

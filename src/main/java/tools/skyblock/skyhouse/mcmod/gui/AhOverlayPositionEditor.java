@@ -75,7 +75,7 @@ public class AhOverlayPositionEditor extends GuiScreen {
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
         tick(mouseX, mouseY);
-        ThemeManager.drawAhOverlayThemeFor("selectionGUI");
+        ThemeManager.drawOverlayThemeFor("selectionGUI");
         Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.GUI_ICONS);
         drawTexturedModalRect(96, 164, 0, 32, 64, 64);
         drawTexturedModalRect(96, 32, 64, 32, 64, 64);

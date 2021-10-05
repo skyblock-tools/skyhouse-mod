@@ -42,6 +42,11 @@ public class SkyhouseConfig {
     @Expose
     public AhOverlayConfig ahOverlayConfig = new AhOverlayConfig();
 
+    @ConfigCategory(name = "Crafting Overlays", description = "Configure the crafting overlays")
+    @SerializedName("craft_overlays")
+    @Expose
+    public CraftingOverlayConfig craftingOverlayConfig = new CraftingOverlayConfig();
+
     @ConfigCategory(name = "Price Overlays", description = "Miscellaneous price overlays")
     @SerializedName("price_overlays")
     @Expose
@@ -135,6 +140,15 @@ public class SkyhouseConfig {
 
     }
 
+    public static class CraftingOverlayConfig {
+
+        @Expose
+        @SerializedName("show_craft_flip_overlay")
+        @ConfigOption(value = "Enable craft flip overlay", description = {"\u00a77Enables the craft flip overlay\u00a7r",
+                "\u00a7aDisplays in the crafting table gui, this does not affect the command\u00a7r"})
+        public boolean showCraftFlipOverlay = false;
+
+    }
 
     public static class PriceOverlayOptions {
 

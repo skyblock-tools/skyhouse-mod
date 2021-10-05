@@ -55,6 +55,12 @@ dependencies {
     implementation 'com.oneandone:composite-jks:1.0'
 }
 
+jar {
+    manifest.attributes(
+            "FMLAT": 'skyhouse_at.cfg'
+    )
+}
+
 reobf {
     shadowJar {
         mappingType = 'SEARGE'

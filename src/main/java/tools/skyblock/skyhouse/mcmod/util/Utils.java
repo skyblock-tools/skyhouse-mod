@@ -10,8 +10,12 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ContainerChest;
@@ -133,6 +137,11 @@ public class Utils {
         return title != null && (title.toLowerCase().contains("create") && title.toLowerCase().contains("auction"));
     }
 
+    public static boolean isCraftingGui() {
+        String title = invGuiName();
+        return title != null && (title.toLowerCase().contains("craft item"));
+    }
+
     public static URL parseUrl(String url) {
         try {
             return new URL(url);
@@ -208,6 +217,64 @@ public class Utils {
         renderItem.zLevel = 0;
         RenderHelper.disableStandardItemLighting();
     }
+
+//    public static void renderItemWithTransparencyEnabled(FontRenderer fontRendererObject, ItemStack itemStack, int x, int y, String text) {
+//        RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+////        RenderHelper.enableGUIStandardItemLighting();
+//        GlStateManager.enableAlpha();
+//        GlStateManager.enableBlend();
+//        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//        GlStateManager.color(0.3f, 0.3f, 0.3f, 0.5f);
+//        renderItem.zLevel = -145;
+//        renderItem.renderItemAndEffectIntoGUI(itemStack, x, y);
+//
+//        if (itemStack.stackSize != 1 || text != null) {
+//            String s = text == null ? String.valueOf(itemStack.stackSize) : text;
+//            if (text == null && itemStack.stackSize < 1) {
+//                s = EnumChatFormatting.RED + String.valueOf(itemStack.stackSize);
+//            }
+//
+//            GlStateManager.disableLighting();
+//            GlStateManager.disableDepth();
+//            GlStateManager.disableBlend();
+//            fontRendererObject.drawStringWithShadow(s, (float)(x + 19 - 2 - fontRendererObject.getStringWidth(s)), (float)(y + 6 + 3), 16777215);
+//            GlStateManager.enableLighting();
+//            GlStateManager.enableDepth();
+//            GlStateManager.enableBlend();
+//        }
+//
+//        if (itemStack.getItem().showDurabilityBar(itemStack)) {
+//            double health = itemStack.getItem().getDurabilityForDisplay(itemStack);
+//            int j = (int)Math.round(13.0D - health * 13.0D);
+//            int i = (int)Math.round(255.0D - health * 255.0D);
+//            GlStateManager.disableLighting();
+//            GlStateManager.disableDepth();
+//            GlStateManager.disableTexture2D();
+////            GlStateManager.disableBlend();
+//            Tessellator tessellator = Tessellator.getInstance();
+//            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+//            draw(worldrenderer, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
+//            draw(worldrenderer, x + 2, y + 13, 12, 1, (255 - i) / 4, 64, 0, 255);
+//            draw(worldrenderer, x + 2, y + 13, j, 1, 255 - i, i, 0, 255);
+//            GlStateManager.enableTexture2D();
+//            GlStateManager.enableLighting();
+//            GlStateManager.enableDepth();
+//        }
+//
+//        renderItem.zLevel = 0;
+//        GlStateManager.disableAlpha();
+////        RenderHelper.disableStandardItemLighting();
+//    }
+//
+//    private static void draw(WorldRenderer p_draw_1_, int p_draw_2_, int p_draw_3_, int p_draw_4_, int p_draw_5_, int p_draw_6_, int p_draw_7_, int p_draw_8_, int p_draw_9_) {
+//        p_draw_1_.begin(7, DefaultVertexFormats.POSITION_COLOR);
+//        p_draw_1_.pos((double)(p_draw_2_ + 0), (double)(p_draw_3_ + 0), 0.0D).color(p_draw_6_, p_draw_7_, p_draw_8_, p_draw_9_).endVertex();
+//        p_draw_1_.pos((double)(p_draw_2_ + 0), (double)(p_draw_3_ + p_draw_5_), 0.0D).color(p_draw_6_, p_draw_7_, p_draw_8_, p_draw_9_).endVertex();
+//        p_draw_1_.pos((double)(p_draw_2_ + p_draw_4_), (double)(p_draw_3_ + p_draw_5_), 0.0D).color(p_draw_6_, p_draw_7_, p_draw_8_, p_draw_9_).endVertex();
+//        p_draw_1_.pos((double)(p_draw_2_ + p_draw_4_), (double)(p_draw_3_ + 0), 0.0D).color(p_draw_6_, p_draw_7_, p_draw_8_, p_draw_9_).endVertex();
+//        Tessellator.getInstance().draw();
+//    }
 
     public static <O, T> Consumer<O> createConvertingCallback(Converter<O, T> converter, Consumer<T> target) {
         return ((O x) -> target.accept(converter.convert(x)));
@@ -417,6 +484,10 @@ public class Utils {
 
     public static boolean renderCreationOverlay() {
         return SkyhouseMod.INSTANCE.getConfig().ahOverlayConfig.showCreationOverlay;
+    }
+
+    public static boolean renderCraftFlipOverlay() {
+        return SkyhouseMod.INSTANCE.getConfig().craftingOverlayConfig.showCraftFlipOverlay;
     }
 
     public static int getGuiLeft() {

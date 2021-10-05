@@ -44,7 +44,7 @@ public class ThemeManager {
         }
         return 0;
     }
-    public static void drawAhOverlayThemeFor(String gui) {
+    public static void drawOverlayThemeFor(String gui) {
         JsonObject currentData = DataManager.themes.get(SkyhouseMod.INSTANCE.getConfig().generalConfig.theme).getAsJsonObject().get(gui).getAsJsonObject();
         if (currentData.has("ref")) {
             gui = currentData.get("ref").getAsString();

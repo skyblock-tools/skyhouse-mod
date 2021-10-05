@@ -236,7 +236,7 @@ public class SelectionGui extends CustomGui {
         GlStateManager.pushMatrix();
         GlStateManager.translate(guiLeft, guiTop, 0);
         GlStateManager.scale(guiScale, guiScale, guiScale);
-        ThemeManager.drawAhOverlayThemeFor("selectionGUI");
+        ThemeManager.drawOverlayThemeFor("selectionGUI");
 
         Utils.drawCenteredString(this, Minecraft.getMinecraft().fontRendererObj, "AH Flip Options", 128, 12-32, 0xffffff);
 
